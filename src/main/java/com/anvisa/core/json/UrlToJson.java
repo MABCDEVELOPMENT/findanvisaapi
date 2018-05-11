@@ -24,9 +24,9 @@ public class UrlToJson {
 	public static String URL_FOOD_PRODUCT = "https://consultas.anvisa.gov.br/api/consulta/produtos/6?count=1000&filter%5Bcnpj%5D=valueCnpj&filter%5BnomeProduto%5D=valueProduct&page=1";
 	public static String URL_SANEANTE_PRODUCT = "";
 
-	public static void main(String[] args) {
+/*	public static void main(String[] args) {
 		findFoodSaneate("55323448000138", "AVEIA", TypeSearch.FOOD_PRODUCT);
-	}
+	}*/
 
 	public static RootObjectProcesso findProcess(String cnpj) {
 
