@@ -1,0 +1,14 @@
+Manifest-Version: 1.0
+Implementation-Title: ANVISAREST
+Implementation-Version: 0.0.1-SNAPSHOT
+Built-By: alessandro.fred
+Implementation-Vendor-Id: com.anvisa
+Build-Jdk: 1.8.0_51
+Implementation-URL: https://projects.spring.io/spring-boot/#/spring-bo
+ ot-starter-parent/ANVISAREST
+Created-By: Maven Integration for Eclipse
+Main-Class: org.springframework.boot.loader.JarLauncher
+Start-Class: com.anvisa.AnvisarestApplication
+Spring-Boot-Classes: BOOT-INF/classes/
+Spring-Boot-Lib: BOOT-INF/lib/
+
