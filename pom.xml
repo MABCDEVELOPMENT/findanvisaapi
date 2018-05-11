@@ -7,7 +7,7 @@
 	<groupId>com.anvisa</groupId>
 	<artifactId>ANVISAREST</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<packaging>war</packaging>
+	<packaging>jar</packaging>
 
 	<name>ANVISAREST</name>
 	<description>Project Anvisa Rest</description>
@@ -101,23 +101,24 @@
 
 	<build>
 		<plugins>
-			<!-- <plugin> <groupId>org.springframework.boot</groupId> <artifactId>spring-boot-maven-plugin</artifactId> 
-				</plugin> -->
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
-				<version>${spring.version}</version>
 				<executions>
 					<execution>
 						<goals>
 							<goal>repackage</goal>
 						</goals>
 						<configuration>
-							<finalName>${artifactId}</finalName>
+							<classifier>spring-boot</classifier>
+							<mainClass>
+								org.baeldung.executable.ExecutableMavenJar
+							</mainClass>
 						</configuration>
 					</execution>
 				</executions>
 			</plugin>
+
 		</plugins>
 	</build>
 
