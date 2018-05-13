@@ -11,6 +11,7 @@ import java.util.Date;
 import java.util.Iterator;
 
 import com.anvisa.core.type.TypeSearch;
+import com.anvisa.core.type.TypeSearchProduct;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -20,13 +21,14 @@ import okhttp3.Response;
 
 public class UrlToJson {
 
-	public static String URL_PROCESS = "https://consultas.anvisa.gov.br/api/documento/tecnico?count=1000&filter[cnpj]=valueCnpj&page=1";
-	public static String URL_FOOD_PRODUCT = "https://consultas.anvisa.gov.br/api/consulta/produtos/6?count=1000&filter%5Bcnpj%5D=valueCnpj&filter%5BnomeProduto%5D=valueProduct&page=1";
-	public static String URL_SANEANTE_PRODUCT = "";
+	public static String URL_PROCESS = "https://consultas.anvisa.gov.br/api/documento/tecnico?count=1000&page=1";
+	public static String URL_FOOD_PRODUCT = "https://consultas.anvisa.gov.br/api/consulta/produtos/6?count=1000&page=1&filter[cnpj]=valueCnpj&filter[nomeProduto]=valueProduct";
+	public static String URL_SANEANTE_PRODUCT = "https://consultas.anvisa.gov.br/api/consulta/cosmeticos/[typeSearch]?count=1000&page=1";
 
-/*	public static void main(String[] args) {
-		findFoodSaneate("55323448000138", "AVEIA", TypeSearch.FOOD_PRODUCT);
-	}*/
+	/*
+	 * public static void main(String[] args) { findFoodSaneate("55323448000138",
+	 * "AVEIA", TypeSearch.FOOD_PRODUCT); }
+	 */
 
 	public static RootObjectProcesso findProcess(String cnpj) {
 
@@ -134,6 +136,59 @@ public class UrlToJson {
 		}
 
 		return rootObjectProduto;
+	}
+
+	public static String validParameterTypeSearchProduct(String url, TypeSearchProduct typeSearchProduct) {
+
+		if (typeSearchProduct != null) {
+			url = url + typeSearchProduct.name();
+		}
+
+		return url;
+
+	}
+
+	public static String validParameterProcess(String url, String cnpj, String area) {
+
+		if (cnpj != null && cnpj.isEmpty()) {
+			url = url + "&filter[cnpj]=" + cnpj;
+		}
+
+		if (area != null && !area.isEmpty()) {
+			url = url + "&filter[area]=" + area;
+		}
+
+		return url;
+	}
+
+	public static String validParameterProduct(String url, String cnpj, String numeroProcesso, String numeroRegistro,
+			String nomeProduto, String categoria, String marca) {
+
+		if (cnpj != null && cnpj.isEmpty()) {
+			url = url + "&filter[cnpj]=" + cnpj;
+		}
+
+		if (numeroProcesso != null && !numeroProcesso.isEmpty()) {
+			url = url + "&filter[numeroProcesso]=" + numeroProcesso;
+		}
+
+		if (numeroRegistro != null && !numeroRegistro.isEmpty()) {
+			url = url + "&filter[numeroRegistro]=" + numeroRegistro;
+		}
+
+		if (nomeProduto != null && !nomeProduto.isEmpty()) {
+			url = url + "&filter[nomeProduto]=" + nomeProduto;
+		}
+
+		if (categoria != null && !categoria.isEmpty()) {
+			url = url + "&filter[categoria]=" + categoria;
+		}
+
+		if (marca != null && !marca.isEmpty()) {
+			url = url + "&filter[marca]=" + marca;
+		}
+
+		return url;
 	}
 
 	public static void downloadFileFromURL(String urlString, File destination) {
