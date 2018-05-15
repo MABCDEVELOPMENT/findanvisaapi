@@ -10,6 +10,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Iterator;
 
+import com.anvisa.core.type.TypeArea;
 import com.anvisa.core.type.TypeSearch;
 import com.anvisa.core.type.TypeSearchProduct;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -30,13 +31,13 @@ public class UrlToJson {
 	 * "AVEIA", TypeSearch.FOOD_PRODUCT); }
 	 */
 
-	public static RootObjectProcesso findProcess(String cnpj) {
+	public static RootObjectProcesso findProcess(String cnpj, TypeArea area) {
 
 		RootObjectProcesso rootObjectProcesso = new RootObjectProcesso();
 
 		OkHttpClient client = new OkHttpClient(); //
 		// https://consultas.anvisa.gov.br/#/alimentos/q/?nomeProduto=AVEIA Request
-		Request request = new Request.Builder().url(URL_PROCESS.replace("valueCnpj", cnpj)).get()
+		Request request = new Request.Builder().url(validParameterProcess(URL_PROCESS, cnpj, area)).get()
 				.addHeader("authorization", "Guest").build();
 
 		try {
@@ -148,14 +149,14 @@ public class UrlToJson {
 
 	}
 
-	public static String validParameterProcess(String url, String cnpj, String area) {
+	public static String validParameterProcess(String url, String cnpj, TypeArea area) {
 
 		if (cnpj != null && cnpj.isEmpty()) {
 			url = url + "&filter[cnpj]=" + cnpj;
 		}
 
-		if (area != null && !area.isEmpty()) {
-			url = url + "&filter[area]=" + area;
+		if (area != null) {
+			url = url + "&filter[area]=" + area.getId();
 		}
 
 		return url;
