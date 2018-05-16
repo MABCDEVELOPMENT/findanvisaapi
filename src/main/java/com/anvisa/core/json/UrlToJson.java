@@ -151,7 +151,7 @@ public class UrlToJson {
 
 	public static String validParameterProcess(String url, String cnpj, TypeArea area) {
 
-		if (cnpj != null && cnpj.isEmpty()) {
+		if (cnpj != null && !cnpj.isEmpty()) {
 			url = url + "&filter[cnpj]=" + cnpj;
 		}
 
