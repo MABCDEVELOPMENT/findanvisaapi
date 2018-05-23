@@ -11,7 +11,8 @@ import java.util.Date;
 import java.util.Iterator;
 
 import com.anvisa.core.type.TypeArea;
-import com.anvisa.core.type.TypeSearch;
+import com.anvisa.core.type.TypeCategory;
+import com.anvisa.core.type.TypeProduct;
 import com.anvisa.core.type.TypeSearchProduct;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -23,8 +24,8 @@ import okhttp3.Response;
 public class UrlToJson {
 
 	public static String URL_PROCESS = "https://consultas.anvisa.gov.br/api/documento/tecnico?count=1000&page=1";
-	public static String URL_FOOD_PRODUCT = "https://consultas.anvisa.gov.br/api/consulta/produtos/6?count=1000&page=1&filter[cnpj]=valueCnpj&filter[nomeProduto]=valueProduct";
-	public static String URL_SANEANTE_PRODUCT = "https://consultas.anvisa.gov.br/api/consulta/cosmeticos/[typeSearch]?count=1000&page=1";
+	public static String URL_FOOD_PRODUCT = "https://consultas.anvisa.gov.br/api/consulta/produtos/6?count=1000&page=1";
+	public static String URL_SANEANTE_PRODUCT = "https://consultas.anvisa.gov.br/api/consulta/cosmeticos/[typeSearchProduct]?count=1000&page=1";
 
 	/*
 	 * public static void main(String[] args) { findFoodSaneate("55323448000138",
@@ -81,31 +82,31 @@ public class UrlToJson {
 		return rootObjectProcesso;
 	}
 
-	public static RootObjectProduto findFoodSaneate(String cnpj, String fieldValue, TypeSearch typeSearch) {
+	public static RootObjectProduto findFoodSaneate(String cnpj, String numeroProcesso, String numeroRegistro,
+			String nomeProduto, TypeCategory categoria, String marca, TypeProduct typeProduct,
+			TypeSearchProduct typeSearchProduct) {
 
 		RootObjectProduto rootObjectProduto = new RootObjectProduto();
 
 		OkHttpClient client = new OkHttpClient();
 
-		String url = "";
+		Request url = null;
 
-		if (typeSearch.equals(TypeSearch.FOOD_PRODUCT)) {
+		if (typeProduct.equals(TypeProduct.FOOD_PRODUCT)) {
 
-			url = URL_FOOD_PRODUCT;
+			url = new Request.Builder().url(validParameterProduct(URL_FOOD_PRODUCT, cnpj, numeroProcesso,
+					numeroRegistro, nomeProduto, categoria, marca)).get().addHeader("authorization", "Guest").build();
 
 		} else {
 
-			url = URL_SANEANTE_PRODUCT;
+			url = new Request.Builder().url(validParameterProduct(URL_SANEANTE_PRODUCT, cnpj, numeroProcesso,
+					numeroRegistro, nomeProduto, categoria, marca)).get().addHeader("authorization", "Guest").build();
 
 		}
 
-		url = url.replace("valueCnpj", cnpj).replaceAll("valueProduct", fieldValue);
-
-		Request request = new Request.Builder().url(url).get().addHeader("authorization", "Guest").build();
-
 		try {
 
-			Response response = client.newCall(request).execute();
+			Response response = client.newCall(url).execute();
 
 			ObjectMapper objectMapper = new ObjectMapper();
 
@@ -131,8 +132,7 @@ public class UrlToJson {
 
 			}
 
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
+		} catch (Exception e) { // TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
@@ -142,7 +142,7 @@ public class UrlToJson {
 	public static String validParameterTypeSearchProduct(String url, TypeSearchProduct typeSearchProduct) {
 
 		if (typeSearchProduct != null) {
-			url = url + typeSearchProduct.name();
+			url = url.replace("[typeSearchProduct]", typeSearchProduct.name());
 		}
 
 		return url;
@@ -163,9 +163,9 @@ public class UrlToJson {
 	}
 
 	public static String validParameterProduct(String url, String cnpj, String numeroProcesso, String numeroRegistro,
-			String nomeProduto, String categoria, String marca) {
+			String nomeProduto, TypeCategory categoria, String marca) {
 
-		if (cnpj != null && cnpj.isEmpty()) {
+		if (cnpj != null && !cnpj.isEmpty()) {
 			url = url + "&filter[cnpj]=" + cnpj;
 		}
 
@@ -181,8 +181,8 @@ public class UrlToJson {
 			url = url + "&filter[nomeProduto]=" + nomeProduto;
 		}
 
-		if (categoria != null && !categoria.isEmpty()) {
-			url = url + "&filter[categoria]=" + categoria;
+		if (categoria != null) {
+			url = url + "&filter[categoria]=" + categoria.getId();
 		}
 
 		if (marca != null && !marca.isEmpty()) {

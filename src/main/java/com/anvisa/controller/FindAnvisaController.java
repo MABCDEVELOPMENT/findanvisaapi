@@ -7,8 +7,12 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.anvisa.core.json.RootObjectProcesso;
+import com.anvisa.core.json.RootObjectProduto;
 import com.anvisa.core.json.UrlToJson;
 import com.anvisa.core.type.TypeArea;
+import com.anvisa.core.type.TypeCategory;
+import com.anvisa.core.type.TypeProduct;
+import com.anvisa.core.type.TypeSearchProduct;
 
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
@@ -28,6 +32,26 @@ public class FindAnvisaController {
 			@RequestParam(name = "area", required = false) TypeArea area) {
 
 		return UrlToJson.findProcess(cnpj, area);
+	}
+
+	@ApiOperation(value = "View a list of produtcts", response = Iterable.class)
+	@ApiResponses(value = { @ApiResponse(code = 200, message = "Successfully retrieved list"),
+			@ApiResponse(code = 401, message = "You are not authorized to view the resource"),
+			@ApiResponse(code = 403, message = "Accessing the resource you were trying to reach is forbidden"),
+			@ApiResponse(code = 404, message = "The resource you were trying to reach is not found") })
+
+	@RequestMapping(value = "/product/{cnpj}", method = RequestMethod.GET, produces = "application/json")
+	public RootObjectProduto findProduct(@PathVariable String cnpj,
+			@RequestParam(name = "Processo", required = false) String numeroProcesso,
+			@RequestParam(name = "Produto", required = true) String nomeProduto,
+			@RequestParam(name = "Marca", required = false) String marca,
+			@RequestParam(name = "Categoria", required = false) TypeCategory categoria,
+			@RequestParam(name = "Numero de Registro", required = false) String numeroRegistro,
+			@RequestParam(name = "Tipo de Produto", required = true) TypeProduct typeProdutc,
+			@RequestParam(name = "Tipo de Pesquisa", required = false) TypeSearchProduct typeSearchProduct) {
+
+		return UrlToJson.findFoodSaneate(cnpj, numeroProcesso, numeroRegistro, nomeProduto, categoria, marca,
+				typeProdutc, typeSearchProduct);
 	}
 
 }
