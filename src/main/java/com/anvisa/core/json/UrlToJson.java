@@ -13,7 +13,7 @@ import java.util.Iterator;
 import com.anvisa.core.type.TypeArea;
 import com.anvisa.core.type.TypeCategory;
 import com.anvisa.core.type.TypeProduct;
-import com.anvisa.core.type.TypeSearchProduct;
+import com.anvisa.core.type.TypeSearchProductCosmetic;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -24,8 +24,8 @@ import okhttp3.Response;
 public class UrlToJson {
 
 	public static String URL_PROCESS = "https://consultas.anvisa.gov.br/api/documento/tecnico?count=1000&page=1";
-	public static String URL_FOOD_PRODUCT = "https://consultas.anvisa.gov.br/api/consulta/produtos/6?count=1000&page=1";
-	public static String URL_SANEANTE_PRODUCT = "https://consultas.anvisa.gov.br/api/consulta/cosmeticos/[typeSearchProduct]?count=1000&page=1";
+	public static String URL_COSMETIC = "https://consultas.anvisa.gov.br/api/consulta/produtos/6?count=1000&page=1";
+	public static String URL_SANEANTE = "https://consultas.anvisa.gov.br/api/consulta/produtos/3?count=1000&page=1";
 
 	/*
 	 * public static void main(String[] args) { findFoodSaneate("55323448000138",
@@ -82,9 +82,8 @@ public class UrlToJson {
 		return rootObjectProcesso;
 	}
 
-	public static RootObjectProduto findFoodSaneate(String cnpj, String numeroProcesso, String numeroRegistro,
-			String nomeProduto, TypeCategory categoria, String marca, TypeProduct typeProduct,
-			TypeSearchProduct typeSearchProduct) {
+	public static RootObjectProduto find(String cnpj, String numeroProcesso, String numeroRegistro, String nomeProduto,
+			TypeCategory categoria, String marca, String typeProduct, String typeSearch) {
 
 		RootObjectProduto rootObjectProduto = new RootObjectProduto();
 
@@ -92,15 +91,15 @@ public class UrlToJson {
 
 		Request url = null;
 
-		if (typeProduct.equals(TypeProduct.FOOD_PRODUCT)) {
+		if (typeProduct.equals(TypeProduct.COSMETIC.name())) {
 
-			url = new Request.Builder().url(validParameterProduct(URL_FOOD_PRODUCT, cnpj, numeroProcesso,
-					numeroRegistro, nomeProduto, categoria, marca)).get().addHeader("authorization", "Guest").build();
+			url = new Request.Builder().url(validParameterProduct(URL_COSMETIC, cnpj, numeroProcesso, numeroRegistro,
+					nomeProduto, categoria, marca)).get().addHeader("authorization", "Guest").build();
 
 		} else {
 
-			url = new Request.Builder().url(validParameterProduct(URL_SANEANTE_PRODUCT, cnpj, numeroProcesso,
-					numeroRegistro, nomeProduto, categoria, marca)).get().addHeader("authorization", "Guest").build();
+			url = new Request.Builder().url(validParameterProduct(URL_SANEANTE, cnpj, numeroProcesso, numeroRegistro,
+					nomeProduto, categoria, marca)).get().addHeader("authorization", "Guest").build();
 
 		}
 
@@ -139,7 +138,7 @@ public class UrlToJson {
 		return rootObjectProduto;
 	}
 
-	public static String validParameterTypeSearchProduct(String url, TypeSearchProduct typeSearchProduct) {
+	public static String validParameterTypeSearchProduct(String url, TypeSearchProductCosmetic typeSearchProduct) {
 
 		if (typeSearchProduct != null) {
 			url = url.replace("[typeSearchProduct]", typeSearchProduct.name());

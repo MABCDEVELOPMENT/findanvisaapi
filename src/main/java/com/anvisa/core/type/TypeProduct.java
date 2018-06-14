@@ -2,7 +2,7 @@ package com.anvisa.core.type;
 
 public enum TypeProduct {
 
-	FOOD_PRODUCT("FOOD_PRODUCT"), SANEANTE_PRODUCT("SANEANTE_PRODUCT");
+	COSMETIC("FOOD_PRODUCT"), SANEANTE("SANEANTE");
 
 	private final String type;
 

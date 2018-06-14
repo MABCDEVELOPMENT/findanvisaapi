@@ -12,7 +12,7 @@ import com.anvisa.core.json.UrlToJson;
 import com.anvisa.core.type.TypeArea;
 import com.anvisa.core.type.TypeCategory;
 import com.anvisa.core.type.TypeProduct;
-import com.anvisa.core.type.TypeSearchProduct;
+import com.anvisa.core.type.TypeSearchProductCosmetic;
 
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
@@ -40,18 +40,18 @@ public class FindAnvisaController {
 			@ApiResponse(code = 403, message = "Accessing the resource you were trying to reach is forbidden"),
 			@ApiResponse(code = 404, message = "The resource you were trying to reach is not found") })
 
-	@RequestMapping(value = "/product/{cnpj}", method = RequestMethod.GET, produces = "application/json")
-	public RootObjectProduto findProduct(@PathVariable String cnpj,
+	@RequestMapping(value = "/product/cosmetic/{cnpj}", method = RequestMethod.GET, produces = "application/json")
+	public RootObjectProduto findCosmetic(@PathVariable String cnpj,
 			@RequestParam(name = "Processo", required = false) String numeroProcesso,
 			@RequestParam(name = "Produto", required = true) String nomeProduto,
 			@RequestParam(name = "Marca", required = false) String marca,
 			@RequestParam(name = "Categoria", required = false) TypeCategory categoria,
 			@RequestParam(name = "Numero de Registro", required = false) String numeroRegistro,
 			@RequestParam(name = "Tipo de Produto", required = true) TypeProduct typeProdutc,
-			@RequestParam(name = "Tipo de Pesquisa", required = false) TypeSearchProduct typeSearchProduct) {
+			@RequestParam(name = "Tipo de Pesquisa", required = false) TypeSearchProductCosmetic typeSearchProductCosmetic) {
 
-		return UrlToJson.findFoodSaneate(cnpj, numeroProcesso, numeroRegistro, nomeProduto, categoria, marca,
-				typeProdutc, typeSearchProduct);
+		return UrlToJson.find(cnpj, numeroProcesso, numeroRegistro, nomeProduto, categoria, marca,
+				TypeProduct.COSMETIC.name(), typeSearchProductCosmetic.name());
 	}
 
 }
