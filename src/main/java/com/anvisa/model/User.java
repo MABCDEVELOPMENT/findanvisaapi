@@ -21,7 +21,7 @@ public class User extends AbstractBaseEntity implements Serializable {
 	 */
 	private static final long serialVersionUID = 1L;
 
-	@Column(name = "user_name", length = 40, nullable = false, unique = false)
+	@Column(name = "user_name", length = 40, nullable = false, unique = true)
 	@JsonAlias(value = "userName")
 	private String userName;
 
@@ -37,15 +37,19 @@ public class User extends AbstractBaseEntity implements Serializable {
 	@JsonAlias(value = "cellPhone")
 	private String cellPhone;
 
-	@Column(name = "date_brith", nullable = false)
+	@Column(name = "date_brith", nullable = true)
 	@Temporal(TemporalType.DATE)
 	@JsonFormat(pattern = "dd/MM/yyyy")
 	@JsonAlias(value = "dateBrith")
 	private Date dateBrith;
 
-	@Column(name = "password", length = 100, nullable = true)
+	@Column(name = "password", length = 1, nullable = true)
 	@JsonAlias(value = "password")
 	private String password;
+
+	@Column(name = "perfil", length = 100, nullable = false)
+	@JsonAlias(value = "perfil")
+	private String perfil;
 
 	public Long getId() {
 		return id;
@@ -101,6 +105,14 @@ public class User extends AbstractBaseEntity implements Serializable {
 
 	public void setPassword(String password) {
 		this.password = password;
+	}
+
+	public String getPerfil() {
+		return perfil;
+	}
+
+	public void setPerfil(String perfil) {
+		this.perfil = perfil;
 	}
 
 }

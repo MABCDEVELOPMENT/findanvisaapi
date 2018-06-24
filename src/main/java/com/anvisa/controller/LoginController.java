@@ -6,12 +6,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.anvisa.controller.exception.LoginException;
+import com.anvisa.controller.exception.bean.ErrorResponse;
 import com.anvisa.controller.util.CustomErrorType;
 import com.anvisa.model.Login;
 import com.anvisa.model.ScheduledEmail;
@@ -42,9 +45,39 @@ public class LoginController {
 
 	@ApiOperation(value = "Login of user")
 	@RequestMapping(value = "", method = RequestMethod.POST)
-	public ResponseEntity<?> login(@RequestBody Login login) {
+	public ResponseEntity<?> login(@RequestBody Login login) throws LoginException {
+
+		String pass = login.getPassword();
 
 		User user = userRepository.findLogin(login.getUserName());
+
+		if (user == null) {
+			throw new LoginException("Usuário não encontrado!");
+			// return new ResponseEntity<CustomErrorType>(new CustomErrorType(001, "Usuário
+			// inválido!"),
+			// HttpStatus.CONFLICT);
+		} else {
+			if (pass.equals(user.getPassword())) {
+				return new ResponseEntity<User>(user, HttpStatus.OK);
+			} else {
+				user = null;
+
+				throw new LoginException("Usuário inválido!");
+
+				// return new ResponseEntity<CustomErrorType>(new CustomErrorType(002, "Usuário
+				// inválido!"),
+				// HttpStatus.NON_AUTHORITATIVE_INFORMATION);
+			}
+
+		}
+
+	}
+
+	@ApiOperation(value = "Login of user")
+	@RequestMapping(value = "/loaduser/{id}", method = RequestMethod.GET)
+	public ResponseEntity<?> loadUser(@PathVariable Long id) {
+
+		User user = userRepository.findId(id);
 
 		if (user == null) {
 			return new ResponseEntity<CustomErrorType>(new CustomErrorType("User invalid!"), HttpStatus.CONFLICT);
@@ -85,13 +118,21 @@ public class LoginController {
 			scheduledEmail.setInsertUser(user);
 			scheduledEmail.setInsertDate(GregorianCalendar.getInstance().getTime());
 			scheduledEmail.setSubject("Re-definição de senha.");
-			scheduledEmail.setBody("http://localhost:4200/redefine/" + user.getId());
+			scheduledEmail.setBody("http://localhost:4200/redefine?id=" + user.getId());
 
 			this.scheduledEmail.saveAndFlush(scheduledEmail);
 
 			return new ResponseEntity<User>(user, HttpStatus.OK);
 		}
 
+	}
+
+	@ExceptionHandler(LoginException.class)
+	public ResponseEntity<ErrorResponse> exceptionHandler(Exception ex) {
+		ErrorResponse error = new ErrorResponse();
+		error.setErrorCode(HttpStatus.PRECONDITION_FAILED.value());
+		error.setMessage(ex.getMessage());
+		return new ResponseEntity<ErrorResponse>(error, HttpStatus.INTERNAL_SERVER_ERROR);
 	}
 
 }

@@ -28,7 +28,7 @@ public abstract class AbstractBaseEntity {
 	@Column(name = "active", nullable = false)
 	@ColumnDefault(value = "true")
 	@JsonAlias(value = "active")
-	private boolean active;
+	private boolean active = false;
 
 	@Column(name = "insert_user")
 	@JsonAlias(value = "insertUser")

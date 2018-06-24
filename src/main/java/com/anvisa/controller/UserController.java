@@ -59,7 +59,9 @@ public class UserController {
 	public ResponseEntity<String> saveUser(@RequestBody User user) {
 
 		boolean isSchedule = (user.getId() == null);
-
+		user.setActive(true);
+		String emailUser = user.getUserName() + "@gmail.com";
+		user.setEmail(emailUser);
 		user = userRepository.saveAndFlush(user);
 
 		if (isSchedule) {

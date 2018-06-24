@@ -40,7 +40,7 @@ public class ScheduledTasks {
 
 	private static final SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
 
-	@Scheduled(fixedRate = 50000)
+	@Scheduled(fixedRate = 100000)
 	public void scheduledEmail() {
 
 		log.info("scheduledEmail ", dateFormat.format(new Date()));
