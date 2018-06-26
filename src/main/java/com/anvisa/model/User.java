@@ -2,9 +2,13 @@ package com.anvisa.model;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -47,9 +51,23 @@ public class User extends AbstractBaseEntity implements Serializable {
 	@JsonAlias(value = "password")
 	private String password;
 
-	@Column(name = "perfil", length = 100, nullable = false)
+	@Column(name = "perfil", length = 2, nullable = false)
 	@JsonAlias(value = "perfil")
 	private String perfil;
+
+	@ManyToMany
+	@JoinTable(name = "user_register_cnpj", joinColumns = {
+			@JoinColumn(name = "user_id", unique = true) }, inverseJoinColumns = {
+					@JoinColumn(name = "cnpj_id", unique = true) })
+	private List<RegisterCNPJ> registerCNPJs;
+
+	public List<RegisterCNPJ> getRegisterCNPJs() {
+		return this.registerCNPJs;
+	}
+
+	public void setRegisterCNPJs(List<RegisterCNPJ> registerCNPJs) {
+		this.registerCNPJs = registerCNPJs;
+	}
 
 	public Long getId() {
 		return id;

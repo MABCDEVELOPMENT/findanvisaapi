@@ -2,11 +2,13 @@ package com.anvisa.core.type;
 
 public enum TypeProduct {
 
-	COSMETIC("FOOD_PRODUCT"), SANEANTE("SANEANTE");
+	FOOD(1, "FOOD_PRODUCT"), SANEANTE(2, "SANEANTE"), COSMETIC(3, "COSMETIC");
 
+	private final int id;
 	private final String type;
 
-	TypeProduct(String type) {
+	TypeProduct(int id, String type) {
 		this.type = type;
+		this.id = id;
 	}
 }
