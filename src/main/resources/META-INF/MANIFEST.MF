@@ -8,7 +8,7 @@ Implementation-URL: https://projects.spring.io/spring-boot/#/spring-bo
  ot-starter-parent/ANVISAREST
 Created-By: Maven Integration for Eclipse
 Main-Class: org.springframework.boot.loader.JarLauncher
-Start-Class: com.anvisa.AnvisarestApplication
+Start-Class: com.anvisa.FindAnvisaApplication
 Spring-Boot-Classes: BOOT-INF/classes/
 Spring-Boot-Lib: BOOT-INF/lib/
 
