@@ -16,7 +16,7 @@ import com.fasterxml.jackson.databind.util.ISO8601DateFormat;
 
 @SpringBootApplication
 @EnableScheduling
-@EntityScan(basePackages = { "com.anvisa.model" })
+@EntityScan(basePackages = { "com.anvisa.model.persistence" })
 @EnableJpaRepositories("com.anvisa.repository")
 public class FindAnvisaApplication extends SpringBootServletInitializer {
 

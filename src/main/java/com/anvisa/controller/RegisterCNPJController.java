@@ -15,8 +15,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.anvisa.model.RegisterCNPJ;
-import com.anvisa.model.User;
+import com.anvisa.model.persistence.RegisterCNPJ;
+import com.anvisa.model.persistence.User;
 import com.anvisa.repository.generic.RegisterCNPJRepository;
 import com.anvisa.repository.generic.UserRepository;
 

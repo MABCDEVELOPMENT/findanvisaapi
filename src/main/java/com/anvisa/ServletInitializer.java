@@ -1,13 +1,10 @@
 package com.anvisa;
 
-import org.springframework.boot.builder.SpringApplicationBuilder;
-import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
+public class ServletInitializer  {
 
-public class ServletInitializer extends SpringBootServletInitializer {
-
-	@Override
+/*	@Override
 	protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
 		return application.sources(FindAnvisaApplication.class);
 	}
-
+*/
 }

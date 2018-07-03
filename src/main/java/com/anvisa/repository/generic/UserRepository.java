@@ -4,7 +4,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import com.anvisa.model.User;
+import com.anvisa.model.persistence.User;
 
 public interface UserRepository extends JpaRepository<User, Long> {
 

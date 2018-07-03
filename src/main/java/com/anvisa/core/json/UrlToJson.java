@@ -14,6 +14,10 @@ import com.anvisa.core.type.TypeArea;
 import com.anvisa.core.type.TypeCategory;
 import com.anvisa.core.type.TypeProduct;
 import com.anvisa.core.type.TypeSearchProductCosmetic;
+import com.anvisa.rest.ContentProcesso;
+import com.anvisa.rest.ContentProduto;
+import com.anvisa.rest.RootObjectProcesso;
+import com.anvisa.rest.RootObjectProduto;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
