@@ -8,7 +8,7 @@ import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
-@Component
+//@Component
 public class RequestInterceptor extends HandlerInterceptorAdapter {
 
 	/**

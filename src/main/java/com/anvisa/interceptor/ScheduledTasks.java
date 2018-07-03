@@ -18,17 +18,17 @@ import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
-import com.anvisa.model.ScheduledEmail;
+import com.anvisa.model.persistence.ScheduledEmail;
 import com.anvisa.repository.generic.RepositoryScheduledEmail;
 
-@Component
+//@Component
 public class ScheduledTasks {
 
 	@Autowired
-	RepositoryScheduledEmail repositoryScheduledEmail;
+	static RepositoryScheduledEmail repositoryScheduledEmail;
 
 	@Autowired
-	private JavaMailSender mailSender;
+	private static JavaMailSender mailSender;
 
 	@Autowired
 	public void setService(RepositoryScheduledEmail repositoryScheduledEmail, JavaMailSender mailSender) {
@@ -40,8 +40,8 @@ public class ScheduledTasks {
 
 	private static final SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
 
-	@Scheduled(fixedRate = 5000000)
-	public void scheduledEmail() {
+	//@Scheduled(fixedRate = 5000000)
+	public static void scheduledEmail() {
 
 		log.info("scheduledEmail ", dateFormat.format(new Date()));
 
@@ -53,7 +53,7 @@ public class ScheduledTasks {
 
 	}
 
-	public void sendEmail(ScheduledEmail scheduledEmail) {
+	public static void sendEmail(ScheduledEmail scheduledEmail) {
 
 		Properties props = new Properties();
 		props.put("mail.smtp.host", "smtp.gmail.com");

@@ -125,7 +125,7 @@
 				<configuration>
 					<archive>
 						<manifest>
-							<mainClass>com.anvisa.AnvisarestApplication</mainClass>
+							<mainClass>com.anvisa.FindAnvisaApplication</mainClass>
 						</manifest>
 					</archive>
 				</configuration>

@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.anvisa.controller.util.CustomErrorType;
-import com.anvisa.model.GenericParameter;
+import com.anvisa.model.persistence.GenericParameter;
 import com.anvisa.repository.generic.GenericParameterRepository;
 
 import io.swagger.annotations.ApiOperation;

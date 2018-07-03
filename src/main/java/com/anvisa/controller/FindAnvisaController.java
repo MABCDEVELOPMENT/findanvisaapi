@@ -6,19 +6,20 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.anvisa.core.json.RootObjectProcesso;
-import com.anvisa.core.json.RootObjectProduto;
 import com.anvisa.core.json.UrlToJson;
 import com.anvisa.core.type.TypeArea;
 import com.anvisa.core.type.TypeCategory;
 import com.anvisa.core.type.TypeProduct;
 import com.anvisa.core.type.TypeSearchProductCosmetic;
+import com.anvisa.rest.RootObjectProcesso;
+import com.anvisa.rest.RootObjectProduto;
 
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 
 @RestController
+@RequestMapping("/anvisa")
 public class FindAnvisaController {
 
 	@ApiOperation(value = "View a list of process", response = Iterable.class)

@@ -1,0 +1,11 @@
+Manifest-Version: 1.0
+Implementation-Title: findneapi
+Implementation-Version: 2.0.1.RELEASE
+Built-By: alessandro.fred
+Implementation-Vendor-Id: com.anvisa
+Build-Jdk: 1.8.0_51
+Implementation-URL: https://projects.spring.io/spring-boot/#/spring-bo
+ ot-starter-parent/neapi
+Created-By: Maven Integration for Eclipse
+Main-Class: com.anvisa.ServletInitializer
+

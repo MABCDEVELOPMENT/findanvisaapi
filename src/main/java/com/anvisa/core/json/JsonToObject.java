@@ -2,13 +2,13 @@ package com.anvisa.core.json;
 
 import java.util.Date;
 
-import com.anvisa.model.Assunto;
-import com.anvisa.model.Categoria;
-import com.anvisa.model.Empresa;
-import com.anvisa.model.Peticao;
-import com.anvisa.model.Processo;
-import com.anvisa.model.Produto;
-import com.anvisa.model.Tipo;
+import com.anvisa.rest.model.Assunto;
+import com.anvisa.rest.model.Categoria;
+import com.anvisa.rest.model.Empresa;
+import com.anvisa.rest.model.Peticao;
+import com.anvisa.rest.model.Processo;
+import com.anvisa.rest.model.Produto;
+import com.anvisa.rest.model.Tipo;
 import com.fasterxml.jackson.databind.JsonNode;
 
 public class JsonToObject {

@@ -16,11 +16,11 @@ import org.springframework.web.bind.annotation.RestController;
 import com.anvisa.controller.exception.LoginException;
 import com.anvisa.controller.exception.bean.ErrorResponse;
 import com.anvisa.controller.util.CustomErrorType;
-import com.anvisa.model.Login;
-import com.anvisa.model.ScheduledEmail;
-import com.anvisa.model.User;
+import com.anvisa.model.persistence.ScheduledEmail;
+import com.anvisa.model.persistence.User;
 import com.anvisa.repository.generic.RepositoryScheduledEmail;
 import com.anvisa.repository.generic.UserRepository;
+import com.anvisa.rest.model.Login;
 
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.SwaggerDefinition;
