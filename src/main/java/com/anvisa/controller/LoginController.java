@@ -12,10 +12,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.client.ResponseErrorHandler;
 
 import com.anvisa.controller.exception.LoginException;
 import com.anvisa.controller.exception.bean.ErrorResponse;
 import com.anvisa.controller.util.CustomErrorType;
+import com.anvisa.interceptor.ScheduledTasks;
 import com.anvisa.model.persistence.ScheduledEmail;
 import com.anvisa.model.persistence.User;
 import com.anvisa.repository.generic.RepositoryScheduledEmail;
@@ -49,24 +51,23 @@ public class LoginController {
 
 		String pass = login.getPassword();
 
-		User user = userRepository.findLogin(login.getUserName());
+		User user = userRepository.findEmail(login.getEmail());
 
 		if (user == null) {
-			throw new LoginException("Usuário não encontrado!");
-			// return new ResponseEntity<CustomErrorType>(new CustomErrorType(001, "Usuário
-			// inválido!"),
-			// HttpStatus.CONFLICT);
+
+			LoginException erro = new LoginException("Usuário não encontrado!");
+			return new ResponseEntity<LoginException>(erro,HttpStatus.BAD_REQUEST);
 		} else {
+			
 			if (pass.equals(user.getPassword())) {
+			
 				return new ResponseEntity<User>(user, HttpStatus.OK);
+			
 			} else {
+				
 				user = null;
-
-				throw new LoginException("Usuário inválido!");
-
-				// return new ResponseEntity<CustomErrorType>(new CustomErrorType(002, "Usuário
-				// inválido!"),
-				// HttpStatus.NON_AUTHORITATIVE_INFORMATION);
+				LoginException erro = new LoginException("Login inválido!");
+				return new ResponseEntity<LoginException>(erro,HttpStatus.BAD_REQUEST);
 			}
 
 		}
@@ -121,7 +122,9 @@ public class LoginController {
 			scheduledEmail.setBody("http://localhost:4200/redefine?id=" + user.getId());
 
 			this.scheduledEmail.saveAndFlush(scheduledEmail);
-
+			
+			ScheduledTasks.scheduledEmail();
+			
 			return new ResponseEntity<User>(user, HttpStatus.OK);
 		}
 

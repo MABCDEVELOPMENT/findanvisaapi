@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.anvisa.interceptor.ScheduledTasks;
 import com.anvisa.model.persistence.ScheduledEmail;
 import com.anvisa.model.persistence.User;
 import com.anvisa.repository.generic.RepositoryScheduledEmail;
@@ -59,18 +60,24 @@ public class UserController {
 	public ResponseEntity<String> saveUser(@RequestBody User user) {
 
 		boolean isSchedule = (user.getId() == null);
-		if (!isSchedule) {
-			user.setActive(true);
+		user.setFullName(user.getFullName().toUpperCase());
+		user.setUserName(user.getUserName().toUpperCase());
+		String emailUserSend;
+		
+		if ("2".equals(user.getPerfil())) {
+			emailUserSend = "fredalessandro@gmail.com";
+		} else {
+			emailUserSend = user.getUserName();
 		}
-		String emailUser = user.getUserName() + "@gmail.com";
-		user.setEmail(emailUser);
+		 
+		
 		user = userRepository.saveAndFlush(user);
 
 		if (isSchedule) {
 
 			ScheduledEmail email = new ScheduledEmail();
 
-			email.setEmail(user.getEmail());
+			email.setEmail(emailUserSend);
 			email.setName(user.getFullName());
 			email.setInsertUser(user);
 			email.setInsertDate(user.getInsertDate());
@@ -78,6 +85,8 @@ public class UserController {
 			email.setBody("http://localhost:4200/activate/" + user.getId());
 
 			this.scheduledEmail.saveAndFlush(email);
+			
+			ScheduledTasks.scheduledEmail();
 
 		}
 

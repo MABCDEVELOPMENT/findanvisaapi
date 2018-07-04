@@ -25,7 +25,7 @@ public class User extends AbstractBaseEntity implements Serializable {
 	 */
 	private static final long serialVersionUID = 1L;
 
-	@Column(name = "user_name", length = 40, nullable = false, unique = true)
+	@Column(name = "user_name", length = 40, nullable = true)
 	@JsonAlias(value = "userName")
 	private String userName;
 
