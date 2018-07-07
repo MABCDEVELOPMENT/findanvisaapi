@@ -42,7 +42,7 @@ public class FindAnvisaApplication extends SpringBootServletInitializer {
         return application.sources(FindAnvisaApplication.class);
     }
 
-	/*public static void main(String[] args) {
+	public static void main(String[] args) {
 		SpringApplication.run(FindAnvisaApplication.class, args);
-	}*/
+	}
 }
