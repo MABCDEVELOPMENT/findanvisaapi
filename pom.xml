@@ -8,7 +8,7 @@
 
 	<artifactId>neapi</artifactId>
 
-	<packaging>war</packaging>
+	<packaging>jar</packaging>
 
 	<name>findneapi</name>
 	<description>Project Rest</description>
