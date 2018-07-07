@@ -13,11 +13,8 @@ import javax.mail.internet.MimeMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.mail.javamail.MimeMessageHelper;
-import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.stereotype.Component;
 
+import com.anvisa.core.util.EmailUtil;
 import com.anvisa.model.persistence.ScheduledEmail;
 import com.anvisa.repository.generic.RepositoryScheduledEmail;
 
@@ -27,13 +24,13 @@ public class ScheduledTasks {
 	@Autowired
 	static RepositoryScheduledEmail repositoryScheduledEmail;
 
-	@Autowired
-	private static JavaMailSender mailSender;
+	/*@Autowired
+	private static JavaMailSender mailSender;*/
 
 	@Autowired
-	public void setService(RepositoryScheduledEmail repositoryScheduledEmail, JavaMailSender mailSender) {
+	public void setService(RepositoryScheduledEmail repositoryScheduledEmail) {
 		this.repositoryScheduledEmail = repositoryScheduledEmail;
-		this.mailSender = mailSender;
+		//this.mailSender = mailSender;
 	}
 
 	private static final Logger log = LoggerFactory.getLogger(ScheduledTasks.class);
@@ -72,20 +69,20 @@ public class ScheduledTasks {
 		MimeMessage mail = new MimeMessage(session);
 		try {
 
-			MimeMessageHelper helper = new MimeMessageHelper(mail, true);
+	/*		MimeMessageHelper helper = new MimeMessage(mail, true);
 			helper.setTo(scheduledEmail.getEmail()); //
 			helper.setReplyTo("someone@localhost");
 			helper.setFrom("mabc.developement@gmail.com");
 			helper.setSubject(scheduledEmail.getSubject());
-			helper.setText(scheduledEmail.getBody());
+			helper.setText(scheduledEmail.getBody());*/
 
-			mailSender.send(mail);
+			EmailUtil.sendEmail(session, scheduledEmail);
 
 			scheduledEmail.setSent(true);
 
 			repositoryScheduledEmail.saveAndFlush(scheduledEmail);
 
-		} catch (MessagingException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
 		}

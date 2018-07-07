@@ -64,7 +64,7 @@ public class UserController {
 		user.setUserName(user.getUserName().toUpperCase());
 		String emailUserSend;
 		
-		if ("2".equals(user.getPerfil())) {
+		if (user.getProfile().intValue() == 2) {
 			emailUserSend = "fredalessandro@gmail.com";
 		} else {
 			emailUserSend = user.getUserName();

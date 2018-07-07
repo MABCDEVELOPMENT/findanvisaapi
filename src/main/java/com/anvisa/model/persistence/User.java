@@ -51,9 +51,9 @@ public class User extends AbstractBaseEntity implements Serializable {
 	@JsonAlias(value = "password")
 	private String password;
 
-	@Column(name = "perfil", length = 2, nullable = false)
-	@JsonAlias(value = "perfil")
-	private String perfil;
+	@Column(name = "profile", length = 2, nullable = true)
+	@JsonAlias(value = "profile")
+	private Integer profile = 0;
 
 	@ManyToMany
 	@JoinTable(name = "user_register_cnpj", joinColumns = {
@@ -125,12 +125,12 @@ public class User extends AbstractBaseEntity implements Serializable {
 		this.password = password;
 	}
 
-	public String getPerfil() {
-		return perfil;
+	public Integer getProfile() {
+		return profile;
 	}
 
-	public void setPerfil(String perfil) {
-		this.perfil = perfil;
+	public void setProfile(Integer profile) {
+		this.profile = profile;
 	}
 
 }
