@@ -10,11 +10,6 @@ import com.fasterxml.jackson.annotation.JsonAlias;
 @Table(name = "scheduled_email")
 public class ScheduledEmail extends AbstractBaseEntity {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-
 	@Column(name = "email", nullable = false)
 	@JsonAlias(value = "email")
 	private String email;

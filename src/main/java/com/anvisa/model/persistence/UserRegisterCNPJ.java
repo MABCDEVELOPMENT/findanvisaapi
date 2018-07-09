@@ -15,10 +15,10 @@ public class UserRegisterCNPJ extends AbstractBaseEntity implements Serializable
 	 */
 	private static final long serialVersionUID = 1L;
 
-	@Column(name = "user_id", unique = true)
+	@Column(name = "user_id")
 	private User user;
 
-	@Column(name = "cnpj_id", unique = true)
+	@Column(name = "cnpj_id")
 	private RegisterCNPJ cnpj;
 
 	public User getUser() {

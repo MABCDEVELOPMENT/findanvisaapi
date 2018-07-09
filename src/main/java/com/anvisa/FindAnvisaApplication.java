@@ -1,6 +1,7 @@
 package com.anvisa;
 
 import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.boot.autoconfigure.jackson.Jackson2ObjectMapperBuilderCustomizer;
@@ -9,13 +10,13 @@ import org.springframework.boot.web.servlet.support.SpringBootServletInitializer
 import org.springframework.context.annotation.Bean;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
-import org.springframework.scheduling.annotation.EnableScheduling;
 
 import com.anvisa.interceptor.ScheduledTasks;
 import com.fasterxml.jackson.databind.util.ISO8601DateFormat;
 
 @SpringBootApplication
-@EnableScheduling
+//@EnableScheduling
+@EnableAutoConfiguration
 @EntityScan(basePackages = { "com.anvisa.model.persistence" })
 @EnableJpaRepositories("com.anvisa.repository")
 public class FindAnvisaApplication extends SpringBootServletInitializer {

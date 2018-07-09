@@ -3,15 +3,19 @@ package com.anvisa.model.persistence;
 import java.util.Date;
 
 import javax.persistence.Column;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.MappedSuperclass;
+import javax.persistence.OneToOne;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 import org.hibernate.annotations.ColumnDefault;
+import org.hibernate.annotations.ForeignKey;
 
 import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -20,36 +24,34 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 public abstract class AbstractBaseEntity {
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue
 	@Column(name = "ID", nullable = false)
-	@JsonAlias(value = "id")
 	public Long id;
 
 	@Column(name = "active", nullable = false)
 	@ColumnDefault(value = "true")
-	@JsonAlias(value = "active")
 	private boolean active = false;
 
 	@Column(name = "insert_user")
-	@JsonAlias(value = "insertUser")
-	@JoinColumn(name = "insert_user", referencedColumnName = "id")
+	@ManyToAny
+	@JoinColumn(name = "insert_use", referencedColumnName = "id")
 	private User insertUser;
 
-	@Column(name = "insert_date")
-	@Temporal(TemporalType.DATE)
 	@JsonAlias(value = "insertUser")
 	@JsonFormat(pattern = "dd/MM/yyyy")
+	@Column(name = "insert_date")
+	@Temporal(TemporalType.DATE)
 	private Date insertDate;
 
-	@Column(name = "update_user")
 	@JsonAlias(value = "updateUser")
+	@Column(name = "update_user")
 	@JoinColumn(name = "update_user", referencedColumnName = "id")
 	private User updateUser;
-
-	@Column(name = "update_date")
-	@Temporal(TemporalType.DATE)
+	
 	@JsonFormat(pattern = "dd/MM/yyyy")
 	@JsonAlias(value = "updateDate")
+	@Column(name = "update_date")
+	@Temporal(TemporalType.DATE)
 	private Date updateDate;
 
 	@Column(name = "owner_user")
