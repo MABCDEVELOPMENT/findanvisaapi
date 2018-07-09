@@ -64,7 +64,6 @@ public class LoginController {
 			
 			} else {
 				
-				user = null;
 				LoginException erro = new LoginException("Login inválido!");
 				return new ResponseEntity<LoginException>(erro,HttpStatus.BAD_REQUEST);
 			}
