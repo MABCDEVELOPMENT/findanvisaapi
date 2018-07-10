@@ -45,7 +45,7 @@ public class LoginController {
 	}
 
 	@ApiOperation(value = "Login of user")
-	@RequestMapping(value = "", method = RequestMethod.POST)
+	@RequestMapping(value = "", method = RequestMethod.GET)
 	public ResponseEntity<?> login(@RequestBody Login login) throws LoginException {
 
 		String pass = login.getPassword();

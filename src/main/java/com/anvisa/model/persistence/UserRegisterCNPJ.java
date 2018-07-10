@@ -1,24 +1,17 @@
 package com.anvisa.model.persistence;
 
-import java.io.Serializable;
-
-import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "userCnpj")
-public class UserRegisterCNPJ extends AbstractBaseEntity implements Serializable {
+@Table(name = "user_register_cnpj")
+public class UserRegisterCNPJ extends AbstractBaseEntity  {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-
-	@Column(name = "user_id")
+	@ManyToOne
 	private User user;
 
-	@Column(name = "cnpj_id")
+	@ManyToOne
 	private RegisterCNPJ cnpj;
 
 	public User getUser() {

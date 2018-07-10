@@ -1,6 +1,5 @@
 package com.anvisa.model.persistence;
 
-import java.io.Serializable;
 import java.util.Date;
 
 import javax.persistence.Column;
@@ -9,6 +8,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -18,12 +18,8 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 
 @Entity
 @Table(name = "GenericParameter")
-public class GenericParameter implements Serializable {
+public class GenericParameter extends AbstractBaseEntity {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
@@ -91,17 +87,7 @@ public class GenericParameter implements Serializable {
 	@JsonAlias(value = "emailPermission")
 	private String emailPermission;
 
-	@Column(name = "update_user")
-	@JsonAlias(value = "updateUser")
-	@JoinColumn(name = "update_user", referencedColumnName = "id")
-	private User updateUser;
-
-	@Column(name = "update_date")
-	@Temporal(TemporalType.DATE)
-	@JsonFormat(pattern = "dd/MM/yyyy")
-	@JsonAlias(value = "updateDate")
-	private Date updateDate;
-
+	
 	public Long getId() {
 		return id;
 	}
@@ -229,21 +215,5 @@ public class GenericParameter implements Serializable {
 	public void setEmailPermission(String emailPermission) {
 		this.emailPermission = emailPermission;
 	}
-
-	public User getUpdateUser() {
-		return updateUser;
-	}
-
-	public void setUpdateUser(User updateUser) {
-		this.updateUser = updateUser;
-	}
-
-	public Date getUpdateDate() {
-		return updateDate;
-	}
-
-	public void setUpdateDate(Date updateDate) {
-		this.updateDate = updateDate;
-	}
-
+	
 }

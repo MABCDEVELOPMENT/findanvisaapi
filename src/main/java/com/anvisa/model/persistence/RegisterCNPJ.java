@@ -10,12 +10,8 @@ import com.fasterxml.jackson.annotation.JsonAlias;
 
 @Entity
 @Table(name = "RegisterCNPJ")
-public class RegisterCNPJ extends AbstractBaseEntity implements Serializable {
+public class RegisterCNPJ extends AbstractBaseEntity  {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
 
 	@Column(name = "cnpj", length = 14, nullable = false)
 	@JsonAlias(value = "cnpj")

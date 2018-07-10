@@ -3,19 +3,17 @@ package com.anvisa.model.persistence;
 import java.util.Date;
 
 import javax.persistence.Column;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.MappedSuperclass;
-import javax.persistence.OneToOne;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 import org.hibernate.annotations.ColumnDefault;
-import org.hibernate.annotations.ForeignKey;
+import org.hibernate.annotations.ManyToAny;
 
 import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -30,22 +28,19 @@ public abstract class AbstractBaseEntity {
 
 	@Column(name = "active", nullable = false)
 	@ColumnDefault(value = "true")
-	private boolean active = false;
-
-	@Column(name = "insert_user")
-	@ManyToAny
-	@JoinColumn(name = "insert_use", referencedColumnName = "id")
-	private User insertUser;
+	private boolean active;
 
 	@JsonAlias(value = "insertUser")
+	@ManyToOne
+	private User insertUser;
+	
 	@JsonFormat(pattern = "dd/MM/yyyy")
 	@Column(name = "insert_date")
 	@Temporal(TemporalType.DATE)
 	private Date insertDate;
 
 	@JsonAlias(value = "updateUser")
-	@Column(name = "update_user")
-	@JoinColumn(name = "update_user", referencedColumnName = "id")
+	@ManyToOne
 	private User updateUser;
 	
 	@JsonFormat(pattern = "dd/MM/yyyy")
@@ -54,9 +49,8 @@ public abstract class AbstractBaseEntity {
 	@Temporal(TemporalType.DATE)
 	private Date updateDate;
 
-	@Column(name = "owner_user")
 	@JsonAlias(value = "ownerUser")
-	@JoinColumn(name = "owner_user", referencedColumnName = "id")
+	@ManyToOne	
 	private User ownerUser;
 
 	public Long getId() {
