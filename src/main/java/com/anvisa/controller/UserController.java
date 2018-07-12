@@ -2,6 +2,7 @@ package com.anvisa.controller;
 
 import java.util.List;
 
+import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.anvisa.controller.util.CustomErrorType;
 import com.anvisa.interceptor.ScheduledTasks;
 import com.anvisa.model.persistence.ScheduledEmail;
 import com.anvisa.model.persistence.User;
@@ -49,27 +51,32 @@ public class UserController {
 			@ApiResponse(code = 403, message = "Accessing the resource you were trying to reach is forbidden"),
 			@ApiResponse(code = 404, message = "The resource you were trying to reach is not found") })
 
-	@RequestMapping(value = "/list", method = RequestMethod.GET, produces = "application/json")
-	public List<User> list() {
-		List<User> list = userRepository.findAll(sort(true, "id"));
+	@RequestMapping(value = "/list/{checked}", method = RequestMethod.GET, produces = "application/json")
+	public List<User> list(@PathVariable boolean checked) { 
+		List<User> list = (checked?userRepository.findWaitingForApproval():userRepository.findAll(sort(true, "fullName")));
 		return list;
 	}
 
 	@ApiOperation(value = "Add or update a user")
 	@RequestMapping(value = "/save", method = RequestMethod.POST)
-	public ResponseEntity<String> saveUser(@RequestBody User user) {
+	public ResponseEntity<?> saveUser(@RequestBody User user) {
 
 		boolean isSchedule = (user.getId() == null);
 		user.setFullName(user.getFullName().toUpperCase());
 		user.setUserName(user.getUserName().toUpperCase());
 		String emailUserSend;
 		
-		if (user.getProfile().intValue() == 2) {
+		User userFind = userRepository.findEmail(user.getEmail());
+		
+		if (userFind!=null) {
+			return new ResponseEntity<CustomErrorType>(new CustomErrorType("Usuário já cadastrado."), HttpStatus.BAD_REQUEST);
+		}
+		
+		if (isSchedule && user.getProfile().intValue() == 2) {
 			emailUserSend = "fredalessandro@gmail.com";
 		} else {
 			emailUserSend = user.getUserName();
 		}
-		 
 		
 		user = userRepository.saveAndFlush(user);
 
@@ -82,7 +89,20 @@ public class UserController {
 			email.setInsertUser(user);
 			email.setInsertDate(user.getInsertDate());
 			email.setSubject("Ativação de conta");
-			email.setBody("http://localhost:4200/activate/" + user.getId());
+			
+			StringBuffer sb = new StringBuffer();
+			
+			sb.append("Prezado Administrado,");
+			sb.append("Foi efetuado um registro de usuário no sistema FINDANVISA, favor efetuar a ativação do mesmo confime dados abaixo:");
+			sb.append("");
+			sb.append("");
+			sb.append(" Usuário : "+user.getFullName());
+			sb.append(" Login "+user.getEmail());
+			sb.append("");
+			sb.append("");
+			sb.append(" Acesse o link http://localhost:4200/userList");
+			
+			email.setBody(sb.toString());
 
 			this.scheduledEmail.saveAndFlush(email);
 			
@@ -90,7 +110,7 @@ public class UserController {
 
 		}
 
-		return new ResponseEntity<String>("User saved successfully", HttpStatus.OK);
+		return new ResponseEntity<User>(user, HttpStatus.OK);
 	}
 
 	@ApiOperation(value = "Update a user")

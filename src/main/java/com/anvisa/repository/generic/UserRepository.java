@@ -1,5 +1,7 @@
 package com.anvisa.repository.generic;
 
+import java.util.List;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -16,5 +18,9 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
 	@Query("select u from User u where u.id=:id and u.active = true")
 	public User findId(@Param("id") Long id);
+	
+	@Query("select u from User u where u.password=null and (u.active = false or u.active = null)")
+	public List<User> findWaitingForApproval();
+
 
 }

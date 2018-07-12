@@ -45,7 +45,7 @@ public class LoginController {
 	}
 
 	@ApiOperation(value = "Login of user")
-	@RequestMapping(value = "", method = RequestMethod.GET)
+	@RequestMapping(value = "", method = RequestMethod.POST)
 	public ResponseEntity<?> login(@RequestBody Login login) throws LoginException {
 
 		String pass = login.getPassword();
@@ -54,8 +54,8 @@ public class LoginController {
 
 		if (user == null) {
 
-			LoginException erro = new LoginException("Usuário não encontrado!");
-			return new ResponseEntity<LoginException>(erro,HttpStatus.BAD_REQUEST);
+			CustomErrorType erro = new CustomErrorType("Usuário não encontrado!");
+			return new ResponseEntity<CustomErrorType>(erro,HttpStatus.BAD_REQUEST);
 		} else {
 			
 			if (pass.equals(user.getPassword())) {
@@ -64,8 +64,8 @@ public class LoginController {
 			
 			} else {
 				
-				LoginException erro = new LoginException("Login inválido!");
-				return new ResponseEntity<LoginException>(erro,HttpStatus.BAD_REQUEST);
+				CustomErrorType erro = new CustomErrorType("Login inválido!");
+				return new ResponseEntity<CustomErrorType>(erro,HttpStatus.BAD_REQUEST);
 			}
 
 		}
@@ -87,13 +87,13 @@ public class LoginController {
 	}
 
 	@ApiOperation(value = "Get e-mail of user")
-	@RequestMapping(value = "/getemail/{userName}", method = RequestMethod.GET)
-	public ResponseEntity<?> getEmail(@PathVariable String userName) {
+	@RequestMapping(value = "/getemail/{id}", method = RequestMethod.GET)
+	public ResponseEntity<?> getEmail(@PathVariable Long id) {
 
-		User user = userRepository.findLogin(userName);
+		User user = userRepository.findId(id);
 
 		if (user == null) {
-			return new ResponseEntity<CustomErrorType>(new CustomErrorType("User invalid!"), HttpStatus.CONFLICT);
+			return new ResponseEntity<CustomErrorType>(new CustomErrorType("Usuário inválido!"), HttpStatus.CONFLICT);
 		} else {
 			return new ResponseEntity<User>(user, HttpStatus.OK);
 		}
