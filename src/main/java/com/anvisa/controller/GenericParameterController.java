@@ -40,8 +40,8 @@ public class GenericParameterController {
 		List<GenericParameter> genericParameters = genericParameterRepository.findAll();
 
 		if (genericParameters.size() == 0) {
-			return new ResponseEntity<GenericParameter>(HttpStatus.OK);
-			//return new ResponseEntity<CustomErrorType>(new CustomErrorType("Parameter invalid!"), HttpStatus.CONFLICT);
+			//return new ResponseEntity<GenericParameter>(HttpStatus.OK);
+			return new ResponseEntity<CustomErrorType>(new CustomErrorType("Parametro inexistente!"), HttpStatus.BAD_REQUEST);
 		} else {
 			return new ResponseEntity<GenericParameter>(genericParameters.get(0), HttpStatus.OK);
 		}
