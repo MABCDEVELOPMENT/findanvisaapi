@@ -1,5 +1,8 @@
 package com.anvisa.controller;
 
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 
 import org.hibernate.exception.ConstraintViolationException;
@@ -16,9 +19,12 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.anvisa.controller.util.CustomErrorType;
 import com.anvisa.interceptor.ScheduledTasks;
+import com.anvisa.model.persistence.RegisterCNPJ;
 import com.anvisa.model.persistence.ScheduledEmail;
 import com.anvisa.model.persistence.User;
+import com.anvisa.model.persistence.UserRegisterCNPJ;
 import com.anvisa.repository.generic.RepositoryScheduledEmail;
+import com.anvisa.repository.generic.UserRegisterCNPJRepository;
 import com.anvisa.repository.generic.UserRepository;
 
 import io.swagger.annotations.ApiOperation;
@@ -40,8 +46,12 @@ public class UserController {
 	RepositoryScheduledEmail scheduledEmail;
 
 	@Autowired
-	public void setService(UserRepository userRepository, RepositoryScheduledEmail scheduledEmail) {
+	UserRegisterCNPJRepository userRegisterCNPJRepository;
+	
+	@Autowired
+	public void setService(UserRepository userRepository, UserRegisterCNPJRepository userRegisterCNPJRepository, RepositoryScheduledEmail scheduledEmail) {
 		this.userRepository = userRepository;
+		this.userRegisterCNPJRepository = userRegisterCNPJRepository;
 		this.scheduledEmail = scheduledEmail;
 	}
 
@@ -127,6 +137,46 @@ public class UserController {
 		return new ResponseEntity<String>("User deleted successfully", HttpStatus.OK);
 	}
 
+	@ApiOperation(value = "Delete a cnpj from user")
+	@RequestMapping(value = "/deleteCnpjUser/", method = RequestMethod.POST)
+	public ResponseEntity<User> deleteCnpjUser(@RequestBody UserRegisterCNPJ userRegisterCNPJ) {
+		
+		List<RegisterCNPJ> registerCNPJs = userRegisterCNPJ.getUser().getRegisterCNPJs();
+		List<RegisterCNPJ> registerCNPJsnew = new ArrayList<RegisterCNPJ>();
+		for (Iterator<RegisterCNPJ> iterator = registerCNPJs.iterator(); iterator.hasNext();) {
+			RegisterCNPJ registerCNPJ = (RegisterCNPJ) iterator.next();
+			if (registerCNPJ.getId().longValue() != userRegisterCNPJ.getCnpj().getId().longValue()) {
+				registerCNPJsnew.add(registerCNPJ);
+			}
+		}
+		
+		User userLocal = saveCnpjUse(userRegisterCNPJ.getUser().getId(),registerCNPJsnew);
+		
+
+		return new ResponseEntity<User>(userLocal, HttpStatus.OK);
+	}
+
+	
+
+	public User saveCnpjUse(Long id, List<RegisterCNPJ> registers) {
+		
+		
+		User user = this.userRepository.findId(id);
+		user.setRegisterCNPJs(null);
+		userRepository.save(user);
+		for (Iterator<RegisterCNPJ> iterator = registers.iterator(); iterator.hasNext();) {
+			RegisterCNPJ registerCNPJ = (RegisterCNPJ) iterator.next();
+			UserRegisterCNPJ userRegisterCNPJ = new UserRegisterCNPJ();
+			userRegisterCNPJ.setUser(user);
+			userRegisterCNPJ.setCnpj(registerCNPJ);
+			userRegisterCNPJRepository.save(userRegisterCNPJ);	
+		}
+
+		user = this.userRepository.findId(id);
+		
+		return user;
+		
+	}
 	private Sort sort(boolean asc, String field) {
 		return new Sort(asc ? Sort.Direction.ASC : Sort.Direction.DESC, field);
 	}

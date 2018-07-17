@@ -77,10 +77,13 @@ public class LoginController {
 	public ResponseEntity<?> loadUser(@PathVariable Long id) {
 
 		User user = userRepository.findId(id);
+		
+		
 
 		if (user == null) {
 			return new ResponseEntity<CustomErrorType>(new CustomErrorType("User invalid!"), HttpStatus.CONFLICT);
 		} else {
+			user.getRegisterCNPJs();
 			return new ResponseEntity<User>(user, HttpStatus.OK);
 		}
 

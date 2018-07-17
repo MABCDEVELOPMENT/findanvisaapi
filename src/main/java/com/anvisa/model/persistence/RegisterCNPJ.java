@@ -1,10 +1,9 @@
 package com.anvisa.model.persistence;
 
-import java.io.Serializable;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import com.fasterxml.jackson.annotation.JsonAlias;
 
@@ -24,6 +23,12 @@ public class RegisterCNPJ extends AbstractBaseEntity  {
 	@Column(name = "category", length = 1, nullable = false)
 	@JsonAlias(value = "category")
 	private int category;
+	
+	@Transient
+	@JsonAlias(value = "sendNotification")
+	private boolean sendNotification = true;
+
+	
 
 	public String getCnpj() {
 		return cnpj;
@@ -47,6 +52,14 @@ public class RegisterCNPJ extends AbstractBaseEntity  {
 
 	public void setCategory(int category) {
 		this.category = category;
+	}
+
+	public boolean isSendNotification() {
+		return sendNotification;
+	}
+
+	public void setSendNotification(boolean sendNotification) {
+		this.sendNotification = sendNotification;
 	}
 
 }

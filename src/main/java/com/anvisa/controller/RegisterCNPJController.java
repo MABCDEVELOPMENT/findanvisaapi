@@ -1,6 +1,8 @@
 package com.anvisa.controller;
 
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 
@@ -17,7 +19,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.anvisa.model.persistence.RegisterCNPJ;
 import com.anvisa.model.persistence.User;
+import com.anvisa.model.persistence.UserRegisterCNPJ;
 import com.anvisa.repository.generic.RegisterCNPJRepository;
+import com.anvisa.repository.generic.UserRegisterCNPJRepository;
 import com.anvisa.repository.generic.UserRepository;
 
 import io.swagger.annotations.ApiOperation;
@@ -37,11 +41,15 @@ public class RegisterCNPJController {
 
 	@Autowired
 	UserRepository userRepository;
+	
+	@Autowired
+	UserRegisterCNPJRepository userRegisterCNPJRepository;
 
 	@Autowired
-	public void setService(RegisterCNPJRepository registerRepository, UserRepository userRepository) {
+	public void setService(RegisterCNPJRepository registerRepository, UserRepository userRepository, UserRegisterCNPJRepository userCNPJRepository) {
 		this.registerRepository = registerRepository;
 		this.userRepository = userRepository;
+		this.userRegisterCNPJRepository = userCNPJRepository;
 
 	}
 
@@ -59,16 +67,28 @@ public class RegisterCNPJController {
 
 	@RequestMapping(value = "/listnotuser/{id}", method = RequestMethod.GET, produces = "application/json")
 	public List<RegisterCNPJ> listNotUser(@PathVariable Long id) {
+		
 		List<RegisterCNPJ> list = registerRepository.findAll(sort(true, "id"));
 		List<RegisterCNPJ> returnList = new ArrayList<RegisterCNPJ>();
+		
 		Optional<User> user = userRepository.findById(id);
+		
 		List<RegisterCNPJ> userList = user.get().getRegisterCNPJs();
+		
 		for (RegisterCNPJ registerCNPJ : list) {
+			
+			for (Iterator iterator = userList.iterator(); iterator.hasNext();) {
+				UserRegisterCNPJ userRegisterCNPJ = (UserRegisterCNPJ) iterator.next();
+				
+			}
+			
 			if (!userList.contains(registerCNPJ)) {
 				returnList.add(registerCNPJ);
 			}
 		}
+		
 		return returnList;
+		
 	}
 
 	@ApiOperation(value = "Add or update a Register CNPJ")
@@ -83,13 +103,20 @@ public class RegisterCNPJController {
 
 	@ApiOperation(value = "Add or update a Register CNPJ for user")
 	@RequestMapping(value = "/savecnpjuser/{id}", method = RequestMethod.POST)
-	public ResponseEntity<String> save(@PathVariable Long id, @RequestBody List<RegisterCNPJ> registers) {
+	public ResponseEntity<String> saveCnpjUse(@PathVariable Long id, @RequestBody List<RegisterCNPJ> registers) {
+		
+		
+		User user = this.userRepository.findId(id);
+		
+		for (Iterator<RegisterCNPJ> iterator = registers.iterator(); iterator.hasNext();) {
+			RegisterCNPJ registerCNPJ = (RegisterCNPJ) iterator.next();
+			UserRegisterCNPJ userRegisterCNPJ = new UserRegisterCNPJ();
+			userRegisterCNPJ.setUser(user);
+			userRegisterCNPJ.setCnpj(registerCNPJ);
+			userRegisterCNPJRepository.save(userRegisterCNPJ);	
+		}
 
-		User user = userRepository.findId(id);
-
-		user.getRegisterCNPJs().addAll(registers);
-
-		user = userRepository.saveAndFlush(user);
+		
 
 		return new ResponseEntity<String>("User saved successfully", HttpStatus.OK);
 	}
@@ -99,6 +126,13 @@ public class RegisterCNPJController {
 	public ResponseEntity<String> delete(@PathVariable Long id) {
 		registerRepository.deleteById(id);
 		return new ResponseEntity<String>("User deleted successfully", HttpStatus.OK);
+	}
+	
+	@ApiOperation(value = "Delete a Register CNPJ")
+	@RequestMapping(value = "/deleteUserCnpj/{id}", method = RequestMethod.DELETE)
+	public ResponseEntity<String> deleteUserCnpj(@PathVariable Long id) {
+		userRegisterCNPJRepository.deleteById(id);
+		return new ResponseEntity<String>("CNPJ excluido com sucesso!", HttpStatus.OK);
 	}
 
 	private Sort sort(boolean asc, String field) {
