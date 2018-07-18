@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
@@ -77,8 +78,8 @@ public class RegisterCNPJController {
 		
 		for (RegisterCNPJ registerCNPJ : list) {
 			
-			for (Iterator iterator = userList.iterator(); iterator.hasNext();) {
-				UserRegisterCNPJ userRegisterCNPJ = (UserRegisterCNPJ) iterator.next();
+			for (Iterator<RegisterCNPJ> iterator = userList.iterator(); iterator.hasNext();) {
+				RegisterCNPJ userRegisterCNPJ = (RegisterCNPJ) iterator.next();
 				
 			}
 			
@@ -113,6 +114,7 @@ public class RegisterCNPJController {
 			UserRegisterCNPJ userRegisterCNPJ = new UserRegisterCNPJ();
 			userRegisterCNPJ.setUser(user);
 			userRegisterCNPJ.setCnpj(registerCNPJ);
+			userRegisterCNPJ.setSendNotification(registerCNPJ.isSendNotification());
 			userRegisterCNPJRepository.save(userRegisterCNPJ);	
 		}
 

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -150,7 +151,7 @@ public class UserController {
 			}
 		}
 		
-		User userLocal = saveCnpjUse(userRegisterCNPJ.getUser().getId(),registerCNPJsnew);
+		User userLocal = null; //saveCnpjUse(userRegisterCNPJ.getUser().getId(),registerCNPJsnew);
 		
 
 		return new ResponseEntity<User>(userLocal, HttpStatus.OK);
@@ -169,6 +170,7 @@ public class UserController {
 			UserRegisterCNPJ userRegisterCNPJ = new UserRegisterCNPJ();
 			userRegisterCNPJ.setUser(user);
 			userRegisterCNPJ.setCnpj(registerCNPJ);
+			userRegisterCNPJ.setSendNotification(registerCNPJ.isSendNotification());
 			userRegisterCNPJRepository.save(userRegisterCNPJ);	
 		}
 

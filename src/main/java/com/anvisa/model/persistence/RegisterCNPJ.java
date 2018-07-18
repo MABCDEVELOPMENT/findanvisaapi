@@ -1,7 +1,18 @@
 package com.anvisa.model.persistence;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.ManyToMany;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
@@ -25,10 +36,15 @@ public class RegisterCNPJ extends AbstractBaseEntity  {
 	private int category;
 	
 	@Transient
-	@JsonAlias(value = "sendNotification")
-	private boolean sendNotification = true;
+	private boolean sendNotification;
 
-	
+	public boolean isSendNotification() {
+		return sendNotification;
+	}
+
+	public void setSendNotification(boolean sendNotification) {
+		this.sendNotification = sendNotification;
+	}
 
 	public String getCnpj() {
 		return cnpj;
@@ -54,12 +70,5 @@ public class RegisterCNPJ extends AbstractBaseEntity  {
 		this.category = category;
 	}
 
-	public boolean isSendNotification() {
-		return sendNotification;
-	}
-
-	public void setSendNotification(boolean sendNotification) {
-		this.sendNotification = sendNotification;
-	}
 
 }

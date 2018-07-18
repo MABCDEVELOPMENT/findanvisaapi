@@ -1,19 +1,29 @@
 package com.anvisa.model.persistence;
 
+import java.io.Serializable;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 import com.fasterxml.jackson.annotation.JsonAlias;
 
 @Entity
 @Table(name = "user_register_cnpj")
-public class UserRegisterCNPJ extends AbstractBaseEntity  {
-
+public class UserRegisterCNPJ implements Serializable {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+
 	@Id
     @GeneratedValue
 	@Column(name = "ID", nullable = false)
@@ -26,14 +36,15 @@ public class UserRegisterCNPJ extends AbstractBaseEntity  {
 	private RegisterCNPJ cnpj;
 	
 	@Column(name = "sendNotification")
-	@JsonAlias(value = "sendNotification")
 	private boolean sendNotification;
 
 		
-	@Override
 	public Long getId() {
-		// TODO Auto-generated method stub
-		return super.getId();
+		return id;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
 	}
 
 	public User getUser() {

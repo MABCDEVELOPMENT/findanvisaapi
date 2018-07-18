@@ -1,6 +1,8 @@
 package com.anvisa.controller;
 
+import java.util.ArrayList;
 import java.util.GregorianCalendar;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -17,9 +19,12 @@ import com.anvisa.controller.exception.LoginException;
 import com.anvisa.controller.exception.bean.ErrorResponse;
 import com.anvisa.controller.util.CustomErrorType;
 import com.anvisa.interceptor.ScheduledTasks;
+import com.anvisa.model.persistence.RegisterCNPJ;
 import com.anvisa.model.persistence.ScheduledEmail;
 import com.anvisa.model.persistence.User;
+import com.anvisa.model.persistence.UserRegisterCNPJ;
 import com.anvisa.repository.generic.RepositoryScheduledEmail;
+import com.anvisa.repository.generic.UserRegisterCNPJRepository;
 import com.anvisa.repository.generic.UserRepository;
 import com.anvisa.rest.model.Login;
 
@@ -35,13 +40,18 @@ public class LoginController {
 
 	@Autowired
 	UserRepository userRepository;
+	
+	@Autowired
+	UserRegisterCNPJRepository userRegisterCNPJRepository;
 
 	@Autowired
 	RepositoryScheduledEmail scheduledEmail;
 
 	@Autowired
-	public void setService(UserRepository userRepository) {
+	public void setService(UserRepository userRepository,
+			UserRegisterCNPJRepository userRegisterCNPJRepository) {
 		this.userRepository = userRepository;
+		this.userRegisterCNPJRepository = userRegisterCNPJRepository;
 	}
 
 	@ApiOperation(value = "Login of user")
@@ -78,12 +88,19 @@ public class LoginController {
 
 		User user = userRepository.findId(id);
 		
-		
-
 		if (user == null) {
 			return new ResponseEntity<CustomErrorType>(new CustomErrorType("User invalid!"), HttpStatus.CONFLICT);
 		} else {
-			user.getRegisterCNPJs();
+			List<RegisterCNPJ> registerCNPJs = user.getRegisterCNPJs();
+			List<RegisterCNPJ> registerCNPJsNew = new ArrayList<RegisterCNPJ>();
+			for (RegisterCNPJ registerCNPJ : registerCNPJs) {
+				UserRegisterCNPJ userRegisterCNPJ = this.userRegisterCNPJRepository.findId(user, registerCNPJ);
+				if (userRegisterCNPJ!=null) {
+					registerCNPJ.setSendNotification(userRegisterCNPJ.isSendNotification());
+					registerCNPJsNew.add(registerCNPJ);
+				}
+			}
+			user.setRegisterCNPJs(registerCNPJsNew);
 			return new ResponseEntity<User>(user, HttpStatus.OK);
 		}
 
@@ -96,6 +113,7 @@ public class LoginController {
 		User user = userRepository.findId(id);
 
 		if (user == null) {
+
 			return new ResponseEntity<CustomErrorType>(new CustomErrorType("Usuário inválido!"), HttpStatus.CONFLICT);
 		} else {
 			return new ResponseEntity<User>(user, HttpStatus.OK);
