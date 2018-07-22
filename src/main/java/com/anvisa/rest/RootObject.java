@@ -2,14 +2,14 @@ package com.anvisa.rest;
 
 import java.util.ArrayList;
 
-public class RootObjectProcesso {
-	private ArrayList<ContentProcesso> content = new ArrayList<ContentProcesso>();
+public class RootObject {
+	private ArrayList<Content> content = new ArrayList<Content>();
 
-	public ArrayList<ContentProcesso> getContentProcesso() {
+	public ArrayList<Content> getContent() {
 		return this.content;
 	}
 
-	public void setContentProcesso(ArrayList<ContentProcesso> content) {
+	public void setContent(ArrayList<Content> content) {
 		this.content = content;
 	}
 

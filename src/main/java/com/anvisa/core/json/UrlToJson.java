@@ -11,12 +11,11 @@ import java.util.Date;
 import java.util.Iterator;
 
 import com.anvisa.core.type.TypeArea;
-import com.anvisa.core.type.TypeCategory;
-import com.anvisa.core.type.TypeProduct;
 import com.anvisa.core.type.TypeSearchProductCosmetic;
-import com.anvisa.rest.ContentProcesso;
+import com.anvisa.rest.Content;
 import com.anvisa.rest.ContentProduto;
-import com.anvisa.rest.RootObjectProcesso;
+import com.anvisa.rest.QueryRecordParameter;
+import com.anvisa.rest.RootObject;
 import com.anvisa.rest.RootObjectProduto;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -28,7 +27,8 @@ import okhttp3.Response;
 public class UrlToJson {
 
 	public static String URL_PROCESS = "https://consultas.anvisa.gov.br/api/documento/tecnico?count=1000&page=1";
-	public static String URL_COSMETIC = "https://consultas.anvisa.gov.br/api/consulta/produtos/6?count=1000&page=1";
+	public static String URL_COSMETIC = "https://consultas.anvisa.gov.br/api/consulta/produtos/cosmeticos/registrados?count=1000&page=1";
+	public static String URL_FOOD = "https://consultas.anvisa.gov.br/api/consulta/produtos/6?count=1000&page=1";
 	public static String URL_SANEANTE = "https://consultas.anvisa.gov.br/api/consulta/produtos/3?count=1000&page=1";
 
 	/*
@@ -36,13 +36,13 @@ public class UrlToJson {
 	 * "AVEIA", TypeSearch.FOOD_PRODUCT); }
 	 */
 
-	public static RootObjectProcesso findProcess(String cnpj, TypeArea area) {
+	public static RootObject findProcess(QueryRecordParameter queryRecordParameter) {
 
-		RootObjectProcesso rootObjectProcesso = new RootObjectProcesso();
+		RootObject rootObjectProcesso = new RootObject();
 
 		OkHttpClient client = new OkHttpClient(); //
 		// https://consultas.anvisa.gov.br/#/alimentos/q/?nomeProduto=AVEIA Request
-		Request request = new Request.Builder().url(validParameterProcess(URL_PROCESS, cnpj, area)).get()
+		Request request = new Request.Builder().url(validParameterProcess(URL_PROCESS, queryRecordParameter)).get()
 				.addHeader("authorization", "Guest").build();
 
 		try {
@@ -58,7 +58,7 @@ public class UrlToJson {
 
 				JsonNode jsonNode = (JsonNode) elementsContents.next();
 
-				ContentProcesso content = new ContentProcesso();
+				Content content = new Content();
 
 				content.setTipo(JsonToObject.getTipo(jsonNode));
 
@@ -70,11 +70,11 @@ public class UrlToJson {
 
 				content.setPeticao(JsonToObject.getPeticao(jsonNode));
 
-				content.setPeticao(JsonToObject.getPeticao(jsonNode));
-
 				content.setArea(JsonToObject.getArea(jsonNode));
+				
+				content.setProduto(JsonToObject.getProduto(jsonNode));
 
-				rootObjectProcesso.getContentProcesso().add(content);
+				rootObjectProcesso.getContent().add(content);
 
 			}
 
@@ -86,26 +86,19 @@ public class UrlToJson {
 		return rootObjectProcesso;
 	}
 
-	public static RootObjectProduto find(String cnpj, String numeroProcesso, String numeroRegistro, String nomeProduto,
-			TypeCategory categoria, String marca, String typeProduct, String typeSearch) {
+	public static RootObject find(QueryRecordParameter queryRecordParameter) {
 
-		RootObjectProduto rootObjectProduto = new RootObjectProduto();
+		RootObject rootObject = new RootObject();
 
 		OkHttpClient client = new OkHttpClient();
 
 		Request url = null;
 
-		if (typeProduct.equals(TypeProduct.COSMETIC.name())) {
+		//queryRecordParameter.setCnpj("55323448000138");
 
-			url = new Request.Builder().url(validParameterProduct(URL_COSMETIC, cnpj, numeroProcesso, numeroRegistro,
-					nomeProduto, categoria, marca)).get().addHeader("authorization", "Guest").build();
+			url = new Request.Builder().url(validParameterProduct(queryRecordParameter.getCnpj(), queryRecordParameter.getNumberProcess(), queryRecordParameter.getRegisterNumber(),
+					queryRecordParameter.getProdutoName(), queryRecordParameter.getCategory(), queryRecordParameter.getBrand())).get().addHeader("authorization", "Guest").build();
 
-		} else {
-
-			url = new Request.Builder().url(validParameterProduct(URL_SANEANTE, cnpj, numeroProcesso, numeroRegistro,
-					nomeProduto, categoria, marca)).get().addHeader("authorization", "Guest").build();
-
-		}
 
 		try {
 
@@ -121,7 +114,7 @@ public class UrlToJson {
 
 				JsonNode jsonNode = (JsonNode) elementsContents.next();
 
-				ContentProduto content = new ContentProduto();
+				Content content = new Content();
 
 				content.setOrdem(JsonToObject.getOrdem(jsonNode));
 
@@ -131,7 +124,7 @@ public class UrlToJson {
 
 				content.setProduto(JsonToObject.getProduto(jsonNode));
 
-				rootObjectProduto.getContentProduto().add(content);
+				rootObject.getContent().add(content);
 
 			}
 
@@ -139,7 +132,7 @@ public class UrlToJson {
 			e.printStackTrace();
 		}
 
-		return rootObjectProduto;
+		return rootObject;
 	}
 
 	public static String validParameterTypeSearchProduct(String url, TypeSearchProductCosmetic typeSearchProduct) {
@@ -152,22 +145,37 @@ public class UrlToJson {
 
 	}
 
-	public static String validParameterProcess(String url, String cnpj, TypeArea area) {
+	public static String validParameterProcess(String url, QueryRecordParameter queryRecordParameter) {
 
-		if (cnpj != null && !cnpj.isEmpty()) {
-			url = url + "&filter[cnpj]=" + cnpj;
+		if (queryRecordParameter.getCnpj() != null && !queryRecordParameter.getCnpj().isEmpty()) {
+			url = url + "&filter[cnpj]=" + queryRecordParameter.getCnpj();
 		}
 
-		if (area != null) {
+/*		if (area != null) {
 			url = url + "&filter[area]=" + area.getId();
-		}
+		}*/
 
 		return url;
 	}
 
-	public static String validParameterProduct(String url, String cnpj, String numeroProcesso, String numeroRegistro,
-			String nomeProduto, TypeCategory categoria, String marca) {
+	public static String validParameterProduct(String cnpj, String numeroProcesso, String numeroRegistro,
+			String nomeProduto, Long categoria, String marca) {
+		
+		String url = "";
+		
+		if (categoria == 0) {
+		
+			url = URL_FOOD;
+		
+		} else if (categoria == 1) {
 
+			url = URL_COSMETIC;
+			
+		} else if (categoria == 2) {
+
+			url = URL_SANEANTE;
+		}
+		
 		if (cnpj != null && !cnpj.isEmpty()) {
 			url = url + "&filter[cnpj]=" + cnpj;
 		}
@@ -184,9 +192,9 @@ public class UrlToJson {
 			url = url + "&filter[nomeProduto]=" + nomeProduto;
 		}
 
-		if (categoria != null) {
-			url = url + "&filter[categoria]=" + categoria.getId();
-		}
+		/*if (categoria != null) {
+			url = url + "&filter[categoria]=" + categoria;
+		}*/
 
 		if (marca != null && !marca.isEmpty()) {
 			url = url + "&filter[marca]=" + marca;

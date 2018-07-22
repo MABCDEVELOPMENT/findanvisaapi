@@ -5,9 +5,21 @@ import java.util.Date;
 import com.anvisa.rest.model.Empresa;
 import com.anvisa.rest.model.Peticao;
 import com.anvisa.rest.model.Processo;
+import com.anvisa.rest.model.Produto;
 import com.anvisa.rest.model.Tipo;
 
-public class ContentProcesso {
+public class Content {
+	
+	private int ordem;
+	
+	public int getOrdem() {
+		return ordem;
+	}
+
+	public void setOrdem(int ordem) {
+		this.ordem = ordem;
+	}
+
 	private Tipo tipo;
 
 	public Tipo getTipo() {
@@ -67,4 +79,16 @@ public class ContentProcesso {
 	public void setArea(String area) {
 		this.area = area;
 	}
+	
+	private Produto produto;
+
+	public Produto getProduto() {
+		return produto;
+	}
+
+	public void setProduto(Produto produto) {
+		this.produto = produto;
+	}
+	
+	
 }

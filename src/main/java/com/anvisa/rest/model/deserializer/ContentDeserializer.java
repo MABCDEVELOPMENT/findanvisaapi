@@ -2,7 +2,7 @@ package com.anvisa.rest.model.deserializer;
 
 import java.io.IOException;
 
-import com.anvisa.rest.ContentProcesso;
+import com.anvisa.rest.Content;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.ObjectCodec;
@@ -10,10 +10,10 @@ import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.JsonNode;
 
-public class ContentProcessoDeserializer extends JsonDeserializer<ContentProcesso> {
+public class ContentDeserializer extends JsonDeserializer<Content> {
 
 	@Override
-	public ContentProcesso deserialize(JsonParser jp, DeserializationContext ctxt)
+	public Content deserialize(JsonParser jp, DeserializationContext ctxt)
 			throws IOException, JsonProcessingException {
 		ObjectCodec oc = jp.getCodec();
 		JsonNode node = oc.readTree(jp);

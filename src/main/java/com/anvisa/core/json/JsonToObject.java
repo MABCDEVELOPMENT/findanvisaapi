@@ -1,6 +1,11 @@
 package com.anvisa.core.json;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
 import java.util.Date;
+import java.util.Locale;
 
 import com.anvisa.rest.model.Assunto;
 import com.anvisa.rest.model.Categoria;
@@ -80,8 +85,13 @@ public class JsonToObject {
 		JsonNode element = node.findValue("processo");
 
 		if (!element.isNull()) {
-
-			processo = new Processo(element.get("numero").asText(), element.get("situacao").asText(),
+			String situacao = element.get("situacao").asText();
+			if ("29".equals(situacao)) {
+				situacao = "Publicado Deferimento";
+			} else if ("31".equals(situacao)) {
+				situacao = "";
+			}
+			processo = new Processo(element.get("numero").asText(), situacao,
 					element.get("numeroProcessoFormatado").asText());
 
 		}
@@ -146,7 +156,13 @@ public class JsonToObject {
 
 		JsonNode element = node.findValue("produto");
 
-		if (!element.isNull()) {
+		//DateTimeFormatter formatterBR = DateTimeFormatter.ofPattern("dd/mm/yyyy").withLocale(locale);
+		DateTimeFormatter formatter = DateTimeFormatter.ofLocalizedDate(
+			        FormatStyle.MEDIUM).withLocale(Locale.getDefault());
+
+		LocalDate date;
+		
+		if (element!=null) {
 
 			produto = new Produto();
 
@@ -158,26 +174,61 @@ public class JsonToObject {
 			produto.setCategoria(getCategoria(element));
 			produto.setSituacaoRotulo(element.get("situacaoRotulo").asText());
 
-			/*
-			 * if (!element.get("dataVencimento").isNull()) produto.setDataVencimento(new
-			 * Date(element.get("dataVencimento").asText()));
-			 */
+			try {
+				
+				if (!element.get("dataVencimento").isNull()) {
+	
+					LocalDate dataRegistro = LocalDate.parse(element.get("dataVencimento").asText().substring(0, 10));
+					produto.setDataVencimento(dataRegistro);
+					
+				}
+			
+				
+			} catch (Exception e) {
+				// TODO: handle exception
+				e.printStackTrace();
+			}
 
 			produto.setMesAnoVencimento(element.get("mesAnoVencimento").asText());
 
-			/*
-			 * if (!element.get("dataVencimentoRegistro").isNull())
-			 * produto.setDataVencimentoRegistro(new
-			 * Date(element.get("dataVencimentoRegistro").asText()));
-			 */
+			try {
 
+				if (!element.get("dataVencimentoRegistro").isNull()) {
+					
+					LocalDate dataVencimentoRegistro = LocalDate.parse(element.get("dataVencimentoRegistro").asText().substring(0,10));
+					produto.setDataVencimentoRegistro(dataVencimentoRegistro);
+
+					/*DateTimeFormatter formatters = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+				    String text = dataVencimentoRegistro.format(formatters);
+				    LocalDate parsedDate = LocalDate.parse(text, formatters);*/
+					
+					
+				}
+				
+			} catch (Exception e) {
+				// TODO: handle exception
+				e.printStackTrace();
+			}	
+				
 			produto.setPrincipioAtivo(element.get("principioAtivo").asText());
 			produto.setSituacaoApresentacao(element.get("situacaoApresentacao").asText());
-
-			/*
-			 * if (!element.get("dataRegistro").isNull()) produto.setDataRegistro(new
-			 * Date(element.get("dataRegistro").asText()));
-			 */
+			
+			try {
+			
+				if (!element.get("dataRegistro").isNull()) {
+	
+					LocalDate dataRegistro = LocalDate.parse(element.get("dataRegistro").asText().substring(0, 10));
+					produto.setDataRegistro(dataRegistro);
+					produto.setAno(element.get("dataRegistro").asText().substring(0,4));
+					
+				}
+			
+				
+			} catch (Exception e) {
+				// TODO: handle exception
+				e.printStackTrace();
+			}	
+			
 			produto.setNumeroRegistroFormatado(element.get("numeroRegistroFormatado").asText());
 			produto.setMesAnoVencimentoFormatado(element.get("mesAnoVencimentoFormatado").asText());
 			produto.setAcancelar(element.get("acancelar").asBoolean());
@@ -187,6 +238,8 @@ public class JsonToObject {
 		return produto;
 	}
 
+	
+	
 	public static Categoria getCategoria(JsonNode node) {
 
 		Categoria categoria = null;

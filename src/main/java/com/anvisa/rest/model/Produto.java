@@ -1,5 +1,7 @@
 package com.anvisa.rest.model;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Date;
 
 public class Produto {
@@ -63,13 +65,13 @@ public class Produto {
 		this.situacaoRotulo = situacaoRotulo;
 	}
 
-	private Date dataVencimento;
+	private LocalDate dataVencimento;
 
-	public Date getDataVencimento() {
+	public LocalDate getDataVencimento() {
 		return this.dataVencimento;
 	}
 
-	public void setDataVencimento(Date dataVencimento) {
+	public void setDataVencimento(LocalDate dataVencimento) {
 		this.dataVencimento = dataVencimento;
 	}
 
@@ -83,13 +85,13 @@ public class Produto {
 		this.mesAnoVencimento = mesAnoVencimento;
 	}
 
-	private Date dataVencimentoRegistro;
+	private LocalDate dataVencimentoRegistro;
 
-	public Date getDataVencimentoRegistro() {
+	public LocalDate getDataVencimentoRegistro() {
 		return this.dataVencimentoRegistro;
 	}
 
-	public void setDataVencimentoRegistro(Date dataVencimentoRegistro) {
+	public void setDataVencimentoRegistro(LocalDate dataVencimentoRegistro) {
 		this.dataVencimentoRegistro = dataVencimentoRegistro;
 	}
 
@@ -113,13 +115,13 @@ public class Produto {
 		this.situacaoApresentacao = situacaoApresentacao;
 	}
 
-	private Date dataRegistro;
+	private LocalDate dataRegistro;
 
-	public Date getDataRegistro() {
+	public LocalDate getDataRegistro() {
 		return this.dataRegistro;
 	}
 
-	public void setDataRegistro(Date dataRegistro) {
+	public void setDataRegistro(LocalDate dataRegistro) {
 		this.dataRegistro = dataRegistro;
 	}
 
@@ -152,4 +154,16 @@ public class Produto {
 	public void setAcancelar(boolean acancelar) {
 		this.acancelar = acancelar;
 	}
+	
+	private String ano;
+
+	public String getAno() {
+		return ano;
+	}
+
+	public void setAno(String ano) {
+		this.ano = ano;
+	}
+	
+	
 }
