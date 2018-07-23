@@ -111,7 +111,7 @@ public class UserController {
 			sb.append(" Login "+user.getEmail());
 			sb.append("");
 			sb.append("");
-			sb.append(" Acesse o link http://localhost:4200/userList");
+			sb.append(" Acesse o link http://findinfo.kinghost.net/findanvisa/userList");
 			
 			email.setBody(sb.toString());
 

@@ -138,7 +138,7 @@ public class LoginController {
 			scheduledEmail.setInsertUser(user);
 			scheduledEmail.setInsertDate(GregorianCalendar.getInstance().getTime());
 			scheduledEmail.setSubject("Re-definição de senha.");
-			scheduledEmail.setBody("http://localhost:4200/redefine?id=" + user.getId());
+			scheduledEmail.setBody("http://findinfo.kinghost.net/findanvisa/redefine?id=" + user.getId());
 
 			this.scheduledEmail.saveAndFlush(scheduledEmail);
 			
