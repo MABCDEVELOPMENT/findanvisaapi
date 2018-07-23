@@ -2,16 +2,14 @@ package com.anvisa.rest;
 
 import java.util.ArrayList;
 
-import com.anvisa.rest.ContentProduto;
-
 public class RootObjectProduto {
-	private ArrayList<ContentProduto> content = new ArrayList<ContentProduto>();
+	private ArrayList<ContentProdutoAntigo> content = new ArrayList<ContentProdutoAntigo>();
 
-	public ArrayList<ContentProduto> getContentProduto() {
+	public ArrayList<ContentProdutoAntigo> getContentProduto() {
 		return this.content;
 	}
 
-	public void setContent(ArrayList<ContentProduto> content) {
+	public void setContent(ArrayList<ContentProdutoAntigo> content) {
 		this.content = content;
 	}
 

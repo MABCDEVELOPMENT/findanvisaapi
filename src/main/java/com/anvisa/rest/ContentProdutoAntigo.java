@@ -4,9 +4,10 @@ import com.anvisa.rest.model.Empresa;
 import com.anvisa.rest.model.Processo;
 import com.anvisa.rest.model.Produto;
 
-public class ContentProduto {
+public class ContentProdutoAntigo {
 
 	private int ordem;
+
 
 	public int getOrdem() {
 		return this.ordem;

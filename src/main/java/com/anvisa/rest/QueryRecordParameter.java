@@ -12,6 +12,8 @@ public class QueryRecordParameter {
 	
 	Long category;
 	
+	Long option;
+	
 	String registerNumber;
 	
 	Long typeProdutc;
@@ -45,6 +47,12 @@ public class QueryRecordParameter {
 	}
 	public void setCategory(Long category) {
 		this.category = category;
+	}
+	public Long getOption() {
+		return option;
+	}
+	public void setOption(Long option) {
+		this.option = option;
 	}
 	public String getRegisterNumber() {
 		return registerNumber;

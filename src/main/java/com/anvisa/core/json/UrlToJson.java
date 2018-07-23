@@ -13,10 +13,13 @@ import java.util.Iterator;
 import com.anvisa.core.type.TypeArea;
 import com.anvisa.core.type.TypeSearchProductCosmetic;
 import com.anvisa.rest.Content;
-import com.anvisa.rest.ContentProduto;
 import com.anvisa.rest.QueryRecordParameter;
 import com.anvisa.rest.RootObject;
 import com.anvisa.rest.RootObjectProduto;
+import com.anvisa.rest.model.Assunto;
+import com.anvisa.rest.model.ContentProduto;
+import com.anvisa.rest.model.ContentProdutoNotificado;
+import com.anvisa.rest.model.Empresa;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -30,6 +33,7 @@ public class UrlToJson {
 	public static String URL_COSMETIC = "https://consultas.anvisa.gov.br/api/consulta/produtos/cosmeticos/registrados?count=1000&page=1";
 	public static String URL_FOOD = "https://consultas.anvisa.gov.br/api/consulta/produtos/6?count=1000&page=1";
 	public static String URL_SANEANTE = "https://consultas.anvisa.gov.br/api/consulta/produtos/3?count=1000&page=1";
+	public static String URL_SANEANTE_NOTIFICADOS = "https://consultas.anvisa.gov.br/api/consulta/saneantes/notificados?count=1000&page=1";
 
 	/*
 	 * public static void main(String[] args) { findFoodSaneate("55323448000138",
@@ -97,7 +101,7 @@ public class UrlToJson {
 		//queryRecordParameter.setCnpj("55323448000138");
 
 			url = new Request.Builder().url(validParameterProduct(queryRecordParameter.getCnpj(), queryRecordParameter.getNumberProcess(), queryRecordParameter.getRegisterNumber(),
-					queryRecordParameter.getProdutoName(), queryRecordParameter.getCategory(), queryRecordParameter.getBrand())).get().addHeader("authorization", "Guest").build();
+					queryRecordParameter.getProdutoName(), queryRecordParameter.getCategory(), queryRecordParameter.getOption(), queryRecordParameter.getBrand())).get().addHeader("authorization", "Guest").build();
 
 
 		try {
@@ -113,19 +117,54 @@ public class UrlToJson {
 			while (elementsContents.hasNext()) {
 
 				JsonNode jsonNode = (JsonNode) elementsContents.next();
-
+				
+				
 				Content content = new Content();
 
-				content.setOrdem(JsonToObject.getOrdem(jsonNode));
+				
+				if (queryRecordParameter.getCategory()==2 && queryRecordParameter.getOption() == 0) {
+					
+					content.setOrdem(JsonToObject.getOrdem(jsonNode));
 
-				content.setEmpresa(JsonToObject.getEmpresa(jsonNode));
+					content.setEmpresa(JsonToObject.getEmpresa(jsonNode));
 
-				content.setProcesso(JsonToObject.getProcessoProduto(jsonNode));
+					content.setProcesso(JsonToObject.getProcessoProduto(jsonNode));
 
-				content.setProduto(JsonToObject.getProduto(jsonNode));
-
-				rootObject.getContent().add(content);
-
+					content.setProduto(JsonToObject.getProduto(jsonNode));
+					
+					ContentProduto contentProduto = new ContentProduto(content);
+					
+					rootObject.getContent().add(contentProduto);
+					
+				} else if (queryRecordParameter.getCategory()==2 && queryRecordParameter.getOption() == 1) {
+					
+					ContentProdutoNotificado contentProdutoNotificado = new ContentProdutoNotificado();
+					
+					Assunto assunto = JsonToObject.getAssunto(jsonNode);
+					
+					contentProdutoNotificado.setAssunto(assunto.toString());
+					
+					contentProdutoNotificado.setProcesso(JsonToObject.getValue(jsonNode, "processo"));
+					
+					contentProdutoNotificado.setTransacao(JsonToObject.getValue(jsonNode, "transacao"));
+					
+					contentProdutoNotificado.setExpedienteProcesso(JsonToObject.getValue(jsonNode, "expedienteProcesso"));
+					
+					contentProdutoNotificado.setExpedientePeticao(JsonToObject.getValue(jsonNode, "expedientePeticao"));
+					
+					contentProdutoNotificado.setProduto(JsonToObject.getValue(jsonNode, "produto"));
+					
+					contentProdutoNotificado.setCnpj(JsonToObject.getValue(jsonNode,"empresa", "cnpj"));
+					
+					contentProdutoNotificado.setCnpj(JsonToObject.getValue(jsonNode,"empresa", "razaoSocial"));
+					
+					contentProdutoNotificado.setSituacao(JsonToObject.getValue(jsonNode,"situacao", "situacao"));
+					
+					contentProdutoNotificado.setVencimento(JsonToObject.getValueDate(jsonNode,"vencimento"));
+					rootObject.getContent().add(contentProdutoNotificado);
+					
+				}
+			
 			}
 
 		} catch (Exception e) { // TODO Auto-generated catch block
@@ -159,7 +198,7 @@ public class UrlToJson {
 	}
 
 	public static String validParameterProduct(String cnpj, String numeroProcesso, String numeroRegistro,
-			String nomeProduto, Long categoria, String marca) {
+			String nomeProduto, Long categoria, Long opcao, String marca) {
 		
 		String url = "";
 		
@@ -172,8 +211,19 @@ public class UrlToJson {
 			url = URL_COSMETIC;
 			
 		} else if (categoria == 2) {
-
-			url = URL_SANEANTE;
+			
+			if (opcao==0) {
+			
+				url = URL_SANEANTE;
+				
+			
+			} else if (opcao==1) {
+				
+				url = URL_SANEANTE_NOTIFICADOS;
+				
+				
+			}
+			
 		}
 		
 		if (cnpj != null && !cnpj.isEmpty()) {

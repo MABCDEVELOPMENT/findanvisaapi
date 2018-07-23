@@ -1,7 +1,6 @@
 package com.anvisa.core.json;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 import java.util.Date;
@@ -56,7 +55,7 @@ public class JsonToObject {
 
 		if (!element.isNull()) {
 
-			empresa = new Empresa(element.get("cnpj").asText(), element.get("razaoSocial").asText(), null, null);
+			empresa = new Empresa(element.get("cnpj").asText(), element.get("razaoSocial").asText(), null, element.get("cnpjFormatado").asText());
 
 		}
 
@@ -120,6 +119,21 @@ public class JsonToObject {
 		return peticao;
 	}
 
+	public static Assunto getAssunto(JsonNode node) {
+		
+		JsonNode element = node.findValue("assunto");
+		
+		Assunto assunto = null;
+		
+		if (element!=null) {
+			assunto = new Assunto(element.get("codigo").asText(),
+				element.get("descricao").asText());
+		}	
+		
+		return assunto;
+		
+	}
+	
 	public static String getArea(JsonNode node) {
 
 		String area = null;
@@ -254,5 +268,35 @@ public class JsonToObject {
 
 		return categoria;
 	}
+	
+	public static String getValue(JsonNode node,String attribute) {
+		JsonNode element = node.findValue(attribute);
+		if (!element.isNull()) {
+			return element.asText();
+		}
+		return null;
+	}
+	
+	public static LocalDate getValueDate(JsonNode node,String attribute) {
+		JsonNode element = node.findValue(attribute);
+		if (element!=null) {
+			try {
+				LocalDate date = LocalDate.parse(element.asText().substring(0, 10));
+				return date;
+			} catch (Exception e) {
+				// TODO: handle exception
+			}
+		}
+		return null;
+	}
+	
+	public static String getValue(JsonNode node,String content,String attribute) {
+		JsonNode element = node.findValue(content);
+		if (!element.isNull()) {
+			return element.get(attribute).asText();
+		}
+		return null;
+	}
+
 
 }

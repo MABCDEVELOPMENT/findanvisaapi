@@ -3,13 +3,13 @@ package com.anvisa.rest;
 import java.util.ArrayList;
 
 public class RootObject {
-	private ArrayList<Content> content = new ArrayList<Content>();
+	private ArrayList<Object> content = new ArrayList<Object>();
 
-	public ArrayList<Content> getContent() {
+	public ArrayList<Object> getContent() {
 		return this.content;
 	}
 
-	public void setContent(ArrayList<Content> content) {
+	public void setContent(ArrayList<Object> content) {
 		this.content = content;
 	}
 
