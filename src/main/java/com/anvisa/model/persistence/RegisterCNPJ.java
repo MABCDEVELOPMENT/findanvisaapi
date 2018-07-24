@@ -13,8 +13,11 @@ import javax.persistence.FetchType;
 import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
+import javax.persistence.OrderBy;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+
+import org.hibernate.annotations.Sort;
 
 import com.fasterxml.jackson.annotation.JsonAlias;
 
@@ -29,6 +32,7 @@ public class RegisterCNPJ extends AbstractBaseEntity  {
 
 	@Column(name = "full_name", length = 60, nullable = false)
 	@JsonAlias(value = "fullName")
+	@OrderBy
 	private String fullName;
 
 	@Column(name = "category", length = 1, nullable = false)

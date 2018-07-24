@@ -272,9 +272,13 @@ public class JsonToObject {
 	public static String getValue(JsonNode node,String attribute) {
 		JsonNode element = node.findValue(attribute);
 		if (element!=null) {
-			return element.asText();
+			String value = element.asText();
+			if ("null".equals(value)) {
+				value = "";
+			}
+			return value;
 		}
-		return null;
+		return "";
 	}
 	
 	public static String getValue(JsonNode node,String content,String attribute) {

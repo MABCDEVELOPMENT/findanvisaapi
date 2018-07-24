@@ -14,6 +14,8 @@ public class ContentProdutoNotificado {
     String razaoSocial;
     String situacao;
     LocalDate vencimento;
+    String statusVencimento;
+    String empresa;
     
     
 	public String getAssunto() {
@@ -76,6 +78,18 @@ public class ContentProdutoNotificado {
 	}
 	public void setVencimento(LocalDate vencimento) {
 		this.vencimento = vencimento;
+	}
+	public String getStatusVencimento() {
+		return statusVencimento;
+	}
+	public void setStatusVencimento(String statusVencimento) {
+		this.statusVencimento = statusVencimento;
+	}
+	public String getEmpresa() {
+		return empresa;
+	}
+	public void setEmpresa(String empresa) {
+		this.empresa = empresa;
 	}
 
     

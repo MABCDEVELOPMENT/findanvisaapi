@@ -12,6 +12,7 @@ public class ContentProduto {
 	String cnpj;
 	String situacao;
 	String vencimento;
+	String statusVencimento;
 	
 	public ContentProduto(Content content) {
 		// TODO Auto-generated constructor stub
@@ -90,6 +91,14 @@ public class ContentProduto {
 
 	public void setCodigo(int codigo) {
 		this.codigo = codigo;
+	}
+
+	public String getStatusVencimento() {
+		return statusVencimento;
+	}
+
+	public void setStatusVencimento(String statusVencimento) {
+		this.statusVencimento = statusVencimento;
 	}
 	
 	
