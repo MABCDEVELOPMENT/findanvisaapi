@@ -20,6 +20,7 @@ import com.anvisa.rest.model.Assunto;
 import com.anvisa.rest.model.ContentProduto;
 import com.anvisa.rest.model.ContentProdutoNotificado;
 import com.anvisa.rest.model.ContentProdutoRegistrado;
+import com.anvisa.rest.model.ContentProdutoRegularizado;
 import com.anvisa.rest.model.Empresa;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -123,12 +124,11 @@ public class UrlToJson {
 
 				JsonNode jsonNode = (JsonNode) elementsContents.next();
 
-				Content content = new Content();
+				
 
 				if (queryRecordParameter.getCategory() == 1 && queryRecordParameter.getOption() == 0) { // Saneantes
 																										// e Produtos
 																										// Registrados
-
 					ContentProdutoRegistrado contentProdutoRegistrado = new ContentProdutoRegistrado();
 
 					Assunto assunto = JsonToObject.getAssunto(jsonNode);
@@ -156,11 +156,26 @@ public class UrlToJson {
 							.setVencimento(JsonToObject.getValueDate(jsonNode, "vencimento", "vencimento"));
 
 					rootObject.getContent().add(contentProdutoRegistrado);
-
-				} else if ((queryRecordParameter.getCategory() == 1 && queryRecordParameter.getOption() == 2) && 
-						  (queryRecordParameter.getCategory() == 2 && queryRecordParameter.getOption() == 0))   { 	// Cosmeticos e Produtos
-																												// Regularizado ou Saneantes Produtos
-
+					
+				} else if (queryRecordParameter.getCategory() == 1 && queryRecordParameter.getOption() == 2) { // Cosmeticos e Produtos Regularizado 
+					
+					ContentProdutoRegularizado contentProdutoRegularizado = new ContentProdutoRegularizado();
+					
+					contentProdutoRegularizado.setProduto(JsonToObject.getValue(jsonNode, "produto"));
+					
+					contentProdutoRegularizado.setProcesso(JsonToObject.getValue(jsonNode, "processo"));
+					
+					contentProdutoRegularizado.setSituacao(JsonToObject.getValue(jsonNode, "situacao"));
+					
+					contentProdutoRegularizado.setTipo(JsonToObject.getValue(jsonNode, "tipo"));
+					
+					contentProdutoRegularizado.setVencimento(JsonToObject.getValueDate(jsonNode, "data"));
+					
+					rootObject.getContent().add(contentProdutoRegularizado);
+					
+				} else if (queryRecordParameter.getCategory() == 2 && queryRecordParameter.getOption() == 0)  { 	// Saneantes Produtos
+					Content content = new Content();
+					
 					content.setOrdem(JsonToObject.getOrdem(jsonNode));
 
 					content.setEmpresa(JsonToObject.getEmpresa(jsonNode));

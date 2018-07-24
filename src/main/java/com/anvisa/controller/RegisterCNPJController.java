@@ -94,12 +94,12 @@ public class RegisterCNPJController {
 
 	@ApiOperation(value = "Add or update a Register CNPJ")
 	@RequestMapping(value = "/save", method = RequestMethod.POST)
-	public ResponseEntity<String> save(@RequestBody RegisterCNPJ registerCNPJ) {
+	public ResponseEntity<RegisterCNPJ> save(@RequestBody RegisterCNPJ registerCNPJ) {
 
 		registerCNPJ.setCnpj(registerCNPJ.getCnpj().replace(".", "").replace("/", "").replace("-", ""));
 		registerCNPJ = registerRepository.saveAndFlush(registerCNPJ);
 
-		return new ResponseEntity<String>("CNPJ saved successfully", HttpStatus.OK);
+		return new ResponseEntity<RegisterCNPJ>(registerCNPJ, HttpStatus.OK);
 	}
 
 	@ApiOperation(value = "Add or update a Register CNPJ for user")
@@ -120,7 +120,7 @@ public class RegisterCNPJController {
 
 		
 
-		return new ResponseEntity<String>("User saved successfully", HttpStatus.OK);
+		return new ResponseEntity<String>("Registro salvo com sucesso!", HttpStatus.OK);
 	}
 
 	@ApiOperation(value = "Delete a Register CNPJ")
