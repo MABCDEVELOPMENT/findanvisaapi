@@ -19,6 +19,7 @@ import com.anvisa.rest.RootObjectProduto;
 import com.anvisa.rest.model.Assunto;
 import com.anvisa.rest.model.ContentProduto;
 import com.anvisa.rest.model.ContentProdutoNotificado;
+import com.anvisa.rest.model.ContentProdutoRegistrado;
 import com.anvisa.rest.model.Empresa;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -30,7 +31,7 @@ import okhttp3.Response;
 public class UrlToJson {
 
 	public static String URL_PROCESS = "https://consultas.anvisa.gov.br/api/documento/tecnico?count=1000&page=1";
-	public static String URL_COSMETIC = "https://consultas.anvisa.gov.br/api/consulta/produtos/cosmeticos/registrados?count=1000&page=1";
+	public static String URL_COSMETIC_REGISTER = "https://consultas.anvisa.gov.br/api/consulta/cosmeticos/registrados?count=1000&page=1";
 	public static String URL_FOOD = "https://consultas.anvisa.gov.br/api/consulta/produtos/6?count=1000&page=1";
 	public static String URL_SANEANTE = "https://consultas.anvisa.gov.br/api/consulta/produtos/3?count=1000&page=1";
 	public static String URL_SANEANTE_NOTIFICADOS = "https://consultas.anvisa.gov.br/api/consulta/saneantes/notificados?count=1000&page=1";
@@ -122,22 +123,54 @@ public class UrlToJson {
 				Content content = new Content();
 
 				
-				if (queryRecordParameter.getCategory()==2 && queryRecordParameter.getOption() == 0) {
+				
 					
-					content.setOrdem(JsonToObject.getOrdem(jsonNode));
+				if (queryRecordParameter.getCategory()==1 && queryRecordParameter.getOption() == 0) { // Cosmeticos + Produtos Registrados
+						    
+					
+					ContentProdutoRegistrado contentProdutoRegistrado = new ContentProdutoRegistrado();
+					
+					Assunto assunto = JsonToObject.getAssunto(jsonNode);
+					
+					contentProdutoRegistrado.setAssunto(assunto.toString());
+					
+					contentProdutoRegistrado.setProcesso(JsonToObject.getValue(jsonNode, "processo"));
+					
+					contentProdutoRegistrado.setTransacao(JsonToObject.getValue(jsonNode, "transacao"));
+					
+					contentProdutoRegistrado.setExpedienteProcesso(JsonToObject.getValue(jsonNode, "expediente"));
+					
+					//contentProdutoRegistrado.setExpedientePeticao(JsonToObject.getValue(jsonNode, "expedientePeticao"));
+					
+					contentProdutoRegistrado.setProduto(JsonToObject.getValue(jsonNode, "nomeProduto"));
+					
+					contentProdutoRegistrado.setCnpj(JsonToObject.getValue(jsonNode,"empresa", "cnpj"));
+					
+					contentProdutoRegistrado.setRazaoSocial(JsonToObject.getValue(jsonNode,"empresa", "razaoSocial"));
+					
+					contentProdutoRegistrado.setSituacao(JsonToObject.getValue(jsonNode,"situacao", "situacao"));
+					
+					contentProdutoRegistrado.setVencimento(JsonToObject.getValueDate(jsonNode,"vencimento","vencimento"));
+					
+					rootObject.getContent().add(contentProdutoRegistrado);
+					
+					
+				} else	if (queryRecordParameter.getCategory()==2 && queryRecordParameter.getOption() == 0) { // Saneantes + Produtos
+						
+						content.setOrdem(JsonToObject.getOrdem(jsonNode));
 
-					content.setEmpresa(JsonToObject.getEmpresa(jsonNode));
+						content.setEmpresa(JsonToObject.getEmpresa(jsonNode));
 
-					content.setProcesso(JsonToObject.getProcessoProduto(jsonNode));
+						content.setProcesso(JsonToObject.getProcessoProduto(jsonNode));
 
-					content.setProduto(JsonToObject.getProduto(jsonNode));
+						content.setProduto(JsonToObject.getProduto(jsonNode));
+						
+						ContentProduto contentProduto = new ContentProduto(content);
+						
+						rootObject.getContent().add(contentProduto);	
 					
-					ContentProduto contentProduto = new ContentProduto(content);
-					
-					rootObject.getContent().add(contentProduto);
-					
-				} else if (queryRecordParameter.getCategory()==2 && queryRecordParameter.getOption() == 1) {
-					
+				} else if (queryRecordParameter.getCategory()==2 && queryRecordParameter.getOption() == 1) { // Saneantes + Produtos Notificiados
+				
 					ContentProdutoNotificado contentProdutoNotificado = new ContentProdutoNotificado();
 					
 					Assunto assunto = JsonToObject.getAssunto(jsonNode);
@@ -162,10 +195,10 @@ public class UrlToJson {
 					
 					contentProdutoNotificado.setVencimento(JsonToObject.getValueDate(jsonNode,"vencimento"));
 					rootObject.getContent().add(contentProdutoNotificado);
-					
-				}
 			
-			}
+			   }
+			
+			}	
 
 		} catch (Exception e) { // TODO Auto-generated catch block
 			e.printStackTrace();
@@ -207,20 +240,21 @@ public class UrlToJson {
 			url = URL_FOOD;
 		
 		} else if (categoria == 1) {
-
-			url = URL_COSMETIC;
+			
+			if (opcao==0) {
+				
+				url = URL_COSMETIC_REGISTER;
+			}
 			
 		} else if (categoria == 2) {
 			
 			if (opcao==0) {
 			
 				url = URL_SANEANTE;
-				
 			
 			} else if (opcao==1) {
 				
 				url = URL_SANEANTE_NOTIFICADOS;
-				
 				
 			}
 			

@@ -55,6 +55,7 @@ public class LoginController {
 	}
 
 	@ApiOperation(value = "Login of user")
+	@CrossOrigin
 	@RequestMapping(value = "", method = RequestMethod.POST)
 	public ResponseEntity<?> login(@RequestBody Login login) throws LoginException {
 

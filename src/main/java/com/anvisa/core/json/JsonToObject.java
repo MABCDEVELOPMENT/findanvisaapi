@@ -23,7 +23,7 @@ public class JsonToObject {
 
 		JsonNode element = node.findValue("tipo");
 
-		if (!element.isNull()) {
+		if (element!=null) {
 
 			tipo = new Tipo(element.get("codigo").asInt(), element.get("descricao").asText());
 
@@ -38,7 +38,7 @@ public class JsonToObject {
 
 		JsonNode element = node.findValue("dataEntrada");
 
-		if (!element.isNull()) {
+		if (element!=null) {
 
 			dataEntrada = new Date(element.asText());
 
@@ -53,7 +53,7 @@ public class JsonToObject {
 
 		JsonNode element = node.findValue("empresa");
 
-		if (!element.isNull()) {
+		if (element!=null) {
 
 			empresa = new Empresa(element.get("cnpj").asText(), element.get("razaoSocial").asText(), null, element.get("cnpjFormatado").asText());
 
@@ -68,7 +68,7 @@ public class JsonToObject {
 
 		JsonNode element = node.findValue("processo");
 
-		if (!element.isNull()) {
+		if (element!=null) {
 
 			processo = new Processo(element.get("numero").asText(), element.get("ativo").asBoolean());
 
@@ -83,7 +83,7 @@ public class JsonToObject {
 
 		JsonNode element = node.findValue("processo");
 
-		if (!element.isNull()) {
+		if (element!=null) {
 			String situacao = element.get("situacao").asText();
 			if ("29".equals(situacao)) {
 				situacao = "Publicado Deferimento";
@@ -104,7 +104,7 @@ public class JsonToObject {
 
 		JsonNode element = node.findValue("peticao");
 
-		if (!element.isNull()) {
+		if (element!=null) {
 
 			JsonNode elementAssunto = node.findValue("assunto");
 
@@ -140,7 +140,7 @@ public class JsonToObject {
 
 		JsonNode element = node.findValue("area");
 
-		if (!element.isNull()) {
+		if (element!=null) {
 
 			area = element.get("area").asText();
 
@@ -155,7 +155,7 @@ public class JsonToObject {
 
 		JsonNode element = node.findValue("ordem");
 
-		if (!element.isNull()) {
+		if (element!=null) {
 
 			ordem = element.asInt();
 
@@ -260,7 +260,7 @@ public class JsonToObject {
 
 		JsonNode element = node.findValue("categoria");
 
-		if (!element.isNull()) {
+		if (element!=null) {
 
 			categoria = new Categoria(element.get("codigo").asText(), element.get("descricao").asText());
 
@@ -271,12 +271,20 @@ public class JsonToObject {
 	
 	public static String getValue(JsonNode node,String attribute) {
 		JsonNode element = node.findValue(attribute);
-		if (!element.isNull()) {
+		if (element!=null) {
 			return element.asText();
 		}
 		return null;
 	}
 	
+	public static String getValue(JsonNode node,String content,String attribute) {
+		JsonNode element = node.findValue(content);
+		if (element!=null) {
+			return element.get(attribute).asText();
+		}
+		return null;
+	}
+
 	public static LocalDate getValueDate(JsonNode node,String attribute) {
 		JsonNode element = node.findValue(attribute);
 		if (element!=null) {
@@ -290,13 +298,19 @@ public class JsonToObject {
 		return null;
 	}
 	
-	public static String getValue(JsonNode node,String content,String attribute) {
+	public static LocalDate getValueDate(JsonNode node,String content,String attribute) {
 		JsonNode element = node.findValue(content);
-		if (!element.isNull()) {
-			return element.get(attribute).asText();
+		if (element!=null) {
+			try {
+				LocalDate date = LocalDate.parse(element.get(attribute).asText().substring(0, 10));
+				return date;
+			} catch (Exception e) {
+				// TODO: handle exception
+			}
 		}
 		return null;
 	}
-
+	
+	
 
 }
