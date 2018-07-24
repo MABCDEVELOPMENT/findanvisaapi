@@ -9,11 +9,14 @@ import java.nio.channels.ReadableByteChannel;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Iterator;
+import java.util.concurrent.TimeUnit;
 
 import com.anvisa.core.type.TypeArea;
 import com.anvisa.core.type.TypeSearchProductCosmetic;
 import com.anvisa.rest.Content;
+import com.anvisa.rest.ContentProcesso;
 import com.anvisa.rest.QueryRecordParameter;
+import com.anvisa.rest.QueryRecordProcessParameter;
 import com.anvisa.rest.RootObject;
 import com.anvisa.rest.RootObjectProduto;
 import com.anvisa.rest.model.Assunto;
@@ -22,6 +25,8 @@ import com.anvisa.rest.model.ContentProdutoNotificado;
 import com.anvisa.rest.model.ContentProdutoRegistrado;
 import com.anvisa.rest.model.ContentProdutoRegularizado;
 import com.anvisa.rest.model.Empresa;
+import com.anvisa.rest.model.Peticao;
+import com.anvisa.rest.model.Processo;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -44,16 +49,22 @@ public class UrlToJson {
 	 * "AVEIA", TypeSearch.FOOD_PRODUCT); }
 	 */
 
-	public static RootObject findProcess(QueryRecordParameter queryRecordParameter) {
+	public static RootObject findProcess(QueryRecordProcessParameter queryRecordParameter) {
 
 		RootObject rootObjectProcesso = new RootObject();
 
-		OkHttpClient client = new OkHttpClient(); //
-		// https://consultas.anvisa.gov.br/#/alimentos/q/?nomeProduto=AVEIA Request
+		OkHttpClient client = new OkHttpClient.Builder()
+		        .connectTimeout(30, TimeUnit.SECONDS)
+		        .writeTimeout(30, TimeUnit.SECONDS)
+		        .readTimeout(30, TimeUnit.SECONDS)
+		        .build();
+		
+
 		Request request = new Request.Builder().url(validParameterProcess(URL_PROCESS, queryRecordParameter)).get()
 				.addHeader("authorization", "Guest").build();
 
 		try {
+
 			Response response = client.newCall(request).execute();
 
 			ObjectMapper objectMapper = new ObjectMapper();
@@ -61,12 +72,12 @@ public class UrlToJson {
 			JsonNode rootNode = objectMapper.readTree(response.body().string());
 
 			Iterator<JsonNode> elementsContents = rootNode.path("content").iterator();
-
+			int i = 1;
 			while (elementsContents.hasNext()) {
 
 				JsonNode jsonNode = (JsonNode) elementsContents.next();
 
-				Content content = new Content();
+				/*Content content = new Content();
 
 				content.setTipo(JsonToObject.getTipo(jsonNode));
 
@@ -80,9 +91,26 @@ public class UrlToJson {
 
 				content.setArea(JsonToObject.getArea(jsonNode));
 
-				content.setProduto(JsonToObject.getProduto(jsonNode));
+				content.setProduto(JsonToObject.getProduto(jsonNode));*/
 
-				rootObjectProcesso.getContent().add(content);
+				ContentProcesso contentProcesso = new ContentProcesso();
+				
+				contentProcesso.setOrdem(i);
+				i++;
+				
+				Peticao peticao = JsonToObject.getPeticao(jsonNode);
+				contentProcesso.setAssunto(peticao.getAssunto().toString());
+				
+				
+				
+				contentProcesso.setRazaoSocial(JsonToObject.getValue(jsonNode, "empresa", "razaoSocial"));
+				
+				contentProcesso.setCnpj(JsonToObject.getValue(jsonNode, "empresa", "cnpj"));
+				
+				Processo processo = JsonToObject.getProcesso(jsonNode);
+				contentProcesso.setProcesso(processo.getNumero());
+
+				rootObjectProcesso.getContent().add(contentProcesso);
 
 			}
 
@@ -124,8 +152,6 @@ public class UrlToJson {
 
 				JsonNode jsonNode = (JsonNode) elementsContents.next();
 
-				
-
 				if (queryRecordParameter.getCategory() == 1 && queryRecordParameter.getOption() == 0) { // Saneantes
 																										// e Produtos
 																										// Registrados
@@ -156,26 +182,30 @@ public class UrlToJson {
 							.setVencimento(JsonToObject.getValueDate(jsonNode, "vencimento", "vencimento"));
 
 					rootObject.getContent().add(contentProdutoRegistrado);
-					
-				} else if (queryRecordParameter.getCategory() == 1 && queryRecordParameter.getOption() == 2) { // Cosmeticos e Produtos Regularizado 
-					
+
+				} else if (queryRecordParameter.getCategory() == 1 && queryRecordParameter.getOption() == 2) { // Cosmeticos
+																												// e
+																												// Produtos
+																												// Regularizado
+
 					ContentProdutoRegularizado contentProdutoRegularizado = new ContentProdutoRegularizado();
-					
+
 					contentProdutoRegularizado.setProduto(JsonToObject.getValue(jsonNode, "produto"));
-					
+
 					contentProdutoRegularizado.setProcesso(JsonToObject.getValue(jsonNode, "processo"));
-					
+
 					contentProdutoRegularizado.setSituacao(JsonToObject.getValue(jsonNode, "situacao"));
-					
+
 					contentProdutoRegularizado.setTipo(JsonToObject.getValue(jsonNode, "tipo"));
-					
+
 					contentProdutoRegularizado.setVencimento(JsonToObject.getValueDate(jsonNode, "data"));
-					
+
 					rootObject.getContent().add(contentProdutoRegularizado);
-					
-				} else if (queryRecordParameter.getCategory() == 2 && queryRecordParameter.getOption() == 0)  { 	// Saneantes Produtos
+
+				} else if (queryRecordParameter.getCategory() == 2 && queryRecordParameter.getOption() == 0) { // Saneantes
+																												// Produtos
 					Content content = new Content();
-					
+
 					content.setOrdem(JsonToObject.getOrdem(jsonNode));
 
 					content.setEmpresa(JsonToObject.getEmpresa(jsonNode));
@@ -238,15 +268,15 @@ public class UrlToJson {
 
 	}
 
-	public static String validParameterProcess(String url, QueryRecordParameter queryRecordParameter) {
+	public static String validParameterProcess(String url, QueryRecordProcessParameter queryRecordParameter) {
 
 		if (queryRecordParameter.getCnpj() != null && !queryRecordParameter.getCnpj().isEmpty()) {
 			url = url + "&filter[cnpj]=" + queryRecordParameter.getCnpj();
 		}
 
-		/*
-		 * if (area != null) { url = url + "&filter[area]=" + area.getId(); }
-		 */
+		if (queryRecordParameter.getArea() > 0) {
+			url = url + "&filter[area]=" + queryRecordParameter.getArea();
+		}
 
 		return url;
 	}

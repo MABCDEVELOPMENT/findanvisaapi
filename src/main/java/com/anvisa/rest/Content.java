@@ -1,5 +1,6 @@
 package com.anvisa.rest;
 
+import java.time.LocalDate;
 import java.util.Date;
 
 import com.anvisa.rest.model.Empresa;
@@ -30,13 +31,13 @@ public class Content {
 		this.tipo = tipo;
 	}
 
-	private Date dataEntrada;
+	private LocalDate dataEntrada;
 
-	public Date getDataEntrada() {
+	public LocalDate getDataEntrada() {
 		return this.dataEntrada;
 	}
 
-	public void setDataEntrada(Date dataEntrada) {
+	public void setDataEntrada(LocalDate dataEntrada) {
 		this.dataEntrada = dataEntrada;
 	}
 

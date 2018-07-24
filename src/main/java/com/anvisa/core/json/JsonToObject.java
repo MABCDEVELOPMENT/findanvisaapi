@@ -23,7 +23,7 @@ public class JsonToObject {
 
 		JsonNode element = node.findValue("tipo");
 
-		if (element!=null) {
+		if (!element.isNull()) {
 
 			tipo = new Tipo(element.get("codigo").asInt(), element.get("descricao").asText());
 
@@ -32,15 +32,22 @@ public class JsonToObject {
 		return tipo;
 	}
 
-	public static Date getDataEntrada(JsonNode node) {
+	public static LocalDate getDataEntrada(JsonNode node) {
 
-		Date dataEntrada = null;
+		LocalDate dataEntrada = null;
 
 		JsonNode element = node.findValue("dataEntrada");
 
 		if (element!=null) {
+			
+		 try {
+			 dataEntrada = LocalDate.parse(element.asText().substring(0, 10));
+		} catch (Exception e) {
+			// TODO: handle exception
+		}	
+			
+			
 
-			dataEntrada = new Date(element.asText());
 
 		}
 
