@@ -16,7 +16,7 @@ import com.fasterxml.jackson.annotation.JsonAlias;
 
 @Entity
 @Table(name = "user_register_cnpj")
-public class UserRegisterCNPJ implements Serializable {
+public class UserRegisterCNPJ {
 	
 	/**
 	 * 

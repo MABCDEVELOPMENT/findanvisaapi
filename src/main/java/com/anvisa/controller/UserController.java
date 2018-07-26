@@ -79,7 +79,7 @@ public class UserController {
 		
 		User userFind = userRepository.findEmail(user.getEmail());
 		
-		if (userFind!=null) {
+		if ((userFind!=null) && (user.getId() == null)) {
 			return new ResponseEntity<CustomErrorType>(new CustomErrorType("Usuário já cadastrado."), HttpStatus.BAD_REQUEST);
 		}
 		
@@ -132,7 +132,7 @@ public class UserController {
 	}
 
 	@ApiOperation(value = "Delete a user")
-	@RequestMapping(value = "/delete/{id}", method = RequestMethod.DELETE, consumes = "application/json")
+	@RequestMapping(value = "/delete/{id}", method = RequestMethod.DELETE)
 	public ResponseEntity<String> delete(@PathVariable Long id) {
 		userRepository.deleteById(id);
 		return new ResponseEntity<String>("User deleted successfully", HttpStatus.OK);
