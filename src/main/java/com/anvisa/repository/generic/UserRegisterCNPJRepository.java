@@ -1,5 +1,7 @@
 package com.anvisa.repository.generic;
 
+import java.util.Optional;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -12,5 +14,6 @@ public interface UserRegisterCNPJRepository extends JpaRepository<UserRegisterCN
 
 	@Query("select u from UserRegisterCNPJ u where u.user=:user and u.cnpj=:cnpj")
 	public UserRegisterCNPJ findId(@Param("user") User user,@Param("cnpj") RegisterCNPJ cnpj);
+
 	
 }

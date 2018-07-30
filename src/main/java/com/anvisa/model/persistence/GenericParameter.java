@@ -41,11 +41,11 @@ public class GenericParameter extends AbstractBaseEntity {
 
 	@Column(name = "cnpj", length = 14, nullable = false, unique = false)
 	@JsonAlias(value = "cnpj")
-	private Long cnpj;
+	private String cnpj;
 
 	@Column(name = "codeZip", length = 8, nullable = false, unique = false)
 	@JsonAlias(value = "codeZip")
-	private Integer codeZip;
+	private String codeZip;
 
 	@Column(name = "address", length = 60, nullable = false, unique = false)
 	@JsonAlias(value = "address")
@@ -120,19 +120,19 @@ public class GenericParameter extends AbstractBaseEntity {
 		this.socialName = socialName;
 	}
 
-	public Long getCnpj() {
+	public String getCnpj() {
 		return cnpj;
 	}
 
-	public void setCnpj(Long cnpj) {
+	public void setCnpj(String cnpj) {
 		this.cnpj = cnpj;
 	}
 
-	public Integer getCodeZip() {
+	public String getCodeZip() {
 		return codeZip;
 	}
 
-	public void setCodeZip(Integer codeZip) {
+	public void setCodeZip(String codeZip) {
 		this.codeZip = codeZip;
 	}
 

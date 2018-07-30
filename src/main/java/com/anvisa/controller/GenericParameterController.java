@@ -51,6 +51,8 @@ public class GenericParameterController {
 	@ApiOperation(value = "Add or update a parameter")
 	@RequestMapping(value = "/save", method = RequestMethod.POST)
 	public ResponseEntity<GenericParameter> save(@RequestBody GenericParameter genericParameter) {
+		
+		genericParameter.setCnpj(genericParameter.getCnpj().replace(".", "").replace("/", "").replace("-", ""));
 
 		GenericParameter parameter = genericParameterRepository.saveAndFlush(genericParameter);
 

@@ -48,10 +48,15 @@ public class EmailUtil {
 	      msg.setSentDate(new Date());
 
 	      msg.setRecipients(Message.RecipientType.TO, InternetAddress.parse(scheduleMail.getEmail(), false));
-	      System.out.println("Message is ready");
-    	  Transport.send(msg);  
+	      try {
+		      System.out.println("Message is ready");
+	    	  Transport.send(msg);  
 
-	      System.out.println("EMail Sent Successfully!!");
+		      System.out.println("EMail Sent Successfully!!");			
+			} catch (Exception e) {
+				// TODO: handle exception
+			}
+
 	    }
 	    catch (Exception e) {
 	      e.printStackTrace();

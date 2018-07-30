@@ -56,10 +56,10 @@ public class User extends AbstractBaseEntity  {
 	@JsonAlias(value = "profile")
 	private Integer profile = 0;
 
-	@ManyToMany
+	@ManyToMany(fetch = FetchType.LAZY)
 	@JoinTable(name = "user_register_cnpj", joinColumns = {
-			@JoinColumn(name = "user_id", unique = true) }, inverseJoinColumns = {
-					@JoinColumn(name = "cnpj_id", unique = true) })
+			@JoinColumn(name = "user_id", unique = true, updatable = false) }, inverseJoinColumns = {
+					@JoinColumn(name = "cnpj_id", unique = true, updatable = false) })
 	private List<RegisterCNPJ> registerCNPJs;
 
 	public List<RegisterCNPJ> getRegisterCNPJs() {

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 import org.hibernate.exception.ConstraintViolationException;
@@ -24,6 +25,7 @@ import com.anvisa.model.persistence.RegisterCNPJ;
 import com.anvisa.model.persistence.ScheduledEmail;
 import com.anvisa.model.persistence.User;
 import com.anvisa.model.persistence.UserRegisterCNPJ;
+import com.anvisa.repository.generic.RegisterCNPJRepository;
 import com.anvisa.repository.generic.RepositoryScheduledEmail;
 import com.anvisa.repository.generic.UserRegisterCNPJRepository;
 import com.anvisa.repository.generic.UserRepository;
@@ -50,10 +52,14 @@ public class UserController {
 	UserRegisterCNPJRepository userRegisterCNPJRepository;
 	
 	@Autowired
-	public void setService(UserRepository userRepository, UserRegisterCNPJRepository userRegisterCNPJRepository, RepositoryScheduledEmail scheduledEmail) {
+	RegisterCNPJRepository registerCNPJRepository; 
+	
+	@Autowired
+	public void setService(UserRepository userRepository, UserRegisterCNPJRepository userRegisterCNPJRepository, RepositoryScheduledEmail scheduledEmail, RegisterCNPJRepository registerCNPJRepository) {
 		this.userRepository = userRepository;
 		this.userRegisterCNPJRepository = userRegisterCNPJRepository;
 		this.scheduledEmail = scheduledEmail;
+		this.registerCNPJRepository = registerCNPJRepository;
 	}
 
 	@ApiOperation(value = "View a list of available user", response = Iterable.class)
@@ -71,7 +77,7 @@ public class UserController {
 	@ApiOperation(value = "Add or update a user")
 	@RequestMapping(value = "/save", method = RequestMethod.POST)
 	public ResponseEntity<?> saveUser(@RequestBody User user) {
-
+		
 		boolean isSchedule = (user.getId() == null);
 		user.setFullName(user.getFullName().toUpperCase());
 		user.setUserName(user.getUserName().toUpperCase());
@@ -89,6 +95,9 @@ public class UserController {
 			emailUserSend = user.getUserName();
 		}
 		
+		if (userFind!=null) {
+			user.setRegisterCNPJs(userFind.getRegisterCNPJs()); 	
+		}
 		user = userRepository.saveAndFlush(user);
 
 		if (isSchedule) {
@@ -140,17 +149,26 @@ public class UserController {
 
 	@ApiOperation(value = "Delete a cnpj from user")
 	@RequestMapping(value = "/deleteCnpjUser/", method = RequestMethod.POST)
-	public ResponseEntity<User> deleteCnpjUser(@RequestBody UserRegisterCNPJ userRegisterCNPJ) {
+	public ResponseEntity<User> deleteCnpjUser(@RequestBody Long[] object) {
 		
-		List<RegisterCNPJ> registerCNPJs = userRegisterCNPJ.getUser().getRegisterCNPJs();
+		/*List<RegisterCNPJ> registerCNPJs = user.getRegisterCNPJs();
 		List<RegisterCNPJ> registerCNPJsnew = new ArrayList<RegisterCNPJ>();
 		for (Iterator<RegisterCNPJ> iterator = registerCNPJs.iterator(); iterator.hasNext();) {
 			RegisterCNPJ registerCNPJ = (RegisterCNPJ) iterator.next();
 			if (registerCNPJ.getId().longValue() != userRegisterCNPJ.getCnpj().getId().longValue()) {
 				registerCNPJsnew.add(registerCNPJ);
 			}
-		}
+		}*/
+		Long userId = (Long)object[0];
+		User user = this.userRepository.findId(userId);
 		
+		Long registerId = (Long)object[1];
+		RegisterCNPJ cnpj = this.registerCNPJRepository.findId(registerId);
+		
+		UserRegisterCNPJ userRegisterCNPJ = this.userRegisterCNPJRepository.findId(user, cnpj);
+		if (userRegisterCNPJ!=null) {
+			this.userRegisterCNPJRepository.delete(userRegisterCNPJ);
+		}
 		User userLocal = null; //saveCnpjUse(userRegisterCNPJ.getUser().getId(),registerCNPJsnew);
 		
 

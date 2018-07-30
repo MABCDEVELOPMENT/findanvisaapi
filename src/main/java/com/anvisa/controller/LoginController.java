@@ -121,6 +121,21 @@ public class LoginController {
 		}
 
 	}
+	
+	@ApiOperation(value = "Get e-mail of user")
+	@RequestMapping(value = "/getuser/{email}", method = RequestMethod.GET)
+	public ResponseEntity<?> getUser(@PathVariable String email) {
+
+		User user = userRepository.findEmail(email);
+
+		if (user == null) {
+
+			return new ResponseEntity<CustomErrorType>(new CustomErrorType("Usuário inválido!"), HttpStatus.CONFLICT);
+		} else {
+			return new ResponseEntity<User>(user, HttpStatus.OK);
+		}
+
+	}
 
 	@ApiOperation(value = "Get e-mail of user")
 	@RequestMapping(value = "/forgotpassword", method = RequestMethod.POST)

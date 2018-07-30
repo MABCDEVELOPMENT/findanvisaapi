@@ -62,14 +62,14 @@ public class RegisterCNPJController {
 
 	@RequestMapping(value = "/list", method = RequestMethod.GET, produces = "application/json")
 	public List<RegisterCNPJ> list() {
-		List<RegisterCNPJ> list = registerRepository.findAll(sort(true, "id"));
+		List<RegisterCNPJ> list = registerRepository.findAll(sort(true, "fullName"));
 		return list;
 	}
 
 	@RequestMapping(value = "/listnotuser/{id}", method = RequestMethod.GET, produces = "application/json")
 	public List<RegisterCNPJ> listNotUser(@PathVariable Long id) {
 		
-		List<RegisterCNPJ> list = registerRepository.findAll(sort(true, "id"));
+		List<RegisterCNPJ> list = registerRepository.findAll(sort(true, "fullName"));
 		List<RegisterCNPJ> returnList = new ArrayList<RegisterCNPJ>();
 		
 		Optional<User> user = userRepository.findById(id);
