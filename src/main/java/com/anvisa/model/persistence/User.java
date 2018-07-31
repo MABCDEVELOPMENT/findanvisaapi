@@ -14,6 +14,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
+import javax.persistence.OrderBy;
+import javax.persistence.OrderColumn;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -60,6 +62,7 @@ public class User extends AbstractBaseEntity  {
 	@JoinTable(name = "user_register_cnpj", joinColumns = {
 			@JoinColumn(name = "user_id", unique = true, updatable = false) }, inverseJoinColumns = {
 					@JoinColumn(name = "cnpj_id", unique = true, updatable = false) })
+	@OrderBy(value = "fullName ASC")
 	private List<RegisterCNPJ> registerCNPJs;
 
 	public List<RegisterCNPJ> getRegisterCNPJs() {

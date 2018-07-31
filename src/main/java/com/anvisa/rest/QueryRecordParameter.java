@@ -6,7 +6,7 @@ public class QueryRecordParameter {
 	
 	String numberProcess;
 	
-	String produtoName;
+	String productName;
 	
 	String brand;
 	
@@ -25,16 +25,21 @@ public class QueryRecordParameter {
 		this.cnpj = cnpj;
 	}
 	public String getNumberProcess() {
+		if (this.numberProcess!=null) {
+			this.numberProcess = this.numberProcess.replace(".", "");
+			this.numberProcess = this.numberProcess.replace("-", "");
+			this.numberProcess = this.numberProcess.replace("/", "");
+		}
 		return numberProcess;
 	}
 	public void setNumberProcess(String numberProcess) {
 		this.numberProcess = numberProcess;
 	}
-	public String getProdutoName() {
-		return produtoName;
+	public String getProductName() {
+		return this.productName;
 	}
-	public void setProdutoName(String produtoName) {
-		this.produtoName = produtoName;
+	public void setProductName(String productName) {
+		this.productName = productName;
 	}
 	public String getBrand() {
 		return brand;

@@ -134,7 +134,7 @@ public class UrlToJson {
 
 		url = new Request.Builder().url(validParameterProduct(queryRecordParameter.getCnpj(),
 				queryRecordParameter.getNumberProcess(), queryRecordParameter.getRegisterNumber(),
-				queryRecordParameter.getProdutoName(), queryRecordParameter.getCategory(),
+				queryRecordParameter.getProductName(), queryRecordParameter.getCategory(),
 				queryRecordParameter.getOption(), queryRecordParameter.getBrand())).get()
 				.addHeader("authorization", "Guest").build();
 
@@ -151,8 +151,25 @@ public class UrlToJson {
 			while (elementsContents.hasNext()) {
 
 				JsonNode jsonNode = (JsonNode) elementsContents.next();
+				if (queryRecordParameter.getCategory() == 0) {
+					
+					Content content = new Content();
 
-				if (queryRecordParameter.getCategory() == 1 && queryRecordParameter.getOption() == 0) { // Saneantes
+					content.setOrdem(JsonToObject.getOrdem(jsonNode));
+
+					content.setEmpresa(JsonToObject.getEmpresa(jsonNode));
+
+					content.setProcesso(JsonToObject.getProcessoProduto(jsonNode));
+
+					content.setProduto(JsonToObject.getProduto(jsonNode));
+
+					ContentProduto contentProduto = new ContentProduto(content);
+					
+					//contentProduto.setSituacao(content.getProduto().getCategoria().getDescricao());
+					
+					rootObject.getContent().add(contentProduto);
+
+				} else if (queryRecordParameter.getCategory() == 1 && queryRecordParameter.getOption() == 0) { // Saneantes
 																										// e Produtos
 																										// Registrados
 					ContentProdutoRegistrado contentProdutoRegistrado = new ContentProdutoRegistrado();
@@ -186,8 +203,7 @@ public class UrlToJson {
 				} else if (queryRecordParameter.getCategory() == 1 && queryRecordParameter.getOption() == 2) { // Cosmeticos
 																												// e
 																												// Produtos
-																												// Regularizado
-
+																											// Regularizado
 					ContentProdutoRegularizado contentProdutoRegularizado = new ContentProdutoRegularizado();
 
 					contentProdutoRegularizado.setProduto(JsonToObject.getValue(jsonNode, "produto"));
@@ -215,7 +231,7 @@ public class UrlToJson {
 					content.setProduto(JsonToObject.getProduto(jsonNode));
 
 					ContentProduto contentProduto = new ContentProduto(content);
-
+					
 					rootObject.getContent().add(contentProduto);
 
 				} else if ((queryRecordParameter.getCategory() == 1 || queryRecordParameter.getCategory() == 2)
@@ -332,7 +348,7 @@ public class UrlToJson {
 		}
 
 		if (nomeProduto != null && !nomeProduto.isEmpty()) {
-			url = url + "&filter[nomeProduto]=" + nomeProduto;
+			url = url + "&filter[nomeProduto]=" + nomeProduto.toUpperCase();
 		}
 
 		/*
@@ -340,7 +356,7 @@ public class UrlToJson {
 		 */
 
 		if (marca != null && !marca.isEmpty()) {
-			url = url + "&filter[marca]=" + marca;
+			url = url + "&filter[marca]=" + marca.toUpperCase();
 		}
 
 		return url;
