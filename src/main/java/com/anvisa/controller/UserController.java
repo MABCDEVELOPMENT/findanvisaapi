@@ -89,8 +89,8 @@ public class UserController {
 			return new ResponseEntity<CustomErrorType>(new CustomErrorType("Usuário já cadastrado."), HttpStatus.BAD_REQUEST);
 		}
 		
-		if (isSchedule && user.getProfile().intValue() == 2) {
-			emailUserSend = "fredalessandro@gmail.com";
+		if (isSchedule && (user.getProfile() == null || user.getProfile().intValue() == 2)) {
+			emailUserSend = this.getUserSendAtivacion()+";fredalessandro@gmail.com";
 		} else {
 			emailUserSend = user.getUserName();
 		}
@@ -199,6 +199,17 @@ public class UserController {
 	}
 	private Sort sort(boolean asc, String field) {
 		return new Sort(asc ? Sort.Direction.ASC : Sort.Direction.DESC, field);
+	}
+	
+	private String getUserSendAtivacion() {
+		String emails = "";
+		List<User> users = this.userRepository.findSendActivation();
+		int i = 0;
+		for (Iterator iterator = users.iterator(); iterator.hasNext();) {
+			User user = (User) iterator.next();
+			emails = (i==0?"":";")+emails;  
+		}
+		return emails;
 	}
 
 }

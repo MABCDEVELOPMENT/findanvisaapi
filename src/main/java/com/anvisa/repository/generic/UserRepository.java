@@ -21,6 +21,9 @@ public interface UserRepository extends JpaRepository<User, Long> {
 	
 	@Query("select u from User u where u.password=null and (u.active = false or u.active = null)")
 	public List<User> findWaitingForApproval();
+	
+	@Query("select u from User u where u.receiveActivation = true and profile <> 2")
+	public List<User> findSendActivation();
 
 
 }

@@ -2,20 +2,15 @@ package com.anvisa.model.persistence;
 
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
-import javax.persistence.OneToMany;
 import javax.persistence.OrderBy;
-import javax.persistence.OrderColumn;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -64,7 +59,11 @@ public class User extends AbstractBaseEntity  {
 					@JoinColumn(name = "cnpj_id", unique = true, updatable = false) })
 	@OrderBy(value = "fullName ASC")
 	private List<RegisterCNPJ> registerCNPJs;
-
+	
+	@Column(name = "receive_activation", length = 2, nullable = true)
+	@JsonAlias(value = "receveActivation")
+	private boolean receiveActivation;
+	
 	public List<RegisterCNPJ> getRegisterCNPJs() {
 		if (this.registerCNPJs == null) {
 			this.registerCNPJs = new ArrayList<RegisterCNPJ>();
@@ -138,6 +137,14 @@ public class User extends AbstractBaseEntity  {
 
 	public void setProfile(Integer profile) {
 		this.profile = profile;
+	}
+
+	public boolean isReceiveActivation() {
+		return receiveActivation;
+	}
+
+	public void setReceiveActivation(boolean receiveActivation) {
+		this.receiveActivation = receiveActivation;
 	}
 
 }
