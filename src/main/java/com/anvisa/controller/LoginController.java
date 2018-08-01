@@ -95,11 +95,18 @@ public class LoginController {
 			List<RegisterCNPJ> registerCNPJs = user.getRegisterCNPJs();
 			List<RegisterCNPJ> registerCNPJsNew = new ArrayList<RegisterCNPJ>();
 			for (RegisterCNPJ registerCNPJ : registerCNPJs) {
-				UserRegisterCNPJ userRegisterCNPJ = this.userRegisterCNPJRepository.findId(user, registerCNPJ);
-				if (userRegisterCNPJ!=null) {
-					registerCNPJ.setSendNotification(userRegisterCNPJ.isSendNotification());
-					registerCNPJsNew.add(registerCNPJ);
+				
+				try {
+					UserRegisterCNPJ userRegisterCNPJ = this.userRegisterCNPJRepository.findId(user, registerCNPJ);
+					
+					if (userRegisterCNPJ!=null) {
+						registerCNPJ.setSendNotification(userRegisterCNPJ.isSendNotification());
+						registerCNPJsNew.add(registerCNPJ);
+					}
+				} catch(Exception e) {
+					System.out.println("user "+user.getId() +" registerCNPJ "+registerCNPJ.getId()+" Não carregou !");
 				}
+				
 			}
 			user.setRegisterCNPJs(registerCNPJsNew);
 			return new ResponseEntity<User>(user, HttpStatus.OK);
