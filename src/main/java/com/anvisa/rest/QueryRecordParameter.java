@@ -18,6 +18,13 @@ public class QueryRecordParameter {
 	
 	Long typeProdutc;
 	
+	String authorizationNumber;
+	String expedientProcess;
+	String generatedTransaction;
+	String expeditionPetition;
+	String dateInitial;
+	String dateFinal;
+	
 	public String getCnpj() {
 		return cnpj;
 	}
@@ -70,6 +77,42 @@ public class QueryRecordParameter {
 	}
 	public void setTypeProdutc(Long typeProdutc) {
 		this.typeProdutc = typeProdutc;
+	}
+	public String getAuthorizationNumber() {
+		return authorizationNumber;
+	}
+	public void setAuthorizationNumber(String authorizationNumber) {
+		this.authorizationNumber = authorizationNumber;
+	}
+	public String getExpedientProcess() {
+		return expedientProcess;
+	}
+	public void setExpedientProcess(String expedientProcess) {
+		this.expedientProcess = expedientProcess;
+	}
+	public String getGeneratedTransaction() {
+		return generatedTransaction;
+	}
+	public void setGeneratedTransaction(String generatedTransaction) {
+		this.generatedTransaction = generatedTransaction;
+	}
+	public String getExpeditionPetition() {
+		return expeditionPetition;
+	}
+	public void setExpeditionPetition(String expeditionPetition) {
+		this.expeditionPetition = expeditionPetition;
+	}
+	public String getDateInitial() {
+		return dateInitial;
+	}
+	public void setDateInitial(String dateInitial) {
+		this.dateInitial = dateInitial;
+	}
+	public String getDateFinal() {
+		return dateFinal;
+	}
+	public void setDateFinal(String dateFinal) {
+		this.dateFinal = dateFinal;
 	}
 	
 	
