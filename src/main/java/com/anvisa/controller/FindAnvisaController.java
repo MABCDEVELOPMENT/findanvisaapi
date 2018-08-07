@@ -66,15 +66,15 @@ public class FindAnvisaController {
 		List<Area> areas = new ArrayList<Area>();
 		
 		areas.add(new Area("Alimentos", 6)); 
-		areas.add(new Area("Autorizações", 7)); 
+		//areas.add(new Area("Autorizações", 7)); 
 		areas.add(new Area("Cosmeticos", 2)); 
-		areas.add(new Area("Derivado de Tabaco", 10)); 
-		areas.add(new Area("Medicamentos", 1)); 
-		areas.add(new Area("Portos,Aeroportos e Fronteitas", 11)); 
-		areas.add(new Area("Produtos para saúde(Correlatos)",8)); 
-		areas.add(new Area("Produtos para diognóstico para uso in vitro",5)); 
+		//areas.add(new Area("Derivado de Tabaco", 10)); 
+		//areas.add(new Area("Medicamentos", 1)); 
+		//areas.add(new Area("Portos,Aeroportos e Fronteitas", 11)); 
+		//areas.add(new Area("Produtos para saúde(Correlatos)",8)); 
+		//areas.add(new Area("Produtos para diognóstico para uso in vitro",5)); 
 		areas.add(new Area("Saneantes", 12)); 
-		areas.add(new Area("Toxicologia", 9));
+		//areas.add(new Area("Toxicologia", 9));
 		
 		return areas;
 	}

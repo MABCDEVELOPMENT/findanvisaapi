@@ -141,7 +141,8 @@ public class UrlToJson {
 				queryRecordParameter.getGeneratedTransaction(),
 				queryRecordParameter.getExpeditionPetition(),
 				queryRecordParameter.getDateInitial(),
-				queryRecordParameter.getDateFinal())).get()
+				queryRecordParameter.getDateFinal(),
+				queryRecordParameter.getEanCode())).get()
 				.addHeader("authorization", "Guest").build();
 
 		try {
@@ -300,12 +301,31 @@ public class UrlToJson {
 			url = url + "&filter[area]=" + queryRecordParameter.getArea();
 		}
 
+		if (queryRecordParameter.getOfficehour() != null && !queryRecordParameter.getOfficehour().isEmpty()) {
+			url = url + "&filter[expediente]=" + queryRecordParameter.getOfficehour();
+		}
+		
+		if (queryRecordParameter.getTransaction() != null && !queryRecordParameter.getTransaction().isEmpty()) {
+			url = url + "&filter[transacao]=" + queryRecordParameter.getTransaction();
+		} 
+		
+		if (queryRecordParameter.getProcess() != null && !queryRecordParameter.getProcess().isEmpty()) {
+			url = url + "&filter[processo]=" + queryRecordParameter.getProcess();
+		}
+		
+		if (queryRecordParameter.getProtocol() != null && !queryRecordParameter.getProtocol().isEmpty()) {
+			url = url + "&filter[protocolo]=" + queryRecordParameter.getProtocol();
+		}
+		
+		if (queryRecordParameter.getKnowledge() != null && !queryRecordParameter.getKnowledge().isEmpty()) {
+			url = url + "&filter[conheicimento]=" + queryRecordParameter.getKnowledge();
+		}
 		return url;
 	}
 
 	public static String validParameterProduct(String cnpj, String numeroProcesso, String numeroRegistro,
 			String nomeProduto, Long categoria, Long opcao, String marca, String numeroAutorizacao,
-			String expedienteProcesso, String transacao, String expedientePeticao,String dataInicial,String dataFinal) {
+			String expedienteProcesso, String transacao, String expedientePeticao,String dataInicial,String dataFinal,String codigoEAN) {
 
 		String url = "";
 
@@ -390,6 +410,10 @@ public class UrlToJson {
 		
 		if (dataFinal != null && !dataFinal.isEmpty()) {
 			url = url + "&filter[dataFinal]=" + dataFinal;
+		}
+		
+		if (codigoEAN != null && !codigoEAN.isEmpty()) {
+			url = url + "&filter[codigoEAN]=" + codigoEAN;
 		}
 		
 		return url;

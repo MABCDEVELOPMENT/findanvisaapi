@@ -25,6 +25,8 @@ public class QueryRecordParameter {
 	String dateInitial;
 	String dateFinal;
 	
+	String eanCode;
+	
 	public String getCnpj() {
 		return cnpj;
 	}
@@ -113,6 +115,12 @@ public class QueryRecordParameter {
 	}
 	public void setDateFinal(String dateFinal) {
 		this.dateFinal = dateFinal;
+	}
+	public String getEanCode() {
+		return eanCode;
+	}
+	public void setEanCode(String eanCode) {
+		this.eanCode = eanCode;
 	}
 	
 	
