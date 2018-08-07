@@ -135,7 +135,13 @@ public class UrlToJson {
 		url = new Request.Builder().url(validParameterProduct(queryRecordParameter.getCnpj(),
 				queryRecordParameter.getNumberProcess(), queryRecordParameter.getRegisterNumber(),
 				queryRecordParameter.getProductName(), queryRecordParameter.getCategory(),
-				queryRecordParameter.getOption(), queryRecordParameter.getBrand())).get()
+				queryRecordParameter.getOption(), queryRecordParameter.getBrand(),
+				queryRecordParameter.getAuthorizationNumber(),
+				queryRecordParameter.getExpedientProcess(),
+				queryRecordParameter.getGeneratedTransaction(),
+				queryRecordParameter.getExpeditionPetition(),
+				queryRecordParameter.getDateInitial(),
+				queryRecordParameter.getDateFinal())).get()
 				.addHeader("authorization", "Guest").build();
 
 		try {
@@ -298,7 +304,8 @@ public class UrlToJson {
 	}
 
 	public static String validParameterProduct(String cnpj, String numeroProcesso, String numeroRegistro,
-			String nomeProduto, Long categoria, Long opcao, String marca) {
+			String nomeProduto, Long categoria, Long opcao, String marca, String numeroAutorizacao,
+			String expedienteProcesso, String transacao, String expedientePeticao,String dataInicial,String dataFinal) {
 
 		String url = "";
 
@@ -358,7 +365,33 @@ public class UrlToJson {
 		if (marca != null && !marca.isEmpty()) {
 			url = url + "&filter[marca]=" + marca.toUpperCase();
 		}
-
+		
+		
+		if (numeroAutorizacao != null && !numeroAutorizacao.isEmpty()) {
+			url = url + "&filter[numeroAutorizacao]=" + numeroAutorizacao.toUpperCase();
+		}
+		
+		if (expedienteProcesso != null && !expedienteProcesso.isEmpty()) {
+			expedienteProcesso = expedienteProcesso.replace(".", "");
+			url = url + "&filter[expedienteProcesso]=" + expedienteProcesso.toUpperCase();
+		}
+		
+		if (transacao != null && !transacao.isEmpty()) {
+			url = url + "&filter[transacao]=" + transacao.toUpperCase();
+		}
+		
+		if (expedientePeticao != null && !expedientePeticao.isEmpty()) {
+			url = url + "&filter[expedientePeticao]=" + expedientePeticao.toUpperCase();
+		}
+		
+		if (dataInicial != null && !dataInicial.isEmpty()) {
+			url = url + "&filter[dataInicial]=" + dataInicial;
+		}
+		
+		if (dataFinal != null && !dataFinal.isEmpty()) {
+			url = url + "&filter[dataFinal]=" + dataFinal;
+		}
+		
 		return url;
 	}
 

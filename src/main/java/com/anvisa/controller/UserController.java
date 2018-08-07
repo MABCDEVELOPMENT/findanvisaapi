@@ -1,13 +1,8 @@
 package com.anvisa.controller;
 
-import java.util.ArrayList;
-import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Optional;
-import java.util.Set;
 
-import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
@@ -112,14 +107,14 @@ public class UserController {
 			
 			StringBuffer sb = new StringBuffer();
 			
-			sb.append("Prezado Administrado,");
-			sb.append("Foi efetuado um registro de usuário no sistema FINDANVISA, favor efetuar a ativação do mesmo confime dados abaixo:");
-			sb.append("");
-			sb.append("");
-			sb.append(" Usuário : "+user.getFullName());
-			sb.append(" Login "+user.getEmail());
-			sb.append("");
-			sb.append("");
+			sb.append("Prezado Administrado,\n");
+			sb.append(" Foi efetuado um registro de usuário no sistema FINDANVISA, favor efetuar a ativação do mesmo confime dados abaixo:\n");
+			sb.append("\n");
+			sb.append("\n");
+			sb.append(" Usuário : "+user.getFullName()+"\n");
+			sb.append(" Login "+user.getEmail()+"\n");
+			sb.append("\n");
+			sb.append("\n");
 			sb.append(" Acesse o link http://findinfo.kinghost.net/findanvisa/#/userList");
 			
 			email.setBody(sb.toString());
@@ -207,7 +202,7 @@ public class UserController {
 		int i = 0;
 		for (Iterator iterator = users.iterator(); iterator.hasNext();) {
 			User user = (User) iterator.next();
-			emails = (i==0?"":";")+emails;  
+			emails = (i==0?"":";")+emails+user.getEmail();  
 		}
 		return emails;
 	}
