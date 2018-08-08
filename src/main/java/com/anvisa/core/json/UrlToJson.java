@@ -7,6 +7,7 @@ import java.net.URL;
 import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.concurrent.TimeUnit;
@@ -37,10 +38,14 @@ import okhttp3.Response;
 public class UrlToJson {
 
 	public static String URL_PROCESS = "https://consultas.anvisa.gov.br/api/documento/tecnico?count=1000&page=1";
+	
 	public static String URL_COSMETIC_REGISTER = "https://consultas.anvisa.gov.br/api/consulta/cosmeticos/registrados?count=1000&page=1";
 	public static String URL_COSMETIC_NOTIFY = "https://consultas.anvisa.gov.br/api/consulta/cosmeticos/notificados?count=1000&page=1";
 	public static String URL_COSMETIC_REGULARIZED = "https://consultas.anvisa.gov.br/api/consulta/cosmeticos/regularizados?count=1000&page=1";
+	
 	public static String URL_FOOD = "https://consultas.anvisa.gov.br/api/consulta/produtos/6?count=1000&page=1";
+	public static String URL_FOOD_DETAIL = "https://consultas.anvisa.gov.br/api/consulta/produtos/6";
+	
 	public static String URL_SANEANTE = "https://consultas.anvisa.gov.br/api/consulta/produtos/3?count=1000&page=1";
 	public static String URL_SANEANTE_NOTIFICADOS = "https://consultas.anvisa.gov.br/api/consulta/saneantes/notificados?count=1000&page=1";
 
@@ -281,6 +286,45 @@ public class UrlToJson {
 		return rootObject;
 	}
 
+	public static RootObject findDetail(Long categoria, Long opcao, String valor) {
+		
+		RootObject rootObject = new RootObject();
+
+		OkHttpClient client = new OkHttpClient();
+
+		Request url = null;
+		
+		if (categoria == 0 && opcao == null) {
+			
+			    url = new Request.Builder().url(URL_FOOD_DETAIL+"/"+valor).get()
+						.addHeader("authorization", "Guest").build();;
+			try {
+				
+				Response response = client.newCall(url).execute();
+
+				ObjectMapper objectMapper = new ObjectMapper();
+
+				JsonNode rootNode = objectMapper.readTree(response.body().string());
+
+				Iterator<JsonNode> elementsContents = rootNode.iterator();
+
+				while (elementsContents.hasNext()) {
+
+					JsonNode jsonNode = (JsonNode) elementsContents.next();
+				}
+				
+				rootObject.setContent(null);
+				
+			} catch (Exception e) { // TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+	
+		}
+		
+		return rootObject;
+		
+	}
+	
 	public static String validParameterTypeSearchProduct(String url, TypeSearchProductCosmetic typeSearchProduct) {
 
 		if (typeSearchProduct != null) {

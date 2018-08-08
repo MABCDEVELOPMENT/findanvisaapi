@@ -97,14 +97,7 @@ public class UserController {
 
 		if (isSchedule) {
 
-			ScheduledEmail email = new ScheduledEmail();
 
-			email.setEmail(emailUserSend);
-			email.setName(user.getFullName());
-			email.setInsertUser(user);
-			email.setInsertDate(user.getInsertDate());
-			email.setSubject("Ativação de conta");
-			
 			StringBuffer sb = new StringBuffer();
 			
 			sb.append("Prezado Administrado,\n");
@@ -117,9 +110,26 @@ public class UserController {
 			sb.append("\n");
 			sb.append(" Acesse o link http://findinfo.kinghost.net/findanvisa/#/userList");
 			
-			email.setBody(sb.toString());
+			
+			List<User> users = this.userRepository.findSendActivation();
+			
+			for (Iterator<User> iterator = users.iterator(); iterator.hasNext();) {
+				
+				User usermail = (User) iterator.next();
+				
+				ScheduledEmail email = new ScheduledEmail();
 
-			this.scheduledEmail.saveAndFlush(email);
+				email.setName(user.getFullName());
+				email.setInsertUser(user);
+				email.setInsertDate(user.getInsertDate());
+				email.setSubject("Ativação de conta");
+				email.setEmail(usermail.getEmail());
+				email.setBody(sb.toString());
+				
+				this.scheduledEmail.saveAndFlush(email);
+
+			}
+			
 			
 			ScheduledTasks.scheduledEmail();
 

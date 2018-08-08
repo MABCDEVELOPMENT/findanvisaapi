@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.anvisa.core.json.UrlToJson;
 import com.anvisa.core.type.TypeArea;
+import com.anvisa.rest.QueryRecordDetail;
 import com.anvisa.rest.QueryRecordParameter;
 import com.anvisa.rest.QueryRecordProcessParameter;
 import com.anvisa.rest.RootObject;
@@ -41,6 +42,7 @@ public class FindAnvisaController {
 		return rootObject;
 	}
 
+
 	@ApiOperation(value = "View a list of produtcts", response = Iterable.class)
 	@ApiResponses(value = { @ApiResponse(code = 200, message = "Successfully retrieved list"),
 			@ApiResponse(code = 401, message = "You are not authorized to view the resource"),
@@ -51,6 +53,20 @@ public class FindAnvisaController {
 	public RootObject findProduct(@RequestBody QueryRecordParameter queryRecordParameter) {
 		
 		RootObject rootObject = UrlToJson.find(queryRecordParameter);
+		
+		return rootObject;
+	}
+	
+	@ApiOperation(value = "View a detail of produtc")
+	@ApiResponses(value = { @ApiResponse(code = 200, message = "Successfully retrieved list"),
+			@ApiResponse(code = 401, message = "You are not authorized to view the resource"),
+			@ApiResponse(code = 403, message = "Accessing the resource you were trying to reach is forbidden"),
+			@ApiResponse(code = 404, message = "The resource you were trying to reach is not found") })
+	@RequestMapping(value = "/productDetial", method = RequestMethod.POST, produces = "application/json")
+	public RootObject findProductDetail(@RequestBody QueryRecordDetail queryRecordDetail) {
+		
+		RootObject rootObject = UrlToJson.findDetail(queryRecordDetail.getCategory(), queryRecordDetail.getOption(),
+				queryRecordDetail.getValue());
 		
 		return rootObject;
 	}
