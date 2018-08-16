@@ -15,6 +15,7 @@ import java.util.concurrent.TimeUnit;
 import com.anvisa.core.type.TypeArea;
 import com.anvisa.core.type.TypeSearchProductCosmetic;
 import com.anvisa.rest.Content;
+import com.anvisa.rest.ContentDetalheAlimento;
 import com.anvisa.rest.ContentProcesso;
 import com.anvisa.rest.QueryRecordParameter;
 import com.anvisa.rest.QueryRecordProcessParameter;
@@ -308,12 +309,23 @@ public class UrlToJson {
 
 				Iterator<JsonNode> elementsContents = rootNode.iterator();
 
-				while (elementsContents.hasNext()) {
-
-					JsonNode jsonNode = (JsonNode) elementsContents.next();
+				ContentDetalheAlimento contentDetalheAlimento = new ContentDetalheAlimento();
+				
+//				while (elementsContents.hasNext()) {
+			
+				if (elementsContents.hasNext()) {
+					//JsonNode jsonNode = (JsonNode) rootNode.iterator();
+					contentDetalheAlimento.setProcesso(JsonToObject.getValue(rootNode, "produto"));
+					//contentDetalheAlimento.setClassesTerapeuticas(JsonToObject.getValue(jsonNode, "classesTerapeuticas"));
+					contentDetalheAlimento.setCnpj(JsonToObject.getValue(rootNode, "cnpj"));
+					contentDetalheAlimento.setMarca(JsonToObject.getValue(rootNode, "marca"));
+					contentDetalheAlimento.setNomeComercial(JsonToObject.getValue(rootNode, "nomeComercial"));
+					contentDetalheAlimento.setRazaoSocial(JsonToObject.getValue(rootNode, "razaoSocial"));
+					contentDetalheAlimento.setRegistro(JsonToObject.getValue(rootNode, "registro"));
+				
 				}
 				
-				rootObject.setContent(null);
+				rootObject.setContentObject(contentDetalheAlimento);
 				
 			} catch (Exception e) { // TODO Auto-generated catch block
 				e.printStackTrace();

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 public class RootObject {
 	private ArrayList<Object> content = new ArrayList<Object>();
+	private Object contentObject;
 
 	public ArrayList<Object> getContent() {
 		return this.content;
@@ -12,6 +13,8 @@ public class RootObject {
 	public void setContent(ArrayList<Object> content) {
 		this.content = content;
 	}
+	
+
 
 	private int totalElements;
 
@@ -91,5 +94,13 @@ public class RootObject {
 
 	public void setNumber(int number) {
 		this.number = number;
+	}
+
+	public Object getContentObject() {
+		return contentObject;
+	}
+
+	public void setContentObject(Object contentObject) {
+		this.contentObject = contentObject;
 	}
 }
