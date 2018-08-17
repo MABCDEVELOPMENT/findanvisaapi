@@ -315,14 +315,22 @@ public class UrlToJson {
 			
 				if (elementsContents.hasNext()) {
 					//JsonNode jsonNode = (JsonNode) rootNode.iterator();
-					contentDetalheAlimento.setProcesso(JsonToObject.getValue(rootNode, "produto"));
-					//contentDetalheAlimento.setClassesTerapeuticas(JsonToObject.getValue(jsonNode, "classesTerapeuticas"));
+					
+					contentDetalheAlimento.setProcesso(JsonToObject.getValue(rootNode, "processo","numero"));
+					contentDetalheAlimento.setClassesTerapeuticas(JsonToObject.getArrayValue(rootNode, "classesTerapeuticas"));
 					contentDetalheAlimento.setCnpj(JsonToObject.getValue(rootNode, "cnpj"));
-					contentDetalheAlimento.setMarca(JsonToObject.getValue(rootNode, "marca"));
+					contentDetalheAlimento.setMarca(JsonToObject.getArrayValue(rootNode, "marcas"));
 					contentDetalheAlimento.setNomeComercial(JsonToObject.getValue(rootNode, "nomeComercial"));
 					contentDetalheAlimento.setRazaoSocial(JsonToObject.getValue(rootNode, "razaoSocial"));
-					contentDetalheAlimento.setRegistro(JsonToObject.getValue(rootNode, "registro"));
-				
+					contentDetalheAlimento.setRegistro(JsonToObject.getValue(rootNode, "numeroRegistro"));
+					contentDetalheAlimento.setMesAnoVencimento(JsonToObject.getValue(rootNode, "mesAnoVencimento"));
+					contentDetalheAlimento.setPrincipioAtivo(JsonToObject.getValue(rootNode, "principioAtivo"));
+					contentDetalheAlimento.setEmbalagemPrimaria(JsonToObject.getValue(rootNode, "embalagemPrimaria","tipo"));
+					contentDetalheAlimento.setViasAdministrativa(JsonToObject.getArrayValue(rootNode, "viasAdministracao"));
+					String ifaUnico = JsonToObject.getValue(rootNode, "ifaUnico");
+					contentDetalheAlimento.setIfaUnico(ifaUnico.equals("true")?"Sim":"Não");
+					contentDetalheAlimento.setConservacao(JsonToObject.getArrayValue(rootNode, "conservacao"));
+					
 				}
 				
 				rootObject.setContentObject(contentDetalheAlimento);

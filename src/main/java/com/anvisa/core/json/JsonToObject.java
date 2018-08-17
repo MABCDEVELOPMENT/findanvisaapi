@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.Locale;
 
 import com.anvisa.rest.model.Assunto;
@@ -14,6 +15,7 @@ import com.anvisa.rest.model.Processo;
 import com.anvisa.rest.model.Produto;
 import com.anvisa.rest.model.Tipo;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 
 public class JsonToObject {
 
@@ -287,6 +289,26 @@ public class JsonToObject {
 		}
 		return "";
 	}
+	
+	public static String getArrayValue(JsonNode node,String attribute) {
+		
+		ArrayNode element = (ArrayNode)node.findValue(attribute);
+		
+		if (element!=null) {
+				
+			StringBuffer sb = new StringBuffer();
+				
+				for (Iterator<JsonNode> it = element.iterator(); it.hasNext();) {
+					String str = (String)it.next().asText();
+					sb.append(str);
+				}
+			
+			
+			return sb.toString();
+		}
+		return "";
+	}
+	
 	
 	public static String getValue(JsonNode node,String content,String attribute) {
 		JsonNode element = node.findValue(content);
