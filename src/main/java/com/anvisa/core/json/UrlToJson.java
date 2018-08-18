@@ -15,12 +15,14 @@ import java.util.concurrent.TimeUnit;
 import com.anvisa.core.type.TypeArea;
 import com.anvisa.core.type.TypeSearchProductCosmetic;
 import com.anvisa.rest.Content;
-import com.anvisa.rest.ContentDetalheAlimento;
+
 import com.anvisa.rest.ContentProcesso;
 import com.anvisa.rest.QueryRecordParameter;
 import com.anvisa.rest.QueryRecordProcessParameter;
 import com.anvisa.rest.RootObject;
 import com.anvisa.rest.RootObjectProduto;
+import com.anvisa.rest.detalhe.alimento.ContentDetalheAlimento;
+import com.anvisa.rest.detalhe.comestico.registrado.ContentDetalheCosmeticoRegistrado;
 import com.anvisa.rest.model.Assunto;
 import com.anvisa.rest.model.ContentProduto;
 import com.anvisa.rest.model.ContentProdutoNotificado;
@@ -39,14 +41,16 @@ import okhttp3.Response;
 public class UrlToJson {
 
 	public static String URL_PROCESS = "https://consultas.anvisa.gov.br/api/documento/tecnico?count=1000&page=1";
-	
+
 	public static String URL_COSMETIC_REGISTER = "https://consultas.anvisa.gov.br/api/consulta/cosmeticos/registrados?count=1000&page=1";
+	public static String URL_COSMETIC_REGISTER_DETAIL = "https://consultas.anvisa.gov.br/api/consulta/cosmeticos/registrados/";
+	
 	public static String URL_COSMETIC_NOTIFY = "https://consultas.anvisa.gov.br/api/consulta/cosmeticos/notificados?count=1000&page=1";
 	public static String URL_COSMETIC_REGULARIZED = "https://consultas.anvisa.gov.br/api/consulta/cosmeticos/regularizados?count=1000&page=1";
-	
+
 	public static String URL_FOOD = "https://consultas.anvisa.gov.br/api/consulta/produtos/6?count=1000&page=1";
-	public static String URL_FOOD_DETAIL = "https://consultas.anvisa.gov.br/api/consulta/produtos/6";
-	
+	public static String URL_FOOD_DETAIL = "https://consultas.anvisa.gov.br/api/consulta/produtos/6/";
+
 	public static String URL_SANEANTE = "https://consultas.anvisa.gov.br/api/consulta/produtos/3?count=1000&page=1";
 	public static String URL_SANEANTE_NOTIFICADOS = "https://consultas.anvisa.gov.br/api/consulta/saneantes/notificados?count=1000&page=1";
 
@@ -59,12 +63,8 @@ public class UrlToJson {
 
 		RootObject rootObjectProcesso = new RootObject();
 
-		OkHttpClient client = new OkHttpClient.Builder()
-		        .connectTimeout(30, TimeUnit.SECONDS)
-		        .writeTimeout(30, TimeUnit.SECONDS)
-		        .readTimeout(30, TimeUnit.SECONDS)
-		        .build();
-		
+		OkHttpClient client = new OkHttpClient.Builder().connectTimeout(30, TimeUnit.SECONDS)
+				.writeTimeout(30, TimeUnit.SECONDS).readTimeout(30, TimeUnit.SECONDS).build();
 
 		Request request = new Request.Builder().url(validParameterProcess(URL_PROCESS, queryRecordParameter)).get()
 				.addHeader("authorization", "Guest").build();
@@ -83,36 +83,36 @@ public class UrlToJson {
 
 				JsonNode jsonNode = (JsonNode) elementsContents.next();
 
-				/*Content content = new Content();
-
-				content.setTipo(JsonToObject.getTipo(jsonNode));
-
-				content.setDataEntrada(JsonToObject.getDataEntrada(jsonNode));
-
-				content.setEmpresa(JsonToObject.getEmpresa(jsonNode));
-
-				content.setProcesso(JsonToObject.getProcesso(jsonNode));
-
-				content.setPeticao(JsonToObject.getPeticao(jsonNode));
-
-				content.setArea(JsonToObject.getArea(jsonNode));
-
-				content.setProduto(JsonToObject.getProduto(jsonNode));*/
+				/*
+				 * Content content = new Content();
+				 * 
+				 * content.setTipo(JsonToObject.getTipo(jsonNode));
+				 * 
+				 * content.setDataEntrada(JsonToObject.getDataEntrada(jsonNode));
+				 * 
+				 * content.setEmpresa(JsonToObject.getEmpresa(jsonNode));
+				 * 
+				 * content.setProcesso(JsonToObject.getProcesso(jsonNode));
+				 * 
+				 * content.setPeticao(JsonToObject.getPeticao(jsonNode));
+				 * 
+				 * content.setArea(JsonToObject.getArea(jsonNode));
+				 * 
+				 * content.setProduto(JsonToObject.getProduto(jsonNode));
+				 */
 
 				ContentProcesso contentProcesso = new ContentProcesso();
-				
+
 				contentProcesso.setOrdem(i);
 				i++;
-				
+
 				Peticao peticao = JsonToObject.getPeticao(jsonNode);
 				contentProcesso.setAssunto(peticao.getAssunto().toString());
-				
-				
-				
+
 				contentProcesso.setRazaoSocial(JsonToObject.getValue(jsonNode, "empresa", "razaoSocial"));
-				
+
 				contentProcesso.setCnpj(JsonToObject.getValue(jsonNode, "empresa", "cnpj"));
-				
+
 				Processo processo = JsonToObject.getProcesso(jsonNode);
 				contentProcesso.setProcesso(processo.getNumero());
 
@@ -138,18 +138,15 @@ public class UrlToJson {
 
 		// queryRecordParameter.setCnpj("55323448000138");
 
-		url = new Request.Builder().url(validParameterProduct(queryRecordParameter.getCnpj(),
-				queryRecordParameter.getNumberProcess(), queryRecordParameter.getRegisterNumber(),
-				queryRecordParameter.getProductName(), queryRecordParameter.getCategory(),
-				queryRecordParameter.getOption(), queryRecordParameter.getBrand(),
-				queryRecordParameter.getAuthorizationNumber(),
-				queryRecordParameter.getExpedientProcess(),
-				queryRecordParameter.getGeneratedTransaction(),
-				queryRecordParameter.getExpeditionPetition(),
-				queryRecordParameter.getDateInitial(),
-				queryRecordParameter.getDateFinal(),
-				queryRecordParameter.getEanCode())).get()
-				.addHeader("authorization", "Guest").build();
+		url = new Request.Builder()
+				.url(validParameterProduct(queryRecordParameter.getCnpj(), queryRecordParameter.getNumberProcess(),
+						queryRecordParameter.getRegisterNumber(), queryRecordParameter.getProductName(),
+						queryRecordParameter.getCategory(), queryRecordParameter.getOption(),
+						queryRecordParameter.getBrand(), queryRecordParameter.getAuthorizationNumber(),
+						queryRecordParameter.getExpedientProcess(), queryRecordParameter.getGeneratedTransaction(),
+						queryRecordParameter.getExpeditionPetition(), queryRecordParameter.getDateInitial(),
+						queryRecordParameter.getDateFinal(), queryRecordParameter.getEanCode()))
+				.get().addHeader("authorization", "Guest").build();
 
 		try {
 
@@ -165,7 +162,7 @@ public class UrlToJson {
 
 				JsonNode jsonNode = (JsonNode) elementsContents.next();
 				if (queryRecordParameter.getCategory() == 0) {
-					
+
 					Content content = new Content();
 
 					content.setOrdem(JsonToObject.getOrdem(jsonNode));
@@ -177,14 +174,14 @@ public class UrlToJson {
 					content.setProduto(JsonToObject.getProduto(jsonNode));
 
 					ContentProduto contentProduto = new ContentProduto(content);
-					
-					//contentProduto.setSituacao(content.getProduto().getCategoria().getDescricao());
-					
+
+					// contentProduto.setSituacao(content.getProduto().getCategoria().getDescricao());
+
 					rootObject.getContent().add(contentProduto);
 
 				} else if (queryRecordParameter.getCategory() == 1 && queryRecordParameter.getOption() == 0) { // Saneantes
-																										// e Produtos
-																										// Registrados
+					// e Produtos
+					// Registrados
 					ContentProdutoRegistrado contentProdutoRegistrado = new ContentProdutoRegistrado();
 
 					Assunto assunto = JsonToObject.getAssunto(jsonNode);
@@ -216,7 +213,7 @@ public class UrlToJson {
 				} else if (queryRecordParameter.getCategory() == 1 && queryRecordParameter.getOption() == 2) { // Cosmeticos
 																												// e
 																												// Produtos
-																											// Regularizado
+																												// Regularizado
 					ContentProdutoRegularizado contentProdutoRegularizado = new ContentProdutoRegularizado();
 
 					contentProdutoRegularizado.setProduto(JsonToObject.getValue(jsonNode, "produto"));
@@ -244,7 +241,7 @@ public class UrlToJson {
 					content.setProduto(JsonToObject.getProduto(jsonNode));
 
 					ContentProduto contentProduto = new ContentProduto(content);
-					
+
 					rootObject.getContent().add(contentProduto);
 
 				} else if ((queryRecordParameter.getCategory() == 1 || queryRecordParameter.getCategory() == 2)
@@ -288,36 +285,39 @@ public class UrlToJson {
 	}
 
 	public static RootObject findDetail(Long categoria, Long opcao, String valor) {
-		
+
 		RootObject rootObject = new RootObject();
 
 		OkHttpClient client = new OkHttpClient();
 
 		Request url = null;
+
+		url = new Request.Builder().url(validParameterProductDetail(categoria, opcao, valor)).get().addHeader("authorization", "Guest")
+				.build();
 		
-		if (categoria == 0 && opcao == null) {
-			
-			    url = new Request.Builder().url(URL_FOOD_DETAIL+"/"+valor).get()
-						.addHeader("authorization", "Guest").build();;
-			try {
+		try {
+
+			Response response = client.newCall(url).execute();
+
+			ObjectMapper objectMapper = new ObjectMapper();
+
+			JsonNode rootNode = objectMapper.readTree(response.body().string());
+
+			Iterator<JsonNode> elementsContents = rootNode.iterator();
+
+			// while (elementsContents.hasNext()) {
+
+			if (elementsContents.hasNext()) {
 				
-				Response response = client.newCall(url).execute();
-
-				ObjectMapper objectMapper = new ObjectMapper();
-
-				JsonNode rootNode = objectMapper.readTree(response.body().string());
-
-				Iterator<JsonNode> elementsContents = rootNode.iterator();
-
-				ContentDetalheAlimento contentDetalheAlimento = new ContentDetalheAlimento();
+				// JsonNode jsonNode = (JsonNode) rootNode.iterator();
 				
-//				while (elementsContents.hasNext()) {
-			
-				if (elementsContents.hasNext()) {
-					//JsonNode jsonNode = (JsonNode) rootNode.iterator();
-					
-					contentDetalheAlimento.setProcesso(JsonToObject.getValue(rootNode, "processo","numero"));
-					contentDetalheAlimento.setClassesTerapeuticas(JsonToObject.getArrayValue(rootNode, "classesTerapeuticas"));
+				if (categoria == 0 && opcao == null) {
+
+					ContentDetalheAlimento contentDetalheAlimento = new ContentDetalheAlimento();
+
+					contentDetalheAlimento.setProcesso(JsonToObject.getValue(rootNode, "processo", "numero"));
+					contentDetalheAlimento
+							.setClassesTerapeuticas(JsonToObject.getArrayValue(rootNode, "classesTerapeuticas"));
 					contentDetalheAlimento.setCnpj(JsonToObject.getValue(rootNode, "cnpj"));
 					contentDetalheAlimento.setMarca(JsonToObject.getArrayValue(rootNode, "marcas"));
 					contentDetalheAlimento.setNomeComercial(JsonToObject.getValue(rootNode, "nomeComercial"));
@@ -325,26 +325,46 @@ public class UrlToJson {
 					contentDetalheAlimento.setRegistro(JsonToObject.getValue(rootNode, "numeroRegistro"));
 					contentDetalheAlimento.setMesAnoVencimento(JsonToObject.getValue(rootNode, "mesAnoVencimento"));
 					contentDetalheAlimento.setPrincipioAtivo(JsonToObject.getValue(rootNode, "principioAtivo"));
-					contentDetalheAlimento.setEmbalagemPrimaria(JsonToObject.getValue(rootNode, "embalagemPrimaria","tipo"));
-					contentDetalheAlimento.setViasAdministrativa(JsonToObject.getArrayValue(rootNode, "viasAdministracao"));
+					contentDetalheAlimento
+							.setEmbalagemPrimaria(JsonToObject.getValue(rootNode, "embalagemPrimaria", "tipo"));
+					contentDetalheAlimento
+							.setViasAdministrativa(JsonToObject.getArrayValue(rootNode, "viasAdministracao"));
 					String ifaUnico = JsonToObject.getValue(rootNode, "ifaUnico");
-					contentDetalheAlimento.setIfaUnico(ifaUnico.equals("true")?"Sim":"Não");
+					contentDetalheAlimento.setIfaUnico(ifaUnico.equals("true") ? "Sim" : "Não");
 					contentDetalheAlimento.setConservacao(JsonToObject.getArrayValue(rootNode, "conservacao"));
+
+					rootObject.setContentObject(contentDetalheAlimento);
+
+				} else if (categoria == 1 && opcao == 0) {
+					
+					ContentDetalheCosmeticoRegistrado contentDetalheCosmeticoRegistrado = new ContentDetalheCosmeticoRegistrado();
+					contentDetalheCosmeticoRegistrado.setRazaoSocial(JsonToObject.getValue(rootNode, "empresa", "razaoSocial"));
+					contentDetalheCosmeticoRegistrado.setCnpj(JsonToObject.getValue(rootNode, "empresa", "cnpj"));
+					contentDetalheCosmeticoRegistrado.setAutorizacao(JsonToObject.getValue(rootNode, "empresa", "autorizacao"));
+					contentDetalheCosmeticoRegistrado.setNomeProduto(JsonToObject.getValue(rootNode, "nomeProduto"));
+					contentDetalheCosmeticoRegistrado.setCategoria(JsonToObject.getValue(rootNode, "categoria"));
+					contentDetalheCosmeticoRegistrado.setProcesso(JsonToObject.getValue(rootNode, "processo"));
+					contentDetalheCosmeticoRegistrado.setVencimentoRegistro(JsonToObject.getValue(rootNode, "vencimento", "vencimento"));
+					contentDetalheCosmeticoRegistrado.setPublicacaoRgistro(JsonToObject.getValue(rootNode, "publicacao"));
+					contentDetalheCosmeticoRegistrado.setApresentacoes(rootNode,"apresentacoes");
+					contentDetalheCosmeticoRegistrado.setPeticoes(rootNode, "peticoes");
+					
+					rootObject.setContentObject(contentDetalheCosmeticoRegistrado);
 					
 				}
-				
-				rootObject.setContentObject(contentDetalheAlimento);
-				
-			} catch (Exception e) { // TODO Auto-generated catch block
-				e.printStackTrace();
+
 			}
-	
+
+		} catch (Exception e) { // TODO Auto-generated catch block
+			e.printStackTrace();
 		}
-		
-		return rootObject;
-		
-	}
+
 	
+
+		return rootObject;
+
+	}
+
 	public static String validParameterTypeSearchProduct(String url, TypeSearchProductCosmetic typeSearchProduct) {
 
 		if (typeSearchProduct != null) {
@@ -368,19 +388,19 @@ public class UrlToJson {
 		if (queryRecordParameter.getOfficehour() != null && !queryRecordParameter.getOfficehour().isEmpty()) {
 			url = url + "&filter[expediente]=" + queryRecordParameter.getOfficehour();
 		}
-		
+
 		if (queryRecordParameter.getTransaction() != null && !queryRecordParameter.getTransaction().isEmpty()) {
 			url = url + "&filter[transacao]=" + queryRecordParameter.getTransaction();
-		} 
-		
+		}
+
 		if (queryRecordParameter.getProcess() != null && !queryRecordParameter.getProcess().isEmpty()) {
 			url = url + "&filter[processo]=" + queryRecordParameter.getProcess();
 		}
-		
+
 		if (queryRecordParameter.getProtocol() != null && !queryRecordParameter.getProtocol().isEmpty()) {
 			url = url + "&filter[protocolo]=" + queryRecordParameter.getProtocol();
 		}
-		
+
 		if (queryRecordParameter.getKnowledge() != null && !queryRecordParameter.getKnowledge().isEmpty()) {
 			url = url + "&filter[conheicimento]=" + queryRecordParameter.getKnowledge();
 		}
@@ -389,7 +409,8 @@ public class UrlToJson {
 
 	public static String validParameterProduct(String cnpj, String numeroProcesso, String numeroRegistro,
 			String nomeProduto, Long categoria, Long opcao, String marca, String numeroAutorizacao,
-			String expedienteProcesso, String transacao, String expedientePeticao,String dataInicial,String dataFinal,String codigoEAN) {
+			String expedienteProcesso, String transacao, String expedientePeticao, String dataInicial, String dataFinal,
+			String codigoEAN) {
 
 		String url = "";
 
@@ -449,39 +470,81 @@ public class UrlToJson {
 		if (marca != null && !marca.isEmpty()) {
 			url = url + "&filter[marca]=" + marca.toUpperCase();
 		}
-		
-		
+
 		if (numeroAutorizacao != null && !numeroAutorizacao.isEmpty()) {
 			url = url + "&filter[numeroAutorizacao]=" + numeroAutorizacao.toUpperCase();
 		}
-		
+
 		if (expedienteProcesso != null && !expedienteProcesso.isEmpty()) {
 			expedienteProcesso = expedienteProcesso.replace(".", "");
 			url = url + "&filter[expedienteProcesso]=" + expedienteProcesso.toUpperCase();
 		}
-		
+
 		if (transacao != null && !transacao.isEmpty()) {
 			url = url + "&filter[transacao]=" + transacao.toUpperCase();
 		}
-		
+
 		if (expedientePeticao != null && !expedientePeticao.isEmpty()) {
 			url = url + "&filter[expedientePeticao]=" + expedientePeticao.toUpperCase();
 		}
-		
+
 		if (dataInicial != null && !dataInicial.isEmpty()) {
 			url = url + "&filter[dataInicial]=" + dataInicial;
 		}
-		
+
 		if (dataFinal != null && !dataFinal.isEmpty()) {
 			url = url + "&filter[dataFinal]=" + dataFinal;
 		}
-		
+
 		if (codigoEAN != null && !codigoEAN.isEmpty()) {
 			url = url + "&filter[codigoEAN]=" + codigoEAN;
 		}
-		
+
 		return url;
 	}
+	
+	public static String validParameterProductDetail(Long categoria, Long opcao, String valor) {
+
+		String url = "";
+
+		if (categoria == 0) {
+
+			url = URL_FOOD_DETAIL;
+
+		} else if (categoria == 1) { // Cosmeticos
+
+			if (opcao == 0) {
+
+				url = URL_COSMETIC_REGISTER_DETAIL;
+
+			} else if (opcao == 1) {
+
+				url = URL_COSMETIC_NOTIFY;
+
+			} else if (opcao == 2) {
+
+				url = URL_COSMETIC_REGULARIZED;
+			}
+
+		} else if (categoria == 2) { // Saneantes
+
+			if (opcao == 0) {
+
+				url = URL_SANEANTE;
+
+			} else if (opcao == 1) {
+
+				url = URL_SANEANTE_NOTIFICADOS;
+
+			}
+
+		}
+
+		
+
+		return url+valor;
+	}
+
 
 	public static void downloadFileFromURL(String urlString, File destination) {
 		try {

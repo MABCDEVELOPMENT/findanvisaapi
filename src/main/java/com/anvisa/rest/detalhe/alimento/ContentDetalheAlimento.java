@@ -1,4 +1,4 @@
-package com.anvisa.rest;
+package com.anvisa.rest.detalhe.alimento;
 
 public class ContentDetalheAlimento {
 	
