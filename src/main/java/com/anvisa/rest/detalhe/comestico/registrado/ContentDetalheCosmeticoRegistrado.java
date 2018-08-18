@@ -133,13 +133,13 @@ public class ContentDetalheCosmeticoRegistrado {
 					PeticaoCosmeticoRegistrado peticaoCosmeticoRegistrado = new PeticaoCosmeticoRegistrado();
 					
 					peticaoCosmeticoRegistrado.setExpediente(JsonToObject.getValue(nodeIt,"expediente"));
-					peticaoCosmeticoRegistrado.setPublicacao(JsonToObject.getValue(nodeIt,"publicacao"));
+					peticaoCosmeticoRegistrado.setPublicacao(JsonToObject.getValueDateToString(nodeIt,"publicacao"));
 					peticaoCosmeticoRegistrado.setTransacao(JsonToObject.getValue(nodeIt,"transacao"));
 					
 					String assunto = JsonToObject.getValue(nodeIt, "assunto", "codigo")+" "+JsonToObject.getValue(nodeIt, "assunto", "descricao");
 					peticaoCosmeticoRegistrado.setAssunto(assunto);
 					
-					String situacao = JsonToObject.getValue(nodeIt, "situacao", "situacao")+" "+JsonToObject.getValue(nodeIt, "situacao", "data");
+					String situacao = JsonToObject.getValue(nodeIt, "situacao", "situacao")+" "+JsonToObject.getValueDateToString(nodeIt, "situacao", "data");
 					peticaoCosmeticoRegistrado.setSituacao(situacao);
 					
 					peticoes.add(peticaoCosmeticoRegistrado);

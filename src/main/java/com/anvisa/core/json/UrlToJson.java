@@ -7,6 +7,7 @@ import java.net.URL;
 import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
@@ -22,6 +23,7 @@ import com.anvisa.rest.QueryRecordProcessParameter;
 import com.anvisa.rest.RootObject;
 import com.anvisa.rest.RootObjectProduto;
 import com.anvisa.rest.detalhe.alimento.ContentDetalheAlimento;
+import com.anvisa.rest.detalhe.comestico.notificado.ContentDetalheCosmeticoNotificado;
 import com.anvisa.rest.detalhe.comestico.registrado.ContentDetalheCosmeticoRegistrado;
 import com.anvisa.rest.model.Assunto;
 import com.anvisa.rest.model.ContentProduto;
@@ -44,8 +46,11 @@ public class UrlToJson {
 
 	public static String URL_COSMETIC_REGISTER = "https://consultas.anvisa.gov.br/api/consulta/cosmeticos/registrados?count=1000&page=1";
 	public static String URL_COSMETIC_REGISTER_DETAIL = "https://consultas.anvisa.gov.br/api/consulta/cosmeticos/registrados/";
+
 	
 	public static String URL_COSMETIC_NOTIFY = "https://consultas.anvisa.gov.br/api/consulta/cosmeticos/notificados?count=1000&page=1";
+	public static String URL_COSMETIC_NOTIFY_DETAIL = "https://consultas.anvisa.gov.br/api/consulta/cosmeticos/notificados/";
+	
 	public static String URL_COSMETIC_REGULARIZED = "https://consultas.anvisa.gov.br/api/consulta/cosmeticos/regularizados?count=1000&page=1";
 
 	public static String URL_FOOD = "https://consultas.anvisa.gov.br/api/consulta/produtos/6?count=1000&page=1";
@@ -83,24 +88,7 @@ public class UrlToJson {
 
 				JsonNode jsonNode = (JsonNode) elementsContents.next();
 
-				/*
-				 * Content content = new Content();
-				 * 
-				 * content.setTipo(JsonToObject.getTipo(jsonNode));
-				 * 
-				 * content.setDataEntrada(JsonToObject.getDataEntrada(jsonNode));
-				 * 
-				 * content.setEmpresa(JsonToObject.getEmpresa(jsonNode));
-				 * 
-				 * content.setProcesso(JsonToObject.getProcesso(jsonNode));
-				 * 
-				 * content.setPeticao(JsonToObject.getPeticao(jsonNode));
-				 * 
-				 * content.setArea(JsonToObject.getArea(jsonNode));
-				 * 
-				 * content.setProduto(JsonToObject.getProduto(jsonNode));
-				 */
-
+	
 				ContentProcesso contentProcesso = new ContentProcesso();
 
 				contentProcesso.setOrdem(i);
@@ -344,12 +332,33 @@ public class UrlToJson {
 					contentDetalheCosmeticoRegistrado.setNomeProduto(JsonToObject.getValue(rootNode, "nomeProduto"));
 					contentDetalheCosmeticoRegistrado.setCategoria(JsonToObject.getValue(rootNode, "categoria"));
 					contentDetalheCosmeticoRegistrado.setProcesso(JsonToObject.getValue(rootNode, "processo"));
-					contentDetalheCosmeticoRegistrado.setVencimentoRegistro(JsonToObject.getValue(rootNode, "vencimento", "vencimento"));
-					contentDetalheCosmeticoRegistrado.setPublicacaoRgistro(JsonToObject.getValue(rootNode, "publicacao"));
+					contentDetalheCosmeticoRegistrado.setVencimentoRegistro(JsonToObject.getValueDateToString(rootNode, "vencimento", "vencimento"));
+					contentDetalheCosmeticoRegistrado.setPublicacaoRgistro( JsonToObject.getValueDateToString(rootNode, "publicacao"));
 					contentDetalheCosmeticoRegistrado.setApresentacoes(rootNode,"apresentacoes");
 					contentDetalheCosmeticoRegistrado.setPeticoes(rootNode, "peticoes");
 					
 					rootObject.setContentObject(contentDetalheCosmeticoRegistrado);
+					
+				} else if (categoria == 1 && opcao == 0) {
+					
+					ContentDetalheCosmeticoNotificado contentDetalheCosmeticoNotificado = new ContentDetalheCosmeticoNotificado();
+					
+					String assunto = JsonToObject.getValue(rootNode, "assunto", "codigo")+" - "+JsonToObject.getValue(rootNode, "assunto", "descricao");
+					contentDetalheCosmeticoNotificado.setAssunto(JsonToObject.getValue(rootNode, "empresa", "razaoSocial"));
+					
+					String empresa = JsonToObject.getValue(rootNode, "empresa", "cnpj")+" - "+JsonToObject.getValue(rootNode, "empresa", "razaoSocial");
+					contentDetalheCosmeticoNotificado.setEmpresa(empresa);
+					
+					contentDetalheCosmeticoNotificado.setProduto(JsonToObject.getValue(rootNode, "produto"));
+
+					
+					contentDetalheCosmeticoNotificado.setProcesso(JsonToObject.getValue(rootNode, "processo"));
+					contentDetalheCosmeticoNotificado.setArea(JsonToObject.getValue(rootNode,  "area"));
+					contentDetalheCosmeticoNotificado.setSituacao( JsonToObject.getValue(rootNode,"situacao" ,"situacao"));
+					contentDetalheCosmeticoNotificado.setDataNotificacao(JsonToObject.getValueDateToString(rootNode,"situacao" ,"data"));
+					contentDetalheCosmeticoNotificado.setApresentacoes(rootNode,"apresentacoes");
+					
+					rootObject.setContentObject(contentDetalheCosmeticoNotificado);
 					
 				}
 
@@ -519,7 +528,7 @@ public class UrlToJson {
 
 			} else if (opcao == 1) {
 
-				url = URL_COSMETIC_NOTIFY;
+				url = URL_COSMETIC_NOTIFY_DETAIL;
 
 			} else if (opcao == 2) {
 

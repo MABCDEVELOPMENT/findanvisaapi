@@ -348,6 +348,39 @@ public class JsonToObject {
 		return null;
 	}
 	
+	public static String getValueDateToString(JsonNode node,String attribute) {
+		JsonNode element = node.findValue(attribute);
+		if (element!=null) {
+			try {
+				LocalDate date = LocalDate.parse(element.asText().substring(0, 10));
+				DateTimeFormatter formatter_2 = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+				String format_2=(date).format(formatter_2);
+				
+				return format_2;
+			} catch (Exception e) {
+				// TODO: handle exception
+			}
+		}
+		return "";
+	}
+	
+	public static String getValueDateToString(JsonNode node,String content,String attribute) {
+		JsonNode element = node.findValue(content);
+		if (element!=null) {
+			try {
+				LocalDate date = LocalDate.parse(element.get(attribute).asText().substring(0, 10));
+				
+				DateTimeFormatter formatter_2 = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+				String format_2=(date).format(formatter_2);
+				
+				return format_2;
+			} catch (Exception e) {
+				// TODO: handle exception
+			}
+		}
+		return "";
+	}
+	
 	
 
 }

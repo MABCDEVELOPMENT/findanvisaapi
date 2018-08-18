@@ -24,19 +24,19 @@ public class ApresentacaoCosmeticoRegistrado {
 		this.numero = numero;
 	}
 	public String getEmbalagemPrimaria() {
-		return embalagemPrimaria;
+		return embalagemPrimaria+" - Primária";
 	}
 	public void setEmbalagemPrimaria(String embalagemPrimaria) {
 		this.embalagemPrimaria = embalagemPrimaria;
 	}
 	public String getEmbalagemSecundaria() {
-		return embalagemSecundaria;
+		return embalagemSecundaria+" - Secundária";
 	}
 	public void setEmbalagemSecundaria(String embalagemSecundaria) {
 		this.embalagemSecundaria = embalagemSecundaria;
 	}
 	public String getTonalidade() {
-		return tonalidade;
+		return tonalidade.equals("")?"Não se aplica para essa categoria":tonalidade;
 	}
 	public void setTonalidade(String tonalidade) {
 		this.tonalidade = tonalidade;
