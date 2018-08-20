@@ -1,10 +1,11 @@
-package com.anvisa.rest.detalhe.comestico.notificado;
+package com.anvisa.rest.detalhe.saneante.notificado;
 
-public class ApresentacaoCosmeticoNotificado {
+public class ApresentacaoSaneanteNotificado {
 	
 	String apresentacao;
     String tonalidade;
     String eans;
+    String versao;
     boolean apenasExportacao;
     boolean rotuloAprovado;
     
@@ -38,7 +39,14 @@ public class ApresentacaoCosmeticoNotificado {
 	public void setRotuloAprovado(boolean rotuloAprovado) {
 		this.rotuloAprovado = rotuloAprovado;
 	}
+	public String getVersao() {
+		return versao;
+	}
+	public void setVersao(String versao) {
+		this.versao = versao;
+	}
 	
 	
 
 }
+

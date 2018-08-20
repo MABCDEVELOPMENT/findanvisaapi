@@ -25,6 +25,12 @@ import com.anvisa.rest.RootObjectProduto;
 import com.anvisa.rest.detalhe.alimento.ContentDetalheAlimento;
 import com.anvisa.rest.detalhe.comestico.notificado.ContentDetalheCosmeticoNotificado;
 import com.anvisa.rest.detalhe.comestico.registrado.ContentDetalheCosmeticoRegistrado;
+import com.anvisa.rest.detalhe.comestico.regularizado.CaracterizacaoVigente;
+import com.anvisa.rest.detalhe.comestico.regularizado.ContentDetalheCosmeticoRegularizado;
+import com.anvisa.rest.detalhe.comestico.regularizado.EmpresaDetentora;
+import com.anvisa.rest.detalhe.comestico.regularizado.LocalNacional;
+import com.anvisa.rest.detalhe.saneante.ContentDetalheSaneante;
+import com.anvisa.rest.detalhe.saneante.notificado.ContentDetalheSaneanteNotificado;
 import com.anvisa.rest.model.Assunto;
 import com.anvisa.rest.model.ContentProduto;
 import com.anvisa.rest.model.ContentProdutoNotificado;
@@ -52,13 +58,16 @@ public class UrlToJson {
 	public static String URL_COSMETIC_NOTIFY_DETAIL = "https://consultas.anvisa.gov.br/api/consulta/cosmeticos/notificados/";
 	
 	public static String URL_COSMETIC_REGULARIZED = "https://consultas.anvisa.gov.br/api/consulta/cosmeticos/regularizados?count=1000&page=1";
+	public static String URL_COSMETIC_REGULARIZED_DETAIL = "https://consultas.anvisa.gov.br/api/consulta/cosmeticos/regularizados/";
 
 	public static String URL_FOOD = "https://consultas.anvisa.gov.br/api/consulta/produtos/6?count=1000&page=1";
 	public static String URL_FOOD_DETAIL = "https://consultas.anvisa.gov.br/api/consulta/produtos/6/";
 
 	public static String URL_SANEANTE = "https://consultas.anvisa.gov.br/api/consulta/produtos/3?count=1000&page=1";
+	public static String URL_SANEANTE_DETAIL = "https://consultas.anvisa.gov.br/api/consulta/produtos/3/";
+	
 	public static String URL_SANEANTE_NOTIFICADOS = "https://consultas.anvisa.gov.br/api/consulta/saneantes/notificados?count=1000&page=1";
-
+	public static String URL_SANEANTE_NOTIFICADO_DETAIL = "https://consultas.anvisa.gov.br/api/consulta/saneantes/notificados/";
 	/*
 	 * public static void main(String[] args) { findFoodSaneate("55323448000138",
 	 * "AVEIA", TypeSearch.FOOD_PRODUCT); }
@@ -339,12 +348,12 @@ public class UrlToJson {
 					
 					rootObject.setContentObject(contentDetalheCosmeticoRegistrado);
 					
-				} else if (categoria == 1 && opcao == 0) {
+				} else if (categoria == 1 && opcao == 1) {
 					
 					ContentDetalheCosmeticoNotificado contentDetalheCosmeticoNotificado = new ContentDetalheCosmeticoNotificado();
 					
 					String assunto = JsonToObject.getValue(rootNode, "assunto", "codigo")+" - "+JsonToObject.getValue(rootNode, "assunto", "descricao");
-					contentDetalheCosmeticoNotificado.setAssunto(JsonToObject.getValue(rootNode, "empresa", "razaoSocial"));
+					contentDetalheCosmeticoNotificado.setAssunto(assunto);
 					
 					String empresa = JsonToObject.getValue(rootNode, "empresa", "cnpj")+" - "+JsonToObject.getValue(rootNode, "empresa", "razaoSocial");
 					contentDetalheCosmeticoNotificado.setEmpresa(empresa);
@@ -360,6 +369,91 @@ public class UrlToJson {
 					
 					rootObject.setContentObject(contentDetalheCosmeticoNotificado);
 					
+				} else if (categoria == 1 && opcao == 2) {
+					
+					
+					ContentDetalheCosmeticoRegularizado contentDetalheCosmeticoRegularizado = new ContentDetalheCosmeticoRegularizado();
+					
+					EmpresaDetentora empresaDetentora = new EmpresaDetentora();
+					
+					empresaDetentora.setCnpj(JsonToObject.getValue(rootNode,"empresaDetentora" ,"cnpj"));
+					empresaDetentora.setRazaoSocial(JsonToObject.getValue(rootNode,"empresaDetentora" ,"razaoSocial"));
+					empresaDetentora.setAutorizacao(JsonToObject.getValue(rootNode,"empresaDetentora" ,"autorizacao"));
+					
+					empresaDetentora.setUf(JsonToObject.getValue(rootNode,"empresaDetentora" ,"uf"));
+					empresaDetentora.setCidade(JsonToObject.getValue(rootNode,"empresaDetentora" ,"cidade"));
+					empresaDetentora.setCodigoMunicipio(JsonToObject.getValue(rootNode,"empresaDetentora" ,"codigoMunicipio"));
+					contentDetalheCosmeticoRegularizado.setEmpresaDetentora(empresaDetentora);
+					
+
+					
+					CaracterizacaoVigente caracterizacaoVigente = new CaracterizacaoVigente();
+					caracterizacaoVigente.setProcesso(JsonToObject.getValue(rootNode,"caracterizacaoVigente" ,"processo"));
+					caracterizacaoVigente.setGrupo(JsonToObject.getValue(rootNode,"caracterizacaoVigente" ,"grupo"));
+					caracterizacaoVigente.setProduto(JsonToObject.getValue(rootNode,"caracterizacaoVigente" ,"produto"));
+					caracterizacaoVigente.setFormaFisica(JsonToObject.getValue(rootNode,"caracterizacaoVigente" ,"formaFisica"));
+					
+					contentDetalheCosmeticoRegularizado.setCaracterizacaoVigente(caracterizacaoVigente);
+					
+					
+									
+					contentDetalheCosmeticoRegularizado.setDestinacoes(JsonToObject.getArrayValue(rootNode,"destinacoes"));
+					
+					contentDetalheCosmeticoRegularizado.setLocalNacional(rootNode,"locaisNacionais");
+					
+					contentDetalheCosmeticoRegularizado.setApresentacoes(rootNode,"apresentacoes");
+					
+					rootObject.setContentObject(contentDetalheCosmeticoRegularizado);
+
+					
+				} else if (categoria == 2 && opcao == 0) {
+					
+					ContentDetalheSaneante contentDetalheSaneante = new ContentDetalheSaneante();
+
+					contentDetalheSaneante.setProcesso(JsonToObject.getValue(rootNode, "processo", "numero"));
+					contentDetalheSaneante
+							.setClassesTerapeuticas(JsonToObject.getArrayValue(rootNode, "classesTerapeuticas"));
+					contentDetalheSaneante.setCnpj(JsonToObject.getValue(rootNode, "cnpj"));
+					contentDetalheSaneante.setMarca(JsonToObject.getArrayValue(rootNode, "marcas"));
+					contentDetalheSaneante.setNomeComercial(JsonToObject.getValue(rootNode, "nomeComercial"));
+					contentDetalheSaneante.setRazaoSocial(JsonToObject.getValue(rootNode, "razaoSocial"));
+					contentDetalheSaneante.setRegistro(JsonToObject.getValue(rootNode, "numeroRegistro"));
+					contentDetalheSaneante.setMesAnoVencimento(JsonToObject.getValue(rootNode, "mesAnoVencimento"));
+					contentDetalheSaneante.setPrincipioAtivo(JsonToObject.getValue(rootNode, "principioAtivo"));
+					contentDetalheSaneante
+							.setEmbalagemPrimaria(JsonToObject.getValue(rootNode, "embalagemPrimaria", "tipo"));
+					contentDetalheSaneante
+							.setViasAdministrativa(JsonToObject.getArrayValue(rootNode, "viasAdministracao"));
+					String ifaUnico = JsonToObject.getValue(rootNode, "ifaUnico");
+					contentDetalheSaneante.setIfaUnico(ifaUnico.equals("true") ? "Sim" : "Não");
+					contentDetalheSaneante.setConservacao(JsonToObject.getArrayValue(rootNode, "conservacao"));
+
+					rootObject.setContentObject(contentDetalheSaneante);
+				
+				} else if (categoria == 2 && opcao == 1) {
+					
+					ContentDetalheSaneanteNotificado contentDetalheSaneanteNotificado = new ContentDetalheSaneanteNotificado();
+					
+					String assunto = JsonToObject.getValue(rootNode, "assunto", "codigo")+" - "+JsonToObject.getValue(rootNode, "assunto", "descricao");
+					contentDetalheSaneanteNotificado.setAssunto(assunto);
+					
+					String empresa = JsonToObject.getValue(rootNode, "empresa", "cnpj")+" - "+JsonToObject.getValue(rootNode, "empresa", "razaoSocial");
+					contentDetalheSaneanteNotificado.setEmpresa(empresa);
+					
+					contentDetalheSaneanteNotificado.setProduto(JsonToObject.getValue(rootNode, "produto"));
+
+					
+					contentDetalheSaneanteNotificado.setProcesso(JsonToObject.getValue(rootNode, "processo"));
+					contentDetalheSaneanteNotificado.setArea(JsonToObject.getValue(rootNode,  "area"));
+					contentDetalheSaneanteNotificado.setSituacao( JsonToObject.getValue(rootNode,"situacao" ,"situacao"));
+					contentDetalheSaneanteNotificado.setDataNotificacao(JsonToObject.getValueDateToString(rootNode,"situacao" ,"data"));
+					contentDetalheSaneanteNotificado.setApresentacoes(rootNode,"apresentacoes");
+					contentDetalheSaneanteNotificado.setPeticoes(rootNode, "peticoes");
+					
+					rootObject.setContentObject(contentDetalheSaneanteNotificado);
+
+					
+
 				}
 
 			}
@@ -532,18 +626,18 @@ public class UrlToJson {
 
 			} else if (opcao == 2) {
 
-				url = URL_COSMETIC_REGULARIZED;
+				url = URL_COSMETIC_REGULARIZED_DETAIL;
 			}
 
 		} else if (categoria == 2) { // Saneantes
 
 			if (opcao == 0) {
 
-				url = URL_SANEANTE;
+				url = URL_SANEANTE_DETAIL;
 
 			} else if (opcao == 1) {
 
-				url = URL_SANEANTE_NOTIFICADOS;
+				url = URL_SANEANTE_NOTIFICADO_DETAIL;
 
 			}
 
