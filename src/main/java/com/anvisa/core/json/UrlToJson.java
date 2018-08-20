@@ -49,6 +49,7 @@ import okhttp3.Response;
 public class UrlToJson {
 
 	public static String URL_PROCESS = "https://consultas.anvisa.gov.br/api/documento/tecnico?count=1000&page=1";
+	public static String URL_PROCESS_DETAIL = "https://consultas.anvisa.gov.br/api/documento/tecnico/";
 
 	public static String URL_COSMETIC_REGISTER = "https://consultas.anvisa.gov.br/api/consulta/cosmeticos/registrados?count=1000&page=1";
 	public static String URL_COSMETIC_REGISTER_DETAIL = "https://consultas.anvisa.gov.br/api/consulta/cosmeticos/registrados/";
@@ -281,6 +282,55 @@ public class UrlToJson {
 		return rootObject;
 	}
 
+	public static RootObject findProcessDetail(String valor) {
+
+		RootObject rootObject = new RootObject();
+
+		OkHttpClient client = new OkHttpClient();
+
+		Request url = null;
+
+		url = new Request.Builder().url(URL_PROCESS_DETAIL+valor).get().addHeader("authorization", "Guest")
+				.build();
+		
+		try {
+
+			Response response = client.newCall(url).execute();
+
+			ObjectMapper objectMapper = new ObjectMapper();
+
+			JsonNode rootNode = objectMapper.readTree(response.body().string());
+
+			Iterator<JsonNode> elementsContents = rootNode.iterator();
+
+			// while (elementsContents.hasNext()) {
+
+			if (elementsContents.hasNext()) {
+				
+				// JsonNode jsonNode = (JsonNode) rootNode.iterator();
+				
+
+
+					ContentDetalheAlimento contentDetalheAlimento = new ContentDetalheAlimento();
+
+					contentDetalheSaneanteNotificado.setPeticoes(rootNode, "peticoes");
+					
+					rootObject.setContentObject(contentDetalheSaneanteNotificado);
+
+					
+
+			}
+
+		} catch (Exception e) { // TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+	
+
+		return rootObject;
+
+	}
+	
 	public static RootObject findDetail(Long categoria, Long opcao, String valor) {
 
 		RootObject rootObject = new RootObject();
