@@ -48,10 +48,9 @@ public class UrlToJson {
 	public static String URL_COSMETIC_REGISTER = "https://consultas.anvisa.gov.br/api/consulta/cosmeticos/registrados?count=1000&page=1";
 	public static String URL_COSMETIC_REGISTER_DETAIL = "https://consultas.anvisa.gov.br/api/consulta/cosmeticos/registrados/";
 
-	
 	public static String URL_COSMETIC_NOTIFY = "https://consultas.anvisa.gov.br/api/consulta/cosmeticos/notificados?count=1000&page=1";
 	public static String URL_COSMETIC_NOTIFY_DETAIL = "https://consultas.anvisa.gov.br/api/consulta/cosmeticos/notificados/";
-	
+
 	public static String URL_COSMETIC_REGULARIZED = "https://consultas.anvisa.gov.br/api/consulta/cosmeticos/regularizados?count=1000&page=1";
 	public static String URL_COSMETIC_REGULARIZED_DETAIL = "https://consultas.anvisa.gov.br/api/consulta/cosmeticos/regularizados/";
 
@@ -60,7 +59,7 @@ public class UrlToJson {
 
 	public static String URL_SANEANTE = "https://consultas.anvisa.gov.br/api/consulta/produtos/3?count=1000&page=1";
 	public static String URL_SANEANTE_DETAIL = "https://consultas.anvisa.gov.br/api/consulta/produtos/3/";
-	
+
 	public static String URL_SANEANTE_NOTIFICADOS = "https://consultas.anvisa.gov.br/api/consulta/saneantes/notificados?count=1000&page=1";
 	public static String URL_SANEANTE_NOTIFICADO_DETAIL = "https://consultas.anvisa.gov.br/api/consulta/saneantes/notificados/";
 	/*
@@ -92,7 +91,6 @@ public class UrlToJson {
 
 				JsonNode jsonNode = (JsonNode) elementsContents.next();
 
-	
 				ContentProcesso contentProcesso = new ContentProcesso();
 
 				contentProcesso.setOrdem(i);
@@ -284,9 +282,8 @@ public class UrlToJson {
 
 		Request url = null;
 
-		url = new Request.Builder().url(URL_PROCESS_DETAIL+valor).get().addHeader("authorization", "Guest")
-				.build();
-		
+		url = new Request.Builder().url(URL_PROCESS_DETAIL + valor).get().addHeader("authorization", "Guest").build();
+
 		try {
 
 			Response response = client.newCall(url).execute();
@@ -300,17 +297,12 @@ public class UrlToJson {
 			// while (elementsContents.hasNext()) {
 
 			if (elementsContents.hasNext()) {
-				
-				// JsonNode jsonNode = (JsonNode) rootNode.iterator();
-				
 
+				ContentProcessoDetalhe contentProcessoDetalhe = new ContentProcessoDetalhe();
 
-					ContentProcessoDetalhe ContentProcessoDetalhe = new ContentProcessoDetalhe().build(rootNode);
+				contentProcessoDetalhe.build(rootNode);
 
-					
-					rootObject.setContentObject(ContentProcessoDetalhe);
-
-					
+				rootObject.setContentObject(contentProcessoDetalhe);
 
 			}
 
@@ -318,12 +310,10 @@ public class UrlToJson {
 			e.printStackTrace();
 		}
 
-	
-
 		return rootObject;
 
 	}
-	
+
 	public static RootObject findDetail(Long categoria, Long opcao, String valor) {
 
 		RootObject rootObject = new RootObject();
@@ -332,9 +322,9 @@ public class UrlToJson {
 
 		Request url = null;
 
-		url = new Request.Builder().url(validParameterProductDetail(categoria, opcao, valor)).get().addHeader("authorization", "Guest")
-				.build();
-		
+		url = new Request.Builder().url(validParameterProductDetail(categoria, opcao, valor)).get()
+				.addHeader("authorization", "Guest").build();
+
 		try {
 
 			Response response = client.newCall(url).execute();
@@ -348,9 +338,9 @@ public class UrlToJson {
 			// while (elementsContents.hasNext()) {
 
 			if (elementsContents.hasNext()) {
-				
+
 				// JsonNode jsonNode = (JsonNode) rootNode.iterator();
-				
+
 				if (categoria == 0 && opcao == null) {
 
 					ContentDetalheAlimento contentDetalheAlimento = new ContentDetalheAlimento();
@@ -376,81 +366,87 @@ public class UrlToJson {
 					rootObject.setContentObject(contentDetalheAlimento);
 
 				} else if (categoria == 1 && opcao == 0) {
-					
+
 					ContentDetalheCosmeticoRegistrado contentDetalheCosmeticoRegistrado = new ContentDetalheCosmeticoRegistrado();
-					contentDetalheCosmeticoRegistrado.setRazaoSocial(JsonToObject.getValue(rootNode, "empresa", "razaoSocial"));
+					contentDetalheCosmeticoRegistrado
+							.setRazaoSocial(JsonToObject.getValue(rootNode, "empresa", "razaoSocial"));
 					contentDetalheCosmeticoRegistrado.setCnpj(JsonToObject.getValue(rootNode, "empresa", "cnpj"));
-					contentDetalheCosmeticoRegistrado.setAutorizacao(JsonToObject.getValue(rootNode, "empresa", "autorizacao"));
+					contentDetalheCosmeticoRegistrado
+							.setAutorizacao(JsonToObject.getValue(rootNode, "empresa", "autorizacao"));
 					contentDetalheCosmeticoRegistrado.setNomeProduto(JsonToObject.getValue(rootNode, "nomeProduto"));
 					contentDetalheCosmeticoRegistrado.setCategoria(JsonToObject.getValue(rootNode, "categoria"));
 					contentDetalheCosmeticoRegistrado.setProcesso(JsonToObject.getValue(rootNode, "processo"));
-					contentDetalheCosmeticoRegistrado.setVencimentoRegistro(JsonToObject.getValueDateToString(rootNode, "vencimento", "vencimento"));
-					contentDetalheCosmeticoRegistrado.setPublicacaoRgistro( JsonToObject.getValueDateToString(rootNode, "publicacao"));
-					contentDetalheCosmeticoRegistrado.setApresentacoes(rootNode,"apresentacoes");
+					contentDetalheCosmeticoRegistrado.setVencimentoRegistro(
+							JsonToObject.getValueDateToString(rootNode, "vencimento", "vencimento"));
+					contentDetalheCosmeticoRegistrado
+							.setPublicacaoRgistro(JsonToObject.getValueDateToString(rootNode, "publicacao"));
+					contentDetalheCosmeticoRegistrado.setApresentacoes(rootNode, "apresentacoes");
 					contentDetalheCosmeticoRegistrado.setPeticoes(rootNode, "peticoes");
-					
+
 					rootObject.setContentObject(contentDetalheCosmeticoRegistrado);
-					
+
 				} else if (categoria == 1 && opcao == 1) {
-					
+
 					ContentDetalheCosmeticoNotificado contentDetalheCosmeticoNotificado = new ContentDetalheCosmeticoNotificado();
-					
-					String assunto = JsonToObject.getValue(rootNode, "assunto", "codigo")+" - "+JsonToObject.getValue(rootNode, "assunto", "descricao");
+
+					String assunto = JsonToObject.getValue(rootNode, "assunto", "codigo") + " - "
+							+ JsonToObject.getValue(rootNode, "assunto", "descricao");
 					contentDetalheCosmeticoNotificado.setAssunto(assunto);
-					
-					String empresa = JsonToObject.getValue(rootNode, "empresa", "cnpj")+" - "+JsonToObject.getValue(rootNode, "empresa", "razaoSocial");
+
+					String empresa = JsonToObject.getValue(rootNode, "empresa", "cnpj") + " - "
+							+ JsonToObject.getValue(rootNode, "empresa", "razaoSocial");
 					contentDetalheCosmeticoNotificado.setEmpresa(empresa);
-					
+
 					contentDetalheCosmeticoNotificado.setProduto(JsonToObject.getValue(rootNode, "produto"));
 
-					
 					contentDetalheCosmeticoNotificado.setProcesso(JsonToObject.getValue(rootNode, "processo"));
-					contentDetalheCosmeticoNotificado.setArea(JsonToObject.getValue(rootNode,  "area"));
-					contentDetalheCosmeticoNotificado.setSituacao( JsonToObject.getValue(rootNode,"situacao" ,"situacao"));
-					contentDetalheCosmeticoNotificado.setDataNotificacao(JsonToObject.getValueDateToString(rootNode,"situacao" ,"data"));
-					contentDetalheCosmeticoNotificado.setApresentacoes(rootNode,"apresentacoes");
-					
-					rootObject.setContentObject(contentDetalheCosmeticoNotificado);
-					
-				} else if (categoria == 1 && opcao == 2) {
-					
-					
-					ContentDetalheCosmeticoRegularizado contentDetalheCosmeticoRegularizado = new ContentDetalheCosmeticoRegularizado();
-					
-					EmpresaDetentora empresaDetentora = new EmpresaDetentora();
-					
-					empresaDetentora.setCnpj(JsonToObject.getValue(rootNode,"empresaDetentora" ,"cnpj"));
-					empresaDetentora.setRazaoSocial(JsonToObject.getValue(rootNode,"empresaDetentora" ,"razaoSocial"));
-					empresaDetentora.setAutorizacao(JsonToObject.getValue(rootNode,"empresaDetentora" ,"autorizacao"));
-					
-					empresaDetentora.setUf(JsonToObject.getValue(rootNode,"empresaDetentora" ,"uf"));
-					empresaDetentora.setCidade(JsonToObject.getValue(rootNode,"empresaDetentora" ,"cidade"));
-					empresaDetentora.setCodigoMunicipio(JsonToObject.getValue(rootNode,"empresaDetentora" ,"codigoMunicipio"));
-					contentDetalheCosmeticoRegularizado.setEmpresaDetentora(empresaDetentora);
-					
+					contentDetalheCosmeticoNotificado.setArea(JsonToObject.getValue(rootNode, "area"));
+					contentDetalheCosmeticoNotificado
+							.setSituacao(JsonToObject.getValue(rootNode, "situacao", "situacao"));
+					contentDetalheCosmeticoNotificado
+							.setDataNotificacao(JsonToObject.getValueDateToString(rootNode, "situacao", "data"));
+					contentDetalheCosmeticoNotificado.setApresentacoes(rootNode, "apresentacoes");
 
-					
+					rootObject.setContentObject(contentDetalheCosmeticoNotificado);
+
+				} else if (categoria == 1 && opcao == 2) {
+
+					ContentDetalheCosmeticoRegularizado contentDetalheCosmeticoRegularizado = new ContentDetalheCosmeticoRegularizado();
+
+					EmpresaDetentora empresaDetentora = new EmpresaDetentora();
+
+					empresaDetentora.setCnpj(JsonToObject.getValue(rootNode, "empresaDetentora", "cnpj"));
+					empresaDetentora.setRazaoSocial(JsonToObject.getValue(rootNode, "empresaDetentora", "razaoSocial"));
+					empresaDetentora.setAutorizacao(JsonToObject.getValue(rootNode, "empresaDetentora", "autorizacao"));
+
+					empresaDetentora.setUf(JsonToObject.getValue(rootNode, "empresaDetentora", "uf"));
+					empresaDetentora.setCidade(JsonToObject.getValue(rootNode, "empresaDetentora", "cidade"));
+					empresaDetentora
+							.setCodigoMunicipio(JsonToObject.getValue(rootNode, "empresaDetentora", "codigoMunicipio"));
+					contentDetalheCosmeticoRegularizado.setEmpresaDetentora(empresaDetentora);
+
 					CaracterizacaoVigente caracterizacaoVigente = new CaracterizacaoVigente();
-					caracterizacaoVigente.setProcesso(JsonToObject.getValue(rootNode,"caracterizacaoVigente" ,"processo"));
-					caracterizacaoVigente.setGrupo(JsonToObject.getValue(rootNode,"caracterizacaoVigente" ,"grupo"));
-					caracterizacaoVigente.setProduto(JsonToObject.getValue(rootNode,"caracterizacaoVigente" ,"produto"));
-					caracterizacaoVigente.setFormaFisica(JsonToObject.getValue(rootNode,"caracterizacaoVigente" ,"formaFisica"));
-					
+					caracterizacaoVigente
+							.setProcesso(JsonToObject.getValue(rootNode, "caracterizacaoVigente", "processo"));
+					caracterizacaoVigente.setGrupo(JsonToObject.getValue(rootNode, "caracterizacaoVigente", "grupo"));
+					caracterizacaoVigente
+							.setProduto(JsonToObject.getValue(rootNode, "caracterizacaoVigente", "produto"));
+					caracterizacaoVigente
+							.setFormaFisica(JsonToObject.getValue(rootNode, "caracterizacaoVigente", "formaFisica"));
+
 					contentDetalheCosmeticoRegularizado.setCaracterizacaoVigente(caracterizacaoVigente);
-					
-					
-									
-					contentDetalheCosmeticoRegularizado.setDestinacoes(JsonToObject.getArrayValue(rootNode,"destinacoes"));
-					
-					contentDetalheCosmeticoRegularizado.setLocalNacional(rootNode,"locaisNacionais");
-					
-					contentDetalheCosmeticoRegularizado.setApresentacoes(rootNode,"apresentacoes");
-					
+
+					contentDetalheCosmeticoRegularizado
+							.setDestinacoes(JsonToObject.getArrayValue(rootNode, "destinacoes"));
+
+					contentDetalheCosmeticoRegularizado.setLocalNacional(rootNode, "locaisNacionais");
+
+					contentDetalheCosmeticoRegularizado.setApresentacoes(rootNode, "apresentacoes");
+
 					rootObject.setContentObject(contentDetalheCosmeticoRegularizado);
 
-					
 				} else if (categoria == 2 && opcao == 0) {
-					
+
 					ContentDetalheSaneante contentDetalheSaneante = new ContentDetalheSaneante();
 
 					contentDetalheSaneante.setProcesso(JsonToObject.getValue(rootNode, "processo", "numero"));
@@ -472,30 +468,31 @@ public class UrlToJson {
 					contentDetalheSaneante.setConservacao(JsonToObject.getArrayValue(rootNode, "conservacao"));
 
 					rootObject.setContentObject(contentDetalheSaneante);
-				
+
 				} else if (categoria == 2 && opcao == 1) {
-					
+
 					ContentDetalheSaneanteNotificado contentDetalheSaneanteNotificado = new ContentDetalheSaneanteNotificado();
-					
-					String assunto = JsonToObject.getValue(rootNode, "assunto", "codigo")+" - "+JsonToObject.getValue(rootNode, "assunto", "descricao");
+
+					String assunto = JsonToObject.getValue(rootNode, "assunto", "codigo") + " - "
+							+ JsonToObject.getValue(rootNode, "assunto", "descricao");
 					contentDetalheSaneanteNotificado.setAssunto(assunto);
-					
-					String empresa = JsonToObject.getValue(rootNode, "empresa", "cnpj")+" - "+JsonToObject.getValue(rootNode, "empresa", "razaoSocial");
+
+					String empresa = JsonToObject.getValue(rootNode, "empresa", "cnpj") + " - "
+							+ JsonToObject.getValue(rootNode, "empresa", "razaoSocial");
 					contentDetalheSaneanteNotificado.setEmpresa(empresa);
-					
+
 					contentDetalheSaneanteNotificado.setProduto(JsonToObject.getValue(rootNode, "produto"));
 
-					
 					contentDetalheSaneanteNotificado.setProcesso(JsonToObject.getValue(rootNode, "processo"));
-					contentDetalheSaneanteNotificado.setArea(JsonToObject.getValue(rootNode,  "area"));
-					contentDetalheSaneanteNotificado.setSituacao( JsonToObject.getValue(rootNode,"situacao" ,"situacao"));
-					contentDetalheSaneanteNotificado.setDataNotificacao(JsonToObject.getValueDateToString(rootNode,"situacao" ,"data"));
-					contentDetalheSaneanteNotificado.setApresentacoes(rootNode,"apresentacoes");
+					contentDetalheSaneanteNotificado.setArea(JsonToObject.getValue(rootNode, "area"));
+					contentDetalheSaneanteNotificado
+							.setSituacao(JsonToObject.getValue(rootNode, "situacao", "situacao"));
+					contentDetalheSaneanteNotificado
+							.setDataNotificacao(JsonToObject.getValueDateToString(rootNode, "situacao", "data"));
+					contentDetalheSaneanteNotificado.setApresentacoes(rootNode, "apresentacoes");
 					contentDetalheSaneanteNotificado.setPeticoes(rootNode, "peticoes");
-					
-					rootObject.setContentObject(contentDetalheSaneanteNotificado);
 
-					
+					rootObject.setContentObject(contentDetalheSaneanteNotificado);
 
 				}
 
@@ -504,8 +501,6 @@ public class UrlToJson {
 		} catch (Exception e) { // TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-
-	
 
 		return rootObject;
 
@@ -648,7 +643,7 @@ public class UrlToJson {
 
 		return url;
 	}
-	
+
 	public static String validParameterProductDetail(Long categoria, Long opcao, String valor) {
 
 		String url = "";
@@ -686,11 +681,8 @@ public class UrlToJson {
 
 		}
 
-		
-
-		return url+valor;
+		return url + valor;
 	}
-
 
 	public static void downloadFileFromURL(String urlString, File destination) {
 		try {

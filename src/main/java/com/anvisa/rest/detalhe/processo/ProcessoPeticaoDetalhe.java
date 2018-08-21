@@ -72,8 +72,10 @@ public class ProcessoPeticaoDetalhe {
     	
 		JsonNode element = (JsonNode) node.findValue(attribute);
 		ProcessoPeticaoDetalhe peticao = new ProcessoPeticaoDetalhe();
-
-		if (element != null) {
+		if (element == null) {
+			element = node;
+		}
+		if (node != null) {
 
 			peticao.setExpediente(JsonToObject.getValue(node, "expediente"));
 			peticao.setDataEntrada(JsonToObject.getValueDateToString(node, "dataEntrada"));
@@ -87,7 +89,7 @@ public class ProcessoPeticaoDetalhe {
 			ProcessoSituacaoDetalhe situacao = new ProcessoSituacaoDetalhe();
 			situacao.setDescricao(JsonToObject.getValue(node, "situacao","descricao"));
 			situacao.setData(JsonToObject.getValueDateToString(node, "situacao","data"));
-			situacao.setRotulo(JsonToObject.getValue(node, "situacao","descricao"));
+			situacao.setRotulo(JsonToObject.getValue(node, "situacao","rotulo"));
 			peticao.setSituacao(situacao);
 			
 			ProcessoAreaDetalhe area = new ProcessoAreaDetalhe();

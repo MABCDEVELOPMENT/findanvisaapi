@@ -9,8 +9,6 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 
 public class ContentProcessoDetalhe {
 	
-	ContentProcessoDetalhe detalhe;
-	
 	ProcessoEmpresaDetalhe empresa;
 	
 	ProcessoDetalhe processo;
@@ -101,17 +99,11 @@ public class ContentProcessoDetalhe {
 		
 	}
     
-    public ContentProcessoDetalhe build(JsonNode node) {
+    public void build(JsonNode node) {
     	
-    	if (processoDetalhe==null) {
-    		processoDetalhe = new ContentProcessoDetalhe();
-    	}
-
-        
     	this.setEmpresa(node,"empresa");
     	this.setProcesso(node, "processo");
     	this.setPeticoes(node,"peticoes");
-    	return this.processoDetalhe;
     	
     }
     
