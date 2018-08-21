@@ -7,28 +7,23 @@ import java.net.URL;
 import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
 import java.text.SimpleDateFormat;
-import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.concurrent.TimeUnit;
 
-import com.anvisa.core.type.TypeArea;
 import com.anvisa.core.type.TypeSearchProductCosmetic;
 import com.anvisa.rest.Content;
-
 import com.anvisa.rest.ContentProcesso;
 import com.anvisa.rest.QueryRecordParameter;
 import com.anvisa.rest.QueryRecordProcessParameter;
 import com.anvisa.rest.RootObject;
-import com.anvisa.rest.RootObjectProduto;
 import com.anvisa.rest.detalhe.alimento.ContentDetalheAlimento;
 import com.anvisa.rest.detalhe.comestico.notificado.ContentDetalheCosmeticoNotificado;
 import com.anvisa.rest.detalhe.comestico.registrado.ContentDetalheCosmeticoRegistrado;
 import com.anvisa.rest.detalhe.comestico.regularizado.CaracterizacaoVigente;
 import com.anvisa.rest.detalhe.comestico.regularizado.ContentDetalheCosmeticoRegularizado;
 import com.anvisa.rest.detalhe.comestico.regularizado.EmpresaDetentora;
-import com.anvisa.rest.detalhe.comestico.regularizado.LocalNacional;
+import com.anvisa.rest.detalhe.processo.ContentProcessoDetalhe;
 import com.anvisa.rest.detalhe.saneante.ContentDetalheSaneante;
 import com.anvisa.rest.detalhe.saneante.notificado.ContentDetalheSaneanteNotificado;
 import com.anvisa.rest.model.Assunto;
@@ -36,7 +31,6 @@ import com.anvisa.rest.model.ContentProduto;
 import com.anvisa.rest.model.ContentProdutoNotificado;
 import com.anvisa.rest.model.ContentProdutoRegistrado;
 import com.anvisa.rest.model.ContentProdutoRegularizado;
-import com.anvisa.rest.model.Empresa;
 import com.anvisa.rest.model.Peticao;
 import com.anvisa.rest.model.Processo;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -311,11 +305,10 @@ public class UrlToJson {
 				
 
 
-					ContentDetalheAlimento contentDetalheAlimento = new ContentDetalheAlimento();
+					ContentProcessoDetalhe ContentProcessoDetalhe = new ContentProcessoDetalhe().build(rootNode);
 
-					contentDetalheSaneanteNotificado.setPeticoes(rootNode, "peticoes");
 					
-					rootObject.setContentObject(contentDetalheSaneanteNotificado);
+					rootObject.setContentObject(ContentProcessoDetalhe);
 
 					
 

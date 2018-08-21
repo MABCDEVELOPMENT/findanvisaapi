@@ -41,6 +41,12 @@ public class FindAnvisaController {
 		RootObject rootObject = UrlToJson.findProcess(queryRecordProcessParameter);
 		return rootObject;
 	}
+	
+	@RequestMapping(value = "/processDetail", method = RequestMethod.POST, produces = "application/json")
+	public RootObject findProcess(@RequestBody QueryRecordDetail queryRecordDetail) {
+		RootObject rootObject = UrlToJson.findProcessDetail(queryRecordDetail.getValue());
+		return rootObject;
+	}
 
 
 	@ApiOperation(value = "View a list of produtcts", response = Iterable.class)

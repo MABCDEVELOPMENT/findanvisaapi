@@ -1,7 +1,11 @@
 package com.anvisa.rest.model;
 
 public class Processo {
-
+	
+	private String numeroProcessoFormatado;
+	private String situacao;
+	private String numero;
+	
 	public Processo(String numero, boolean ativo) {
 		super();
 		this.numero = numero;
@@ -15,7 +19,7 @@ public class Processo {
 		this.numeroProcessoFormatado = numeroProcessoFormatado;
 	}
 
-	private String situacao;
+
 
 	public String getSituacao() {
 		return situacao;
@@ -25,7 +29,7 @@ public class Processo {
 		this.situacao = situacao;
 	}
 
-	private String numero;
+
 
 	public String getNumero() {
 		return this.numero;
@@ -44,8 +48,6 @@ public class Processo {
 	public void setSituacao(boolean ativo) {
 		this.ativo = ativo;
 	}
-
-	private String numeroProcessoFormatado;
 
 	public String getNumeroProcessoFormatado() {
 		return this.numeroProcessoFormatado;
