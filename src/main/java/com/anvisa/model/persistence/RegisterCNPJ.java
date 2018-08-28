@@ -13,7 +13,7 @@ import com.fasterxml.jackson.annotation.JsonAlias;
 public class RegisterCNPJ extends AbstractBaseEntity  {
 
 
-	@Column(name = "cnpj", length = 14, nullable = false)
+	@Column(name = "cnpj", length = 14, unique = true, nullable = false)
 	@JsonAlias(value = "cnpj")
 	private String cnpj;
 
