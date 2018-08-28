@@ -13,7 +13,7 @@ import com.fasterxml.jackson.annotation.JsonAlias;
 public class RegisterCNPJ extends AbstractBaseEntity  {
 
 
-	@Column(name = "cnpj", length = 14, nullable = false)
+	@Column(name = "cnpj", length = 14, unique=true, nullable = false)
 	@JsonAlias(value = "cnpj")
 	private String cnpj;
 
@@ -28,15 +28,17 @@ public class RegisterCNPJ extends AbstractBaseEntity  {
 	
 	@Transient
 	private boolean sendNotification;
+	
+	@Transient
+	private boolean foot;
+	
+	@Transient
+	private boolean cosmetic;
+	
+	@Transient
+	private boolean saneante;
 
-	public boolean isSendNotification() {
-		return sendNotification;
-	}
-
-	public void setSendNotification(boolean sendNotification) {
-		this.sendNotification = sendNotification;
-	}
-
+	
 	public String getCnpj() {
 		return cnpj;
 	}
@@ -59,6 +61,38 @@ public class RegisterCNPJ extends AbstractBaseEntity  {
 
 	public void setCategory(int category) {
 		this.category = category;
+	}
+
+	public boolean isSendNotification() {
+		return sendNotification;
+	}
+
+	public void setSendNotification(boolean sendNotification) {
+		this.sendNotification = sendNotification;
+	}
+	
+	public boolean isFoot() {
+		return foot;
+	}
+
+	public void setFoot(boolean foot) {
+		this.foot = foot;
+	}
+
+	public boolean isCosmetic() {
+		return cosmetic;
+	}
+
+	public void setCosmetic(boolean cosmetic) {
+		this.cosmetic = cosmetic;
+	}
+
+	public boolean isSaneante() {
+		return saneante;
+	}
+
+	public void setSaneante(boolean saneante) {
+		this.saneante = saneante;
 	}
 
 

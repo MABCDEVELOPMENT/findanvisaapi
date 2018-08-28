@@ -25,6 +25,16 @@ public class UserRegisterCNPJ {
 	
 	@Column(name = "sendNotification")
 	private boolean sendNotification;
+	
+	@Column(name = "foot")
+	private boolean foot;
+	
+	@Column(name = "cosmetic")
+	private boolean cosmetic;
+	
+	@Column(name = "saneante")
+	private boolean saneante;
+	
 
 		
 	public Long getId() {
@@ -57,6 +67,30 @@ public class UserRegisterCNPJ {
 
 	public void setSendNotification(boolean sendNotification) {
 		this.sendNotification = sendNotification;
+	}
+
+	public boolean isFoot() {
+		return foot;
+	}
+
+	public void setFoot(boolean foot) {
+		this.foot = foot;
+	}
+
+	public boolean isCosmetic() {
+		return cosmetic;
+	}
+
+	public void setCosmetic(boolean cosmetic) {
+		this.cosmetic = cosmetic;
+	}
+
+	public boolean isSaneante() {
+		return saneante;
+	}
+
+	public void setSaneante(boolean saneante) {
+		this.saneante = saneante;
 	}
 
 

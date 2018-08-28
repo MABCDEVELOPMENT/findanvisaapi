@@ -115,6 +115,9 @@ public class RegisterCNPJController {
 			userRegisterCNPJ.setUser(user);
 			userRegisterCNPJ.setCnpj(registerCNPJ);
 			userRegisterCNPJ.setSendNotification(registerCNPJ.isSendNotification());
+			userRegisterCNPJ.setFoot(registerCNPJ.isFoot());
+			userRegisterCNPJ.setCosmetic(registerCNPJ.isCosmetic());
+			userRegisterCNPJ.setSaneante(registerCNPJ.isSaneante());
 			userRegisterCNPJRepository.save(userRegisterCNPJ);	
 		}
 
