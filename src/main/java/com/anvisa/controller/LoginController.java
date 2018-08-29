@@ -101,6 +101,9 @@ public class LoginController {
 					
 					if (userRegisterCNPJ!=null) {
 						registerCNPJ.setSendNotification(userRegisterCNPJ.isSendNotification());
+						registerCNPJ.setCosmetic(userRegisterCNPJ.isCosmetic());
+						registerCNPJ.setFoot(userRegisterCNPJ.isFoot());
+						registerCNPJ.setSaneante(userRegisterCNPJ.isSaneante());
 						registerCNPJsNew.add(registerCNPJ);
 					}
 				} catch(Exception e) {

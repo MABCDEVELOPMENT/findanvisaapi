@@ -23,17 +23,17 @@ public class UserRegisterCNPJ {
 	@ManyToOne
 	private RegisterCNPJ cnpj;
 	
-	@Column(name = "sendNotification")
-	private boolean sendNotification;
+	@Column(name = "sendNotification", nullable = false,   columnDefinition = "boolean default false")
+	private boolean sendNotification = false;
 	
-	@Column(name = "foot")
-	private boolean foot;
+	@Column(name = "foot", nullable = false,   columnDefinition = "boolean default false")
+	private boolean foot = false;
 	
-	@Column(name = "cosmetic")
-	private boolean cosmetic;
+	@Column(name = "cosmetic", nullable = false, columnDefinition = "boolean default false")
+	private boolean cosmetic = false;
 	
-	@Column(name = "saneante")
-	private boolean saneante;
+	@Column(name = "saneante", nullable = false, columnDefinition = "boolean default false")
+	private boolean saneante = false ;
 	
 
 		

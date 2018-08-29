@@ -32,6 +32,7 @@ public abstract class AbstractBaseEntity {
 
 	@JsonAlias(value = "insertUser")
 	@ManyToOne
+	@JoinColumn(name="InsertUserFK")
 	private User insertUser;
 	
 	@JsonFormat(pattern = "dd/MM/yyyy")
@@ -41,6 +42,7 @@ public abstract class AbstractBaseEntity {
 
 	@JsonAlias(value = "updateUser")
 	@ManyToOne
+	@JoinColumn(name="UpdateUserFK")
 	private User updateUser;
 	
 	@JsonFormat(pattern = "dd/MM/yyyy")
@@ -51,6 +53,7 @@ public abstract class AbstractBaseEntity {
 
 	@JsonAlias(value = "ownerUser")
 	@ManyToOne	
+	@JoinColumn(name="OwnerUserFK")
 	private User ownerUser;
 
 	public Long getId() {
