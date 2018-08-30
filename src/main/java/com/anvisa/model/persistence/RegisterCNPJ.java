@@ -95,5 +95,16 @@ public class RegisterCNPJ extends AbstractBaseEntity  {
 		this.saneante = saneante;
 	}
 
-
+	public void loadCategory() {
+		
+		if (this.category == 0) {
+			this.foot = true;
+		} else if (this.category == 1) {
+			this.cosmetic = true;
+		} else if (this.category == 2) {
+			this.saneante = true;
+		} else if (this.category == 3) {
+			this.foot = this.cosmetic = this.saneante = true;
+		}
+	}
 }

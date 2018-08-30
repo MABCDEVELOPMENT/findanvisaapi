@@ -78,12 +78,13 @@ public class RegisterCNPJController {
 		
 		for (RegisterCNPJ registerCNPJ : list) {
 			
-			for (Iterator<RegisterCNPJ> iterator = userList.iterator(); iterator.hasNext();) {
-				RegisterCNPJ userRegisterCNPJ = (RegisterCNPJ) iterator.next();
-				
-			}
+//			for (Iterator<RegisterCNPJ> iterator = userList.iterator(); iterator.hasNext();) {
+//				RegisterCNPJ userRegisterCNPJ = (RegisterCNPJ) iterator.next();
+//				
+//			}
 			
 			if (!userList.contains(registerCNPJ)) {
+				registerCNPJ.loadCategory();
 				returnList.add(registerCNPJ);
 			}
 		}
