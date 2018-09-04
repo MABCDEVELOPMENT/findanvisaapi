@@ -1,5 +1,7 @@
 package com.anvisa.rest.model;
 
+import java.time.LocalDate;
+
 import com.anvisa.rest.Content;
 
 public class ContentProduto {
@@ -13,6 +15,7 @@ public class ContentProduto {
 	String situacao;
 	String vencimento;
 	String statusVencimento;
+	LocalDate dataVencimento;
 	
 	public ContentProduto(Content content) {
 		// TODO Auto-generated constructor stub
@@ -25,6 +28,7 @@ public class ContentProduto {
 		this.setCnpj(content.getEmpresa().getCnpjFormatado());
 		this.setSituacao(content.getProcesso().getSituacao());
 		this.setVencimento(content.getProduto().getMesAnoVencimentoFormatado());
+		this.setDataVencimento(content.getProduto().getDataVencimentoRegistro());
 		
 		
 	}
@@ -83,6 +87,14 @@ public class ContentProduto {
 
 	public void setVencimento(String vencimento) {
 		this.vencimento = vencimento;
+	}
+
+	public LocalDate getDataVencimento() {
+		return dataVencimento;
+	}
+
+	public void setDataVencimento(LocalDate dataVencimento) {
+		this.dataVencimento = dataVencimento;
 	}
 
 	public int getCodigo() {
