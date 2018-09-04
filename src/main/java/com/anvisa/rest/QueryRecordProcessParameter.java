@@ -23,6 +23,11 @@ public class QueryRecordProcessParameter {
 		this.area = area;
 	}
 	public String getProcess() {
+		if (this.process!=null) {
+			this.process = this.process.replace(".", "");
+			this.process = this.process.replace("-", "");
+			this.process = this.process.replace("/", "");
+		}
 		return process;
 	}
 	public void setProcess(String process) {
