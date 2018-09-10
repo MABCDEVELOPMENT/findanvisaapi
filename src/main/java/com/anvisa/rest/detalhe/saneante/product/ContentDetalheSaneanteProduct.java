@@ -1,6 +1,8 @@
-package com.anvisa.rest.detalhe.saneante;
+package com.anvisa.rest.detalhe.saneante.product;
 
-public class ContentDetalheSaneante {
+import java.util.ArrayList;
+
+public class ContentDetalheSaneanteProduct {
 	
 	String razaoSocial;
 	String cnpj;
@@ -16,8 +18,7 @@ public class ContentDetalheSaneante {
 	String viasAdministrativa;
 	String ifaUnico;
 	String conservacao;
-	
-	
+	ArrayList<String> rotulos;
 	
 	public String getRazaoSocial() {
 		return razaoSocial;
@@ -60,6 +61,12 @@ public class ContentDetalheSaneante {
 	}
 	public void setMesAnoVencimento(String mesAnoVencimento) {
 		this.mesAnoVencimento = mesAnoVencimento;
+	}
+	public ArrayList<String> getRotulos() {
+		return rotulos;
+	}
+	public void setRotulos(ArrayList<String> rotulos) {
+		this.rotulos = rotulos;
 	}
 	public String getMarca() {
 		return marca;

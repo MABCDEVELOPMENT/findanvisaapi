@@ -24,8 +24,8 @@ import com.anvisa.rest.detalhe.comestico.regularizado.CaracterizacaoVigente;
 import com.anvisa.rest.detalhe.comestico.regularizado.ContentDetalheCosmeticoRegularizado;
 import com.anvisa.rest.detalhe.comestico.regularizado.EmpresaDetentora;
 import com.anvisa.rest.detalhe.processo.ContentProcessoDetalhe;
-import com.anvisa.rest.detalhe.saneante.ContentDetalheSaneante;
 import com.anvisa.rest.detalhe.saneante.notificado.ContentDetalheSaneanteNotificado;
+import com.anvisa.rest.detalhe.saneante.product.ContentDetalheSaneanteProduct;
 import com.anvisa.rest.model.Assunto;
 import com.anvisa.rest.model.ContentProduto;
 import com.anvisa.rest.model.ContentProdutoNotificado;
@@ -447,27 +447,27 @@ public class UrlToJson {
 
 				} else if (categoria == 2 && opcao == 0) {
 
-					ContentDetalheSaneante contentDetalheSaneante = new ContentDetalheSaneante();
+					ContentDetalheSaneanteProduct contentDetalheSaneanteProduct = new ContentDetalheSaneanteProduct();
 
-					contentDetalheSaneante.setProcesso(JsonToObject.getValue(rootNode, "processo", "numero"));
-					contentDetalheSaneante
+					contentDetalheSaneanteProduct.setProcesso(JsonToObject.getValue(rootNode, "processo", "numero"));
+					contentDetalheSaneanteProduct
 							.setClassesTerapeuticas(JsonToObject.getArrayValue(rootNode, "classesTerapeuticas"));
-					contentDetalheSaneante.setCnpj(JsonToObject.getValue(rootNode, "cnpj"));
-					contentDetalheSaneante.setMarca(JsonToObject.getArrayValue(rootNode, "marcas"));
-					contentDetalheSaneante.setNomeComercial(JsonToObject.getValue(rootNode, "nomeComercial"));
-					contentDetalheSaneante.setRazaoSocial(JsonToObject.getValue(rootNode, "razaoSocial"));
-					contentDetalheSaneante.setRegistro(JsonToObject.getValue(rootNode, "numeroRegistro"));
-					contentDetalheSaneante.setMesAnoVencimento(JsonToObject.getValue(rootNode, "mesAnoVencimento"));
-					contentDetalheSaneante.setPrincipioAtivo(JsonToObject.getValue(rootNode, "principioAtivo"));
-					contentDetalheSaneante
+					contentDetalheSaneanteProduct.setCnpj(JsonToObject.getValue(rootNode, "cnpj"));
+					contentDetalheSaneanteProduct.setMarca(JsonToObject.getArrayValue(rootNode, "marcas"));
+					contentDetalheSaneanteProduct.setNomeComercial(JsonToObject.getValue(rootNode, "nomeComercial"));
+					contentDetalheSaneanteProduct.setRazaoSocial(JsonToObject.getValue(rootNode, "razaoSocial"));
+					contentDetalheSaneanteProduct.setRegistro(JsonToObject.getValue(rootNode, "numeroRegistro"));
+					contentDetalheSaneanteProduct.setMesAnoVencimento(JsonToObject.getValue(rootNode, "mesAnoVencimento"));
+					contentDetalheSaneanteProduct.setPrincipioAtivo(JsonToObject.getValue(rootNode, "principioAtivo"));
+					contentDetalheSaneanteProduct
 							.setEmbalagemPrimaria(JsonToObject.getValue(rootNode, "embalagemPrimaria", "tipo"));
-					contentDetalheSaneante
+					contentDetalheSaneanteProduct
 							.setViasAdministrativa(JsonToObject.getArrayValue(rootNode, "viasAdministracao"));
 					String ifaUnico = JsonToObject.getValue(rootNode, "ifaUnico");
-					contentDetalheSaneante.setIfaUnico(ifaUnico.equals("true") ? "Sim" : "Não");
-					contentDetalheSaneante.setConservacao(JsonToObject.getArrayValue(rootNode, "conservacao"));
-
-					rootObject.setContentObject(contentDetalheSaneante);
+					contentDetalheSaneanteProduct.setIfaUnico(ifaUnico.equals("true") ? "Sim" : "Não");
+					contentDetalheSaneanteProduct.setConservacao(JsonToObject.getArrayValue(rootNode, "conservacao"));
+					contentDetalheSaneanteProduct.setRotulos(JsonToObject.getArrayStringValue(rootNode, "rotulos"));
+					rootObject.setContentObject(contentDetalheSaneanteProduct);
 
 				} else if (categoria == 2 && opcao == 1) {
 

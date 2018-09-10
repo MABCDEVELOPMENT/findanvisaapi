@@ -3,6 +3,7 @@ package com.anvisa.core.json;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.Locale;
@@ -308,6 +309,29 @@ public class JsonToObject {
 		}
 		return "";
 	}
+	
+public static ArrayList<String> getArrayStringValue(JsonNode node,String attribute) {
+		
+		ArrayNode element = (ArrayNode)node.findValue(attribute);
+		
+		ArrayList<String> arrayString = new ArrayList<String>();
+		
+		if (element!=null) {
+				
+			
+				
+				for (Iterator<JsonNode> it = element.iterator(); it.hasNext();) {
+					String str = (String)it.next().asText();
+					arrayString.add(str);
+				}
+			
+			
+
+		}
+		
+		return arrayString;
+		
+}
 	
 	
 	public static String getValue(JsonNode node,String content,String attribute) {
