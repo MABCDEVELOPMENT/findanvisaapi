@@ -1,5 +1,6 @@
 package com.anvisa.core.json;
 
+import java.awt.Image;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -7,11 +8,13 @@ import java.net.URL;
 import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.concurrent.TimeUnit;
 
 import com.anvisa.core.type.TypeSearchProductCosmetic;
+import com.anvisa.core.util.Download;
 import com.anvisa.rest.Content;
 import com.anvisa.rest.ContentProcesso;
 import com.anvisa.rest.QueryRecordParameter;
@@ -59,7 +62,7 @@ public class UrlToJson {
 
 	public static String URL_SANEANTE = "https://consultas.anvisa.gov.br/api/consulta/produtos/3?count=1000&page=1";
 	public static String URL_SANEANTE_DETAIL = "https://consultas.anvisa.gov.br/api/consulta/produtos/3/";
-
+	public static String URL_SANEANTE_LABEL  = "https://consultas.anvisa.gov.br/api/consulta/produtos/3/[processo]/rotulo/[rotulo]?Authorization=Guest";
 	public static String URL_SANEANTE_NOTIFICADOS = "https://consultas.anvisa.gov.br/api/consulta/saneantes/notificados?count=1000&page=1";
 	public static String URL_SANEANTE_NOTIFICADO_DETAIL = "https://consultas.anvisa.gov.br/api/consulta/saneantes/notificados/";
 	/*
@@ -467,6 +470,13 @@ public class UrlToJson {
 					contentDetalheSaneanteProduct.setIfaUnico(ifaUnico.equals("true") ? "Sim" : "Não");
 					contentDetalheSaneanteProduct.setConservacao(JsonToObject.getArrayValue(rootNode, "conservacao"));
 					contentDetalheSaneanteProduct.setRotulos(JsonToObject.getArrayStringValue(rootNode, "rotulos"));
+					
+					ArrayList<String> rotulos = contentDetalheSaneanteProduct.getRotulos();
+					
+					for (String string : rotulos) {
+						downloadLabel(contentDetalheSaneanteProduct.getProcesso(), string);
+					}
+					
 					rootObject.setContentObject(contentDetalheSaneanteProduct);
 
 				} else if (categoria == 2 && opcao == 1) {
@@ -504,6 +514,19 @@ public class UrlToJson {
 
 		return rootObject;
 
+	}
+	
+	public static void downloadLabel(String processo, String rotulo) {
+		
+		
+		String urlString = URL_SANEANTE_LABEL.replace("[processo]", processo);
+		urlString = urlString.replace("[rotulo]",rotulo);
+
+
+
+		    downloadFileFromURL(urlString, new File("/findimage/rotulo_"+rotulo+".jpg")); 
+		
+		
 	}
 
 	public static String validParameterTypeSearchProduct(String url, TypeSearchProductCosmetic typeSearchProduct) {
@@ -686,6 +709,11 @@ public class UrlToJson {
 
 	public static void downloadFileFromURL(String urlString, File destination) {
 		try {
+			
+			if (destination.exists()) {
+				return;
+			}
+			
 			URL website = new URL(urlString);
 			ReadableByteChannel rbc;
 			rbc = Channels.newChannel(website.openStream());
@@ -693,6 +721,9 @@ public class UrlToJson {
 			fos.getChannel().transferFrom(rbc, 0, Long.MAX_VALUE);
 			fos.close();
 			rbc.close();
+			
+			System.out.println("Arquivo baixado");
+			
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

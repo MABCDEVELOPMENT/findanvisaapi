@@ -1,9 +1,13 @@
 package com.anvisa.controller;
 
+import java.awt.Image;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.springframework.core.io.DefaultResourceLoader;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -76,6 +80,22 @@ public class FindAnvisaController {
 		
 		return rootObject;
 	}
+	
+	
+	private ResourceLoader resourceLoader = new DefaultResourceLoader();
+	
+	@ApiOperation(value = "View a label of produtc")
+	@ApiResponses(value = { @ApiResponse(code = 200, message = "Successfully retrieved list"),
+			@ApiResponse(code = 401, message = "You are not authorized to view the resource"),
+			@ApiResponse(code = 403, message = "Accessing the resource you were trying to reach is forbidden"),
+			@ApiResponse(code = 404, message = "The resource you were trying to reach is not found") })
+	@RequestMapping(value = "/productLabel/{id}",  produces = "image/jpg")
+	public Resource findProductLabel(@RequestBody String id) {
+		
+		return resourceLoader.getResource("/findimage/rotulo_" + id + ".jpg");
+
+	}
+	
 
 	@ApiOperation(value = "View a list of TypeArea", response = Iterable.class)
 	@ApiResponses(value = { @ApiResponse(code = 200, message = "Successfully retrieved list"),
