@@ -9,6 +9,9 @@ import org.springframework.boot.web.servlet.support.SpringBootServletInitializer
 import org.springframework.context.annotation.Bean;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
+import org.springframework.web.servlet.config.annotation.EnableWebMvc;
+import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
 import com.anvisa.interceptor.ScheduledTasks;
 import com.fasterxml.jackson.databind.util.ISO8601DateFormat;
@@ -18,7 +21,7 @@ import com.fasterxml.jackson.databind.util.ISO8601DateFormat;
 @EnableAutoConfiguration
 @EntityScan(basePackages = { "com.anvisa.model.persistence" })
 @EnableJpaRepositories("com.anvisa.repository")
-public class FindAnvisaApplication extends SpringBootServletInitializer {
+public class FindAnvisaApplication extends WebMvcConfigurerAdapter {
 
 	@Bean
 	public ScheduledTasks scheduledTasks() {
@@ -37,7 +40,12 @@ public class FindAnvisaApplication extends SpringBootServletInitializer {
 		};
 	}
 	
-
+	 @Override
+	    public void addResourceHandlers(ResourceHandlerRegistry registry) {
+	        registry
+	          .addResourceHandler("/findimage/**")
+	          .addResourceLocations("file:///./findimage/");
+	    }
 
 	public static void main(String[] args) {
 		

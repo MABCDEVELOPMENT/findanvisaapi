@@ -1,6 +1,5 @@
 package com.anvisa.core.json;
 
-import java.awt.Image;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -14,7 +13,6 @@ import java.util.Iterator;
 import java.util.concurrent.TimeUnit;
 
 import com.anvisa.core.type.TypeSearchProductCosmetic;
-import com.anvisa.core.util.Download;
 import com.anvisa.rest.Content;
 import com.anvisa.rest.ContentProcesso;
 import com.anvisa.rest.QueryRecordParameter;
@@ -522,9 +520,13 @@ public class UrlToJson {
 		String urlString = URL_SANEANTE_LABEL.replace("[processo]", processo);
 		urlString = urlString.replace("[rotulo]",rotulo);
 
-
-
-		    downloadFileFromURL(urlString, new File("/findimage/rotulo_"+rotulo+".jpg")); 
+			File dir = new File("/findimage/");
+			
+			if (!dir.exists()) {
+				dir.mkdirs();
+			}
+			File file = new File(dir.getAbsolutePath(),"rotulo_"+rotulo+".jpg");
+		    downloadFileFromURL(urlString, file); 
 		
 		
 	}
@@ -709,10 +711,6 @@ public class UrlToJson {
 
 	public static void downloadFileFromURL(String urlString, File destination) {
 		try {
-			
-			if (destination.exists()) {
-				return;
-			}
 			
 			URL website = new URL(urlString);
 			ReadableByteChannel rbc;

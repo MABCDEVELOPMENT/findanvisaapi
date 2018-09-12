@@ -1,14 +1,24 @@
 package com.anvisa.controller;
 
 import java.awt.Image;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.util.StreamUtils;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -89,11 +99,16 @@ public class FindAnvisaController {
 			@ApiResponse(code = 401, message = "You are not authorized to view the resource"),
 			@ApiResponse(code = 403, message = "Accessing the resource you were trying to reach is forbidden"),
 			@ApiResponse(code = 404, message = "The resource you were trying to reach is not found") })
-	@RequestMapping(value = "/productLabel/{id}",  produces = "image/jpg")
-	public Resource findProductLabel(@RequestBody String id) {
+	@RequestMapping(value = "/productLabel/{id}", method = RequestMethod.GET, produces = "image/jpg")
+	public ResponseEntity<byte[]> findProductLabel(@PathVariable String id) throws IOException {
 		
-		return resourceLoader.getResource("/findimage/rotulo_" + id + ".jpg");
+		    ClassPathResource imgFile = new ClassPathResource("images/rotulo_" + id + ".jpg");
+		    byte[] bytes = StreamUtils.copyToByteArray(imgFile.getInputStream());
 
+	        return ResponseEntity
+	                .ok()
+	                .contentType(MediaType.IMAGE_JPEG)
+	                .body(bytes);
 	}
 	
 
