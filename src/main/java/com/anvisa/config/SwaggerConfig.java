@@ -9,6 +9,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
+import com.anvisa.FindAnvisaApplication;
 import com.google.common.base.Predicates;
 
 import springfox.documentation.builders.PathSelectors;
@@ -22,7 +23,7 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 @SuppressWarnings("deprecation")
 @Configuration
 @EnableSwagger2
-public class SwaggerConfig extends WebMvcConfigurerAdapter {
+public class SwaggerConfig {
 	@Bean
 	public Docket api() {
 		return new Docket(DocumentationType.SWAGGER_12).select().apis(RequestHandlerSelectors.any())
@@ -35,12 +36,10 @@ public class SwaggerConfig extends WebMvcConfigurerAdapter {
 				new Contact("NEConsult", "www.neconsult.com.br", "suport@neconsult.com.br"), "License of API",
 				"API license URL", Collections.emptyList());
 	}
-	@Override
-	public void addResourceHandlers(ResourceHandlerRegistry registry) {
-		System.out.println(System.getProperty("user.dir")+"/findimage/");
-        registry
-          .addResourceHandler("/findimage/**")
-          .addResourceLocations(System.getProperty("user.dir")+"/findimage/").setCachePeriod(0);
-    }
+//	   @Override
+//	    public void addResourceHandlers(ResourceHandlerRegistry registry) {
+//	        registry.addResourceHandler("/findimage/**").addResourceLocations("file:" + FindAnvisaApplication.IMAGE_DIR);
+//	        super.addResourceHandlers(registry);
+//	    }
 	
 }

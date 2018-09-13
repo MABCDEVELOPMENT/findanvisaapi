@@ -1,6 +1,7 @@
 package com.anvisa;
 
-import java.util.Collections;
+import java.io.File;
+import java.io.IOException;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -14,14 +15,6 @@ import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 
 import com.anvisa.interceptor.ScheduledTasks;
 import com.fasterxml.jackson.databind.util.ISO8601DateFormat;
-import com.google.common.base.Predicates;
-
-import springfox.documentation.builders.PathSelectors;
-import springfox.documentation.builders.RequestHandlerSelectors;
-import springfox.documentation.service.ApiInfo;
-import springfox.documentation.service.Contact;
-import springfox.documentation.spi.DocumentationType;
-import springfox.documentation.spring.web.plugins.Docket;
 
 @SpringBootApplication
 //@EnableScheduling
@@ -30,19 +23,8 @@ import springfox.documentation.spring.web.plugins.Docket;
 @EnableJpaRepositories("com.anvisa.repository")
 public class FindAnvisaApplication extends SpringBootServletInitializer {
 	
-	@Bean
-	public Docket api() {
-		return new Docket(DocumentationType.SWAGGER_12).select().apis(RequestHandlerSelectors.any())
-				.paths(PathSelectors.any()).paths(Predicates.not(PathSelectors.regex("/error"))).build()
-				.apiInfo(apiInfo());
-	}
-
-	private ApiInfo apiInfo() {
-		return new ApiInfo("Api Rest NEConsult", "", "", "Terms of service",
-				new Contact("NEConsult", "www.neconsult.com.br", "suport@neconsult.com.br"), "License of API",
-				"API license URL", Collections.emptyList());
-	}
 	
+	public static String IMAGE_DIR;	
 
 	@Bean
 	public ScheduledTasks scheduledTasks() {
@@ -68,5 +50,12 @@ public class FindAnvisaApplication extends SpringBootServletInitializer {
 		
 
 		SpringApplication.run(FindAnvisaApplication.class, args);
+		try {
+			IMAGE_DIR = new File(".").getCanonicalPath() +System.getProperty("file.separator")+ "findimage"+System.getProperty("file.separator");
+			System.out.println(IMAGE_DIR);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 }

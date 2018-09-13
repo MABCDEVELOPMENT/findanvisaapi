@@ -12,6 +12,7 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.concurrent.TimeUnit;
 
+import com.anvisa.FindAnvisaApplication;
 import com.anvisa.core.type.TypeSearchProductCosmetic;
 import com.anvisa.rest.Content;
 import com.anvisa.rest.ContentProcesso;
@@ -513,18 +514,17 @@ public class UrlToJson {
 		String urlString = URL_SANEANTE_LABEL.replace("[processo]", processo);
 		urlString = urlString.replace("[rotulo]",rotulo);
 
-			File dir = new File(System.getProperty("user.dir")+"/findimage/");
-			System.out.println("Caminho "+System.getProperty("user.dir")+"/findimage/");
-			System.out.println(System.getProperty("user.dir")+"/findimage/");
+			File dir = new File("static");
+			System.out.println("Caminho "+FindAnvisaApplication.IMAGE_DIR);
 			
 			if (!dir.exists()) {
 				dir.mkdirs();
-				System.out.println("Diretorio não existe");
+				System.out.println("Diretorio criado");
 			} else {
 				System.out.println("Diretorio existe");
 			}
 			
-			File file = new File(System.getProperty("user.dir")+"/findimage/","rotulo_"+rotulo+".jpg");
+			File file = new File(FindAnvisaApplication.IMAGE_DIR,"rotulo_"+rotulo+".jpg");
 		    downloadFileFromURL(urlString, file); 
 		    System.out.println("Executou");
 		
