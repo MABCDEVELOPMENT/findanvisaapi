@@ -454,25 +454,18 @@ public class UrlToJson {
 					contentDetalheSaneanteProduct
 							.setClassesTerapeuticas(JsonToObject.getArrayValue(rootNode, "classesTerapeuticas"));
 					contentDetalheSaneanteProduct.setCnpj(JsonToObject.getValue(rootNode, "cnpj"));
-					contentDetalheSaneanteProduct.setMarca(JsonToObject.getArrayValue(rootNode, "marcas"));
+					contentDetalheSaneanteProduct.setNumeroAutorizacao(JsonToObject.getValue(rootNode, "numeroAutorizacao"));
 					contentDetalheSaneanteProduct.setNomeComercial(JsonToObject.getValue(rootNode, "nomeComercial"));
 					contentDetalheSaneanteProduct.setRazaoSocial(JsonToObject.getValue(rootNode, "razaoSocial"));
 					contentDetalheSaneanteProduct.setRegistro(JsonToObject.getValue(rootNode, "numeroRegistro"));
 					contentDetalheSaneanteProduct.setMesAnoVencimento(JsonToObject.getValue(rootNode, "mesAnoVencimento"));
-					contentDetalheSaneanteProduct.setPrincipioAtivo(JsonToObject.getValue(rootNode, "principioAtivo"));
-					contentDetalheSaneanteProduct
-							.setEmbalagemPrimaria(JsonToObject.getValue(rootNode, "embalagemPrimaria", "tipo"));
-					contentDetalheSaneanteProduct
-							.setViasAdministrativa(JsonToObject.getArrayValue(rootNode, "viasAdministracao"));
-					String ifaUnico = JsonToObject.getValue(rootNode, "ifaUnico");
-					contentDetalheSaneanteProduct.setIfaUnico(ifaUnico.equals("true") ? "Sim" : "Não");
-					contentDetalheSaneanteProduct.setConservacao(JsonToObject.getArrayValue(rootNode, "conservacao"));
+					contentDetalheSaneanteProduct.loadApresentaçoes(rootNode,"apresentacoes");
 					contentDetalheSaneanteProduct.setRotulos(JsonToObject.getArrayStringValue(rootNode, "rotulos"));
 					
 					ArrayList<String> rotulos = contentDetalheSaneanteProduct.getRotulos();
 					
-					for (String string : rotulos) {
-						downloadLabel(contentDetalheSaneanteProduct.getProcesso(), string);
+					for (String rotulo : rotulos) {
+						downloadLabel(contentDetalheSaneanteProduct.getProcesso(), rotulo);
 					}
 					
 					rootObject.setContentObject(contentDetalheSaneanteProduct);
@@ -520,14 +513,20 @@ public class UrlToJson {
 		String urlString = URL_SANEANTE_LABEL.replace("[processo]", processo);
 		urlString = urlString.replace("[rotulo]",rotulo);
 
-			File dir = new File("/findimage/");
+			File dir = new File(System.getProperty("user.dir")+"/findimage/");
+			System.out.println("Caminho "+System.getProperty("user.dir")+"/findimage/");
+			System.out.println(System.getProperty("user.dir")+"/findimage/");
 			
 			if (!dir.exists()) {
 				dir.mkdirs();
+				System.out.println("Diretorio não existe");
+			} else {
+				System.out.println("Diretorio existe");
 			}
-			File file = new File(dir.getAbsolutePath(),"rotulo_"+rotulo+".jpg");
+			
+			File file = new File(System.getProperty("user.dir")+"/findimage/","rotulo_"+rotulo+".jpg");
 		    downloadFileFromURL(urlString, file); 
-		
+		    System.out.println("Executou");
 		
 	}
 

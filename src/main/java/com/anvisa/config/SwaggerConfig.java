@@ -6,6 +6,7 @@ import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguratio
 import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration.WebMvcAutoConfigurationAdapter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
 import com.google.common.base.Predicates;
@@ -21,7 +22,7 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 @SuppressWarnings("deprecation")
 @Configuration
 @EnableSwagger2
-public class SwaggerConfig  {
+public class SwaggerConfig extends WebMvcConfigurerAdapter {
 	@Bean
 	public Docket api() {
 		return new Docket(DocumentationType.SWAGGER_12).select().apis(RequestHandlerSelectors.any())
@@ -34,6 +35,12 @@ public class SwaggerConfig  {
 				new Contact("NEConsult", "www.neconsult.com.br", "suport@neconsult.com.br"), "License of API",
 				"API license URL", Collections.emptyList());
 	}
-	
+	@Override
+	public void addResourceHandlers(ResourceHandlerRegistry registry) {
+		System.out.println(System.getProperty("user.dir")+"/findimage/");
+        registry
+          .addResourceHandler("/findimage/**")
+          .addResourceLocations(System.getProperty("user.dir")+"/findimage/").setCachePeriod(0);
+    }
 	
 }
