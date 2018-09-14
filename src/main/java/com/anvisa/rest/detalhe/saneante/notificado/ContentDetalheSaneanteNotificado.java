@@ -19,6 +19,7 @@ public class ContentDetalheSaneanteNotificado {
 	String dataNotificacao;
 	ArrayList<ApresentacaoSaneanteNotificado> apresentacoes;
 	ArrayList<PeticaoCosmeticoRegistrado> peticoes;
+	ArrayList<String> rotulos;
 
 	public String getAssunto() {
 		return assunto;
@@ -91,6 +92,14 @@ public class ContentDetalheSaneanteNotificado {
 	public void setPeticoes(ArrayList<PeticaoCosmeticoRegistrado> peticoes) {
 		this.peticoes = peticoes;
 	}
+	
+	public ArrayList<String> getRotulos() {
+		return rotulos;
+	}
+
+	public void setRotulos(ArrayList<String> rotulos) {
+		this.rotulos = rotulos;
+	}
 
 	public void setApresentacoes(JsonNode node, String attribute) {
 
@@ -155,5 +164,7 @@ public class ContentDetalheSaneanteNotificado {
 		this.setPeticoes(peticoes);
 
 	}
+
+
 
 }

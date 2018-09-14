@@ -63,7 +63,9 @@ public class FindAnvisaApplication extends SpringBootServletInitializer implemen
 
 	public static void main(String[] args) throws IOException {
 		
-		File dir = new File(System.getProperty("file.separator")+ "findimage"+System.getProperty("file.separator"));
+		File dir = new File(
+				System.getProperty("file.separator") + "home" + System.getProperty("file.separator") + "findinfo"
+						+ System.getProperty("file.separator") + "findimage" + System.getProperty("file.separator"));
 		if (!dir.exists()) {
 			dir.mkdir();
 		}

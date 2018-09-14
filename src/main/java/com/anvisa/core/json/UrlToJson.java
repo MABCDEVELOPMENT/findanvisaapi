@@ -64,6 +64,7 @@ public class UrlToJson {
 	public static String URL_SANEANTE_LABEL  = "https://consultas.anvisa.gov.br/api/consulta/produtos/3/[processo]/rotulo/[rotulo]?Authorization=Guest";
 	public static String URL_SANEANTE_NOTIFICADOS = "https://consultas.anvisa.gov.br/api/consulta/saneantes/notificados?count=1000&page=1";
 	public static String URL_SANEANTE_NOTIFICADO_DETAIL = "https://consultas.anvisa.gov.br/api/consulta/saneantes/notificados/";
+	public static String URL_SANEANTE_NOTIFICADO_LABEL  = "https://consultas.anvisa.gov.br/api/consulta/saneantes/notificados/[processo]?Authorization=Guest";
 	/*
 	 * public static void main(String[] args) { findFoodSaneate("55323448000138",
 	 * "AVEIA", TypeSearch.FOOD_PRODUCT); }
@@ -493,6 +494,13 @@ public class UrlToJson {
 							.setDataNotificacao(JsonToObject.getValueDateToString(rootNode, "situacao", "data"));
 					contentDetalheSaneanteNotificado.setApresentacoes(rootNode, "apresentacoes");
 					contentDetalheSaneanteNotificado.setPeticoes(rootNode, "peticoes");
+					contentDetalheSaneanteNotificado.setRotulos(JsonToObject.getArrayStringValue(rootNode, "rotulos"));
+					
+					ArrayList<String> rotulos = contentDetalheSaneanteNotificado.getRotulos();
+					
+					for (String rotulo : rotulos) {
+						downloadSaneanteNotificadoLabel(contentDetalheSaneanteNotificado.getProcesso());
+					}
 
 					rootObject.setContentObject(contentDetalheSaneanteNotificado);
 
@@ -537,6 +545,34 @@ public class UrlToJson {
 		
 	}
 
+public static void downloadSaneanteNotificadoLabel(String processo) {
+		
+		
+		String urlString = URL_SANEANTE_LABEL.replace("[processo]", processo);
+		
+
+			File dir = new File("/home/findinfo/findimage/" );
+			try {
+				System.out.println("Caminho "+dir.getCanonicalPath());
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+			if (!dir.exists()) {
+				dir.mkdirs();
+				System.out.println("Diretorio criado");
+			} else {
+				System.out.println("Diretorio existe");
+			}
+			
+			File file = new File(dir,"rotulo_"+processo+".jpg");
+			if (!file.exists()) {
+				downloadFileFromURL(urlString, file);	
+			}
+		    System.out.println("Executou");
+		
+	}
 	public static String validParameterTypeSearchProduct(String url, TypeSearchProductCosmetic typeSearchProduct) {
 
 		if (typeSearchProduct != null) {
