@@ -8,6 +8,7 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.Locale;
 
+import com.anvisa.rest.detalhe.saneante.notificado.Ean;
 import com.anvisa.rest.model.Assunto;
 import com.anvisa.rest.model.Categoria;
 import com.anvisa.rest.model.Empresa;
@@ -41,16 +42,13 @@ public class JsonToObject {
 
 		JsonNode element = node.findValue("dataEntrada");
 
-		if (element!=null) {
-			
-		 try {
-			 dataEntrada = LocalDate.parse(element.asText().substring(0, 10));
-		} catch (Exception e) {
-			// TODO: handle exception
-		}	
-			
-			
+		if (element != null) {
 
+			try {
+				dataEntrada = LocalDate.parse(element.asText().substring(0, 10));
+			} catch (Exception e) {
+				// TODO: handle exception
+			}
 
 		}
 
@@ -63,9 +61,10 @@ public class JsonToObject {
 
 		JsonNode element = node.findValue("empresa");
 
-		if (element!=null) {
+		if (element != null) {
 
-			empresa = new Empresa(element.get("cnpj").asText(), element.get("razaoSocial").asText(), null, element.get("cnpjFormatado").asText());
+			empresa = new Empresa(element.get("cnpj").asText(), element.get("razaoSocial").asText(), null,
+					element.get("cnpjFormatado").asText());
 
 		}
 
@@ -78,7 +77,7 @@ public class JsonToObject {
 
 		JsonNode element = node.findValue("processo");
 
-		if (element!=null) {
+		if (element != null) {
 
 			processo = new Processo(element.get("numero").asText(), element.get("ativo").asBoolean());
 
@@ -93,7 +92,7 @@ public class JsonToObject {
 
 		JsonNode element = node.findValue("processo");
 
-		if (element!=null) {
+		if (element != null) {
 			String situacao = element.get("situacao").asText();
 			if ("29".equals(situacao)) {
 				situacao = "Publicado Deferimento";
@@ -114,7 +113,7 @@ public class JsonToObject {
 
 		JsonNode element = node.findValue("peticao");
 
-		if (element!=null) {
+		if (element != null) {
 
 			JsonNode elementAssunto = node.findValue("assunto");
 
@@ -130,27 +129,26 @@ public class JsonToObject {
 	}
 
 	public static Assunto getAssunto(JsonNode node) {
-		
+
 		JsonNode element = node.findValue("assunto");
-		
+
 		Assunto assunto = null;
-		
-		if (element!=null) {
-			assunto = new Assunto(element.get("codigo").asText(),
-				element.get("descricao").asText());
-		}	
-		
+
+		if (element != null) {
+			assunto = new Assunto(element.get("codigo").asText(), element.get("descricao").asText());
+		}
+
 		return assunto;
-		
+
 	}
-	
+
 	public static String getArea(JsonNode node) {
 
 		String area = null;
 
 		JsonNode element = node.findValue("area");
 
-		if (element!=null) {
+		if (element != null) {
 
 			area = element.get("area").asText();
 
@@ -165,7 +163,7 @@ public class JsonToObject {
 
 		JsonNode element = node.findValue("ordem");
 
-		if (element!=null) {
+		if (element != null) {
 
 			ordem = element.asInt();
 
@@ -180,13 +178,14 @@ public class JsonToObject {
 
 		JsonNode element = node.findValue("produto");
 
-		//DateTimeFormatter formatterBR = DateTimeFormatter.ofPattern("dd/mm/yyyy").withLocale(locale);
-		DateTimeFormatter formatter = DateTimeFormatter.ofLocalizedDate(
-			        FormatStyle.MEDIUM).withLocale(Locale.getDefault());
+		// DateTimeFormatter formatterBR =
+		// DateTimeFormatter.ofPattern("dd/mm/yyyy").withLocale(locale);
+		DateTimeFormatter formatter = DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM)
+				.withLocale(Locale.getDefault());
 
 		LocalDate date;
-		
-		if (element!=null) {
+
+		if (element != null) {
 
 			produto = new Produto();
 
@@ -199,15 +198,14 @@ public class JsonToObject {
 			produto.setSituacaoRotulo(element.get("situacaoRotulo").asText());
 
 			try {
-				
+
 				if (!element.get("dataVencimento").isNull()) {
-	
+
 					LocalDate dataRegistro = LocalDate.parse(element.get("dataVencimento").asText().substring(0, 10));
 					produto.setDataVencimento(dataRegistro);
-					
+
 				}
-			
-				
+
 			} catch (Exception e) {
 				// TODO: handle exception
 				e.printStackTrace();
@@ -218,41 +216,42 @@ public class JsonToObject {
 			try {
 
 				if (!element.get("dataVencimentoRegistro").isNull()) {
-					
-					LocalDate dataVencimentoRegistro = LocalDate.parse(element.get("dataVencimentoRegistro").asText().substring(0,10));
+
+					LocalDate dataVencimentoRegistro = LocalDate
+							.parse(element.get("dataVencimentoRegistro").asText().substring(0, 10));
 					produto.setDataVencimentoRegistro(dataVencimentoRegistro);
 
-					/*DateTimeFormatter formatters = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-				    String text = dataVencimentoRegistro.format(formatters);
-				    LocalDate parsedDate = LocalDate.parse(text, formatters);*/
-					
-					
+					/*
+					 * DateTimeFormatter formatters = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+					 * String text = dataVencimentoRegistro.format(formatters); LocalDate parsedDate
+					 * = LocalDate.parse(text, formatters);
+					 */
+
 				}
-				
+
 			} catch (Exception e) {
 				// TODO: handle exception
 				e.printStackTrace();
-			}	
-				
+			}
+
 			produto.setPrincipioAtivo(element.get("principioAtivo").asText());
 			produto.setSituacaoApresentacao(element.get("situacaoApresentacao").asText());
-			
+
 			try {
-			
+
 				if (!element.get("dataRegistro").isNull()) {
-	
+
 					LocalDate dataRegistro = LocalDate.parse(element.get("dataRegistro").asText().substring(0, 10));
 					produto.setDataRegistro(dataRegistro);
-					produto.setAno(element.get("dataRegistro").asText().substring(0,4));
-					
+					produto.setAno(element.get("dataRegistro").asText().substring(0, 4));
+
 				}
-			
-				
+
 			} catch (Exception e) {
 				// TODO: handle exception
 				e.printStackTrace();
-			}	
-			
+			}
+
 			produto.setNumeroRegistroFormatado(element.get("numeroRegistroFormatado").asText());
 			produto.setMesAnoVencimentoFormatado(element.get("mesAnoVencimentoFormatado").asText());
 			produto.setAcancelar(element.get("acancelar").asBoolean());
@@ -262,15 +261,13 @@ public class JsonToObject {
 		return produto;
 	}
 
-	
-	
 	public static Categoria getCategoria(JsonNode node) {
 
 		Categoria categoria = null;
 
 		JsonNode element = node.findValue("categoria");
 
-		if (element!=null) {
+		if (element != null) {
 
 			categoria = new Categoria(element.get("codigo").asText(), element.get("descricao").asText());
 
@@ -278,10 +275,10 @@ public class JsonToObject {
 
 		return categoria;
 	}
-	
-	public static String getValue(JsonNode node,String attribute) {
+
+	public static String getValue(JsonNode node, String attribute) {
 		JsonNode element = node.findValue(attribute);
-		if (element!=null) {
+		if (element != null) {
 			String value = element.asText();
 			if ("null".equals(value)) {
 				value = "";
@@ -290,61 +287,75 @@ public class JsonToObject {
 		}
 		return "";
 	}
-	
-	public static String getArrayValue(JsonNode node,String attribute) {
-		
-		ArrayNode element = (ArrayNode)node.findValue(attribute);
-		
-		if (element!=null) {
-				
+
+	public static String getArrayValue(JsonNode node, String attribute) {
+
+		ArrayNode element = (ArrayNode) node.findValue(attribute);
+
+		if (element != null) {
+
 			StringBuffer sb = new StringBuffer();
-				
-				for (Iterator<JsonNode> it = element.iterator(); it.hasNext();) {
-					String str = (String)it.next().asText();
-					sb.append(str);
-				}
-			
-			
+
+			for (Iterator<JsonNode> it = element.iterator(); it.hasNext();) {
+				String str = (String) it.next().asText();
+				sb.append(str);
+			}
+
 			return sb.toString();
 		}
 		return "";
 	}
-	
-public static ArrayList<String> getArrayStringValue(JsonNode node,String attribute) {
-		
-		ArrayNode element = (ArrayNode)node.findValue(attribute);
-		
-		ArrayList<String> arrayString = new ArrayList<String>();
-		
-		if (element!=null) {
-				
-			
-				
-				for (Iterator<JsonNode> it = element.iterator(); it.hasNext();) {
-					String str = (String)it.next().asText();
-					arrayString.add(str);
-				}
-			
-			
+
+	public static ArrayList<Ean> getArrayEanValue(JsonNode node, String attribute) {
+
+		ArrayNode element = (ArrayNode) node.findValue(attribute);
+
+		ArrayList<Ean> sb = new ArrayList<Ean>();
+
+		if (element != null) {
+
+			for (Iterator<JsonNode> it = element.iterator(); it.hasNext();) {
+				JsonNode nodeIt = it.next();
+				Ean ean = new Ean();
+				ean.setCodigo(getValue(nodeIt, attribute));
+				sb.add(ean);
+			}
 
 		}
-		
+
+		return sb;
+	}
+
+	public static ArrayList<String> getArrayStringValue(JsonNode node, String attribute) {
+
+		ArrayNode element = (ArrayNode) node.findValue(attribute);
+
+		ArrayList<String> arrayString = new ArrayList<String>();
+
+		if (element != null) {
+
+			for (Iterator<JsonNode> it = element.iterator(); it.hasNext();) {
+				String str = (String) it.next().asText();
+				arrayString.add(str);
+			}
+
+		}
+
 		return arrayString;
-		
-}
-	
-	
-	public static String getValue(JsonNode node,String content,String attribute) {
+
+	}
+
+	public static String getValue(JsonNode node, String content, String attribute) {
 		JsonNode element = node.findValue(content);
-		if (element!=null) {
+		if (element != null) {
 			return element.get(attribute).asText();
 		}
 		return null;
 	}
 
-	public static LocalDate getValueDate(JsonNode node,String attribute) {
+	public static LocalDate getValueDate(JsonNode node, String attribute) {
 		JsonNode element = node.findValue(attribute);
-		if (element!=null) {
+		if (element != null) {
 			try {
 				LocalDate date = LocalDate.parse(element.asText().substring(0, 10));
 				return date;
@@ -354,15 +365,15 @@ public static ArrayList<String> getArrayStringValue(JsonNode node,String attribu
 		}
 		return null;
 	}
-	
-	public static LocalDate getValueDate(JsonNode node,String content,String attribute) {
+
+	public static LocalDate getValueDate(JsonNode node, String content, String attribute) {
 		JsonNode element = node.findValue(content);
-		if (element!=null) {
+		if (element != null) {
 			try {
 				LocalDate date = LocalDate.parse(element.get(attribute).asText().substring(0, 10));
-				
+
 				DateTimeFormatter formatter_2 = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-				String format_2=(date).format(formatter_2);
+				String format_2 = (date).format(formatter_2);
 				LocalDate dateReturn = LocalDate.parse(format_2);
 				return dateReturn;
 			} catch (Exception e) {
@@ -371,15 +382,15 @@ public static ArrayList<String> getArrayStringValue(JsonNode node,String attribu
 		}
 		return null;
 	}
-	
-	public static String getValueDateToString(JsonNode node,String attribute) {
+
+	public static String getValueDateToString(JsonNode node, String attribute) {
 		JsonNode element = node.findValue(attribute);
-		if (element!=null) {
+		if (element != null) {
 			try {
 				LocalDate date = LocalDate.parse(element.asText().substring(0, 10));
 				DateTimeFormatter formatter_2 = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-				String format_2=(date).format(formatter_2);
-				
+				String format_2 = (date).format(formatter_2);
+
 				return format_2;
 			} catch (Exception e) {
 				// TODO: handle exception
@@ -387,16 +398,16 @@ public static ArrayList<String> getArrayStringValue(JsonNode node,String attribu
 		}
 		return "";
 	}
-	
-	public static String getValueDateToString(JsonNode node,String content,String attribute) {
+
+	public static String getValueDateToString(JsonNode node, String content, String attribute) {
 		JsonNode element = node.findValue(content);
-		if (element!=null) {
+		if (element != null) {
 			try {
 				LocalDate date = LocalDate.parse(element.get(attribute).asText().substring(0, 10));
-				
+
 				DateTimeFormatter formatter_2 = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-				String format_2=(date).format(formatter_2);
-				
+				String format_2 = (date).format(formatter_2);
+
 				return format_2;
 			} catch (Exception e) {
 				// TODO: handle exception
@@ -404,7 +415,5 @@ public static ArrayList<String> getArrayStringValue(JsonNode node,String attribu
 		}
 		return "";
 	}
-	
-	
 
 }

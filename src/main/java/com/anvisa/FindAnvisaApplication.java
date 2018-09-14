@@ -12,6 +12,10 @@ import org.springframework.boot.web.servlet.support.SpringBootServletInitializer
 import org.springframework.context.annotation.Bean;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
+import org.springframework.web.servlet.config.annotation.EnableWebMvc;
+import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import org.springframework.web.servlet.resource.VersionResourceResolver;
 
 import com.anvisa.interceptor.ScheduledTasks;
 import com.fasterxml.jackson.databind.util.ISO8601DateFormat;
@@ -19,9 +23,10 @@ import com.fasterxml.jackson.databind.util.ISO8601DateFormat;
 @SpringBootApplication
 //@EnableScheduling
 @EnableAutoConfiguration
+@EnableWebMvc
 @EntityScan(basePackages = { "com.anvisa.model.persistence" })
 @EnableJpaRepositories("com.anvisa.repository")
-public class FindAnvisaApplication extends SpringBootServletInitializer {
+public class FindAnvisaApplication extends SpringBootServletInitializer implements WebMvcConfigurer {
 	
 	
 	public static String IMAGE_DIR;	
@@ -43,19 +48,29 @@ public class FindAnvisaApplication extends SpringBootServletInitializer {
 		};
 	}
 	
-	 
+	@Override
+	public void addResourceHandlers(ResourceHandlerRegistry registry) {
+		// TODO Auto-generated method stub
+		
+	        registry.addResourceHandler("/findimage/**")
+	                .addResourceLocations("file:///./home/findinfo/findimage/")
+	                .resourceChain(true)
+	                .addResolver(new VersionResourceResolver().addContentVersionStrategy("/**"));
+	        
+	    
+	} 
 	    
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws IOException {
 		
-
-		SpringApplication.run(FindAnvisaApplication.class, args);
-		try {
-			IMAGE_DIR = new File(".").getCanonicalPath() +System.getProperty("file.separator")+ "findimage"+System.getProperty("file.separator");
-			System.out.println(IMAGE_DIR);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		File dir = new File(System.getProperty("file.separator")+ "findimage"+System.getProperty("file.separator"));
+		if (!dir.exists()) {
+			dir.mkdir();
 		}
+		IMAGE_DIR = dir.getCanonicalPath();
+		SpringApplication.run(FindAnvisaApplication.class, args);
+		
+		System.out.println(IMAGE_DIR);
+		
 	}
 }

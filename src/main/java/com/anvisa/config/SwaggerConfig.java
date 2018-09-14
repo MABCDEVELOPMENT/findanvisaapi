@@ -1,12 +1,13 @@
 package com.anvisa.config;
 
+import java.io.File;
 import java.util.Collections;
 
-import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration;
-import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration.WebMvcAutoConfigurationAdapter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
 import com.anvisa.FindAnvisaApplication;
@@ -23,7 +24,7 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 @SuppressWarnings("deprecation")
 @Configuration
 @EnableSwagger2
-public class SwaggerConfig {
+public class SwaggerConfig  {
 	@Bean
 	public Docket api() {
 		return new Docket(DocumentationType.SWAGGER_12).select().apis(RequestHandlerSelectors.any())
@@ -36,10 +37,5 @@ public class SwaggerConfig {
 				new Contact("NEConsult", "www.neconsult.com.br", "suport@neconsult.com.br"), "License of API",
 				"API license URL", Collections.emptyList());
 	}
-//	   @Override
-//	    public void addResourceHandlers(ResourceHandlerRegistry registry) {
-//	        registry.addResourceHandler("/findimage/**").addResourceLocations("file:" + FindAnvisaApplication.IMAGE_DIR);
-//	        super.addResourceHandlers(registry);
-//	    }
-	
+
 }

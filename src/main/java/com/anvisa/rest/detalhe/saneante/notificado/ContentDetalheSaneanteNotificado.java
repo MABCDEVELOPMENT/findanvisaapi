@@ -108,8 +108,8 @@ public class ContentDetalheSaneanteNotificado {
 
 				apresentacaoSaneanteNotificado.setApresentacao(JsonToObject.getValue(nodeIt, "apresentacao"));
 				apresentacaoSaneanteNotificado.setTonalidade(JsonToObject.getValue(nodeIt, "versao"));
-				apresentacaoSaneanteNotificado.setEans(JsonToObject.getValue(nodeIt, "tonalidade"));
-				apresentacaoSaneanteNotificado.setEans("");
+				apresentacaoSaneanteNotificado.setEans(JsonToObject.getArrayEanValue(nodeIt, "eans"));
+
 				apresentacoes.add(apresentacaoSaneanteNotificado);
 
 			}

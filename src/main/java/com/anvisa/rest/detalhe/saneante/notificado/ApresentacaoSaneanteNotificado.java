@@ -1,10 +1,12 @@
 package com.anvisa.rest.detalhe.saneante.notificado;
 
+import java.util.ArrayList;
+
 public class ApresentacaoSaneanteNotificado {
 	
 	String apresentacao;
     String tonalidade;
-    String eans;
+    ArrayList<Ean> eans;
     String versao;
     boolean apenasExportacao;
     boolean rotuloAprovado;
@@ -21,10 +23,10 @@ public class ApresentacaoSaneanteNotificado {
 	public void setTonalidade(String tonalidade) {
 		this.tonalidade = tonalidade;
 	}
-	public String getEans() {
+	public ArrayList<Ean> getEans() {
 		return eans;
 	}
-	public void setEans(String eans) {
+	public void setEans(ArrayList<Ean> eans) {
 		this.eans = eans;
 	}
 	public boolean isApenasExportacao() {

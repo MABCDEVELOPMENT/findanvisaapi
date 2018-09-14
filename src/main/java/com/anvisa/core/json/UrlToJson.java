@@ -514,8 +514,13 @@ public class UrlToJson {
 		String urlString = URL_SANEANTE_LABEL.replace("[processo]", processo);
 		urlString = urlString.replace("[rotulo]",rotulo);
 
-			File dir = new File("static");
-			System.out.println("Caminho "+FindAnvisaApplication.IMAGE_DIR);
+			File dir = new File("/home/findinfo/findimage/" );
+			try {
+				System.out.println("Caminho "+dir.getCanonicalPath());
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 			
 			if (!dir.exists()) {
 				dir.mkdirs();
@@ -524,8 +529,10 @@ public class UrlToJson {
 				System.out.println("Diretorio existe");
 			}
 			
-			File file = new File(FindAnvisaApplication.IMAGE_DIR,"rotulo_"+rotulo+".jpg");
-		    downloadFileFromURL(urlString, file); 
+			File file = new File(dir,"rotulo_"+rotulo+".jpg");
+			if (!file.exists()) {
+				downloadFileFromURL(urlString, file);	
+			}
 		    System.out.println("Executou");
 		
 	}
