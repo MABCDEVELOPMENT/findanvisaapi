@@ -317,7 +317,8 @@ public class JsonToObject {
 			for (Iterator<JsonNode> it = element.iterator(); it.hasNext();) {
 				JsonNode nodeIt = it.next();
 				Ean ean = new Ean();
-				ean.setCodigo(getValue(nodeIt, attribute));
+				ean.setCodigo(getValue(nodeIt, "codigo"));
+				ean.setDescricao(getValue(nodeIt, "descricao"));
 				sb.add(ean);
 			}
 

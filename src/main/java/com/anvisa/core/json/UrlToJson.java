@@ -55,6 +55,7 @@ public class UrlToJson {
 
 	public static String URL_COSMETIC_REGULARIZED = "https://consultas.anvisa.gov.br/api/consulta/cosmeticos/regularizados?count=1000&page=1";
 	public static String URL_COSMETIC_REGULARIZED_DETAIL = "https://consultas.anvisa.gov.br/api/consulta/cosmeticos/regularizados/";
+	public static String 
 
 	public static String URL_FOOD = "https://consultas.anvisa.gov.br/api/consulta/produtos/6?count=1000&page=1";
 	public static String URL_FOOD_DETAIL = "https://consultas.anvisa.gov.br/api/consulta/produtos/6/";
@@ -64,7 +65,7 @@ public class UrlToJson {
 	public static String URL_SANEANTE_LABEL  = "https://consultas.anvisa.gov.br/api/consulta/produtos/3/[processo]/rotulo/[rotulo]?Authorization=Guest";
 	public static String URL_SANEANTE_NOTIFICADOS = "https://consultas.anvisa.gov.br/api/consulta/saneantes/notificados?count=1000&page=1";
 	public static String URL_SANEANTE_NOTIFICADO_DETAIL = "https://consultas.anvisa.gov.br/api/consulta/saneantes/notificados/";
-	public static String URL_SANEANTE_NOTIFICADO_LABEL  = "https://consultas.anvisa.gov.br/api/consulta/saneantes/notificados/[processo]?Authorization=Guest";
+	public static String URL_SANEANTE_NOTIFICADO_LABEL  = "https://consultas.anvisa.gov.br/api/consulta/saneantes/notificados/[processo]/rotulo/[rotulo]?Authorization=Guest";
 	/*
 	 * public static void main(String[] args) { findFoodSaneate("55323448000138",
 	 * "AVEIA", TypeSearch.FOOD_PRODUCT); }
@@ -499,7 +500,206 @@ public class UrlToJson {
 					ArrayList<String> rotulos = contentDetalheSaneanteNotificado.getRotulos();
 					
 					for (String rotulo : rotulos) {
-						downloadSaneanteNotificadoLabel(contentDetalheSaneanteNotificado.getProcesso());
+						downloadSaneanteNotificadoLabel(contentDetalheSaneanteNotificado.getProcesso(),rotulo);
+					}
+
+					rootObject.setContentObject(contentDetalheSaneanteNotificado);
+
+				}
+
+			}
+
+		} catch (Exception e) { // TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		return rootObject;
+
+	}
+	
+	public static RootObject findDetailCosmetic(String registrado, String peticao, Long opcao) {
+
+		RootObject rootObject = new RootObject();
+
+		OkHttpClient client = new OkHttpClient();
+
+		Request url = null;
+
+		url = new Request.Builder().url(validParameterProductDetailCosmetic(registrado, peticao)).get()
+				.addHeader("authorization", "Guest").build();
+
+		try {
+
+			Response response = client.newCall(url).execute();
+
+			ObjectMapper objectMapper = new ObjectMapper();
+
+			JsonNode rootNode = objectMapper.readTree(response.body().string());
+
+			Iterator<JsonNode> elementsContents = rootNode.iterator();
+
+			// while (elementsContents.hasNext()) {
+
+			if (elementsContents.hasNext()) {
+
+				// JsonNode jsonNode = (JsonNode) rootNode.iterator();
+
+				if (opcao != null && opcao == 0) {
+
+					ContentDetalheAlimento contentDetalheAlimento = new ContentDetalheAlimento();
+
+					contentDetalheAlimento.setProcesso(JsonToObject.getValue(rootNode, "processo", "numero"));
+					contentDetalheAlimento
+							.setClassesTerapeuticas(JsonToObject.getArrayValue(rootNode, "classesTerapeuticas"));
+					contentDetalheAlimento.setCnpj(JsonToObject.getValue(rootNode, "cnpj"));
+					contentDetalheAlimento.setMarca(JsonToObject.getArrayValue(rootNode, "marcas"));
+					contentDetalheAlimento.setNomeComercial(JsonToObject.getValue(rootNode, "nomeComercial"));
+					contentDetalheAlimento.setRazaoSocial(JsonToObject.getValue(rootNode, "razaoSocial"));
+					contentDetalheAlimento.setRegistro(JsonToObject.getValue(rootNode, "numeroRegistro"));
+					contentDetalheAlimento.setMesAnoVencimento(JsonToObject.getValue(rootNode, "mesAnoVencimento"));
+					contentDetalheAlimento.setPrincipioAtivo(JsonToObject.getValue(rootNode, "principioAtivo"));
+					contentDetalheAlimento
+							.setEmbalagemPrimaria(JsonToObject.getValue(rootNode, "embalagemPrimaria", "tipo"));
+					contentDetalheAlimento
+							.setViasAdministrativa(JsonToObject.getArrayValue(rootNode, "viasAdministracao"));
+					String ifaUnico = JsonToObject.getValue(rootNode, "ifaUnico");
+					contentDetalheAlimento.setIfaUnico(ifaUnico.equals("true") ? "Sim" : "Não");
+					contentDetalheAlimento.setConservacao(JsonToObject.getArrayValue(rootNode, "conservacao"));
+
+					rootObject.setContentObject(contentDetalheAlimento);
+
+				} else if (categoria == 1 && opcao == 0) {
+
+					ContentDetalheCosmeticoRegistrado contentDetalheCosmeticoRegistrado = new ContentDetalheCosmeticoRegistrado();
+					contentDetalheCosmeticoRegistrado
+							.setRazaoSocial(JsonToObject.getValue(rootNode, "empresa", "razaoSocial"));
+					contentDetalheCosmeticoRegistrado.setCnpj(JsonToObject.getValue(rootNode, "empresa", "cnpj"));
+					contentDetalheCosmeticoRegistrado
+							.setAutorizacao(JsonToObject.getValue(rootNode, "empresa", "autorizacao"));
+					contentDetalheCosmeticoRegistrado.setNomeProduto(JsonToObject.getValue(rootNode, "nomeProduto"));
+					contentDetalheCosmeticoRegistrado.setCategoria(JsonToObject.getValue(rootNode, "categoria"));
+					contentDetalheCosmeticoRegistrado.setProcesso(JsonToObject.getValue(rootNode, "processo"));
+					contentDetalheCosmeticoRegistrado.setVencimentoRegistro(
+							JsonToObject.getValueDateToString(rootNode, "vencimento", "vencimento"));
+					contentDetalheCosmeticoRegistrado
+							.setPublicacaoRgistro(JsonToObject.getValueDateToString(rootNode, "publicacao"));
+					contentDetalheCosmeticoRegistrado.setApresentacoes(rootNode, "apresentacoes");
+					contentDetalheCosmeticoRegistrado.setPeticoes(rootNode, "peticoes");
+
+					rootObject.setContentObject(contentDetalheCosmeticoRegistrado);
+
+				} else if (categoria == 1 && opcao == 1) {
+
+					ContentDetalheCosmeticoNotificado contentDetalheCosmeticoNotificado = new ContentDetalheCosmeticoNotificado();
+
+					String assunto = JsonToObject.getValue(rootNode, "assunto", "codigo") + " - "
+							+ JsonToObject.getValue(rootNode, "assunto", "descricao");
+					contentDetalheCosmeticoNotificado.setAssunto(assunto);
+
+					String empresa = JsonToObject.getValue(rootNode, "empresa", "cnpj") + " - "
+							+ JsonToObject.getValue(rootNode, "empresa", "razaoSocial");
+					contentDetalheCosmeticoNotificado.setEmpresa(empresa);
+
+					contentDetalheCosmeticoNotificado.setProduto(JsonToObject.getValue(rootNode, "produto"));
+
+					contentDetalheCosmeticoNotificado.setProcesso(JsonToObject.getValue(rootNode, "processo"));
+					contentDetalheCosmeticoNotificado.setArea(JsonToObject.getValue(rootNode, "area"));
+					contentDetalheCosmeticoNotificado
+							.setSituacao(JsonToObject.getValue(rootNode, "situacao", "situacao"));
+					contentDetalheCosmeticoNotificado
+							.setDataNotificacao(JsonToObject.getValueDateToString(rootNode, "situacao", "data"));
+					contentDetalheCosmeticoNotificado.setApresentacoes(rootNode, "apresentacoes");
+
+					rootObject.setContentObject(contentDetalheCosmeticoNotificado);
+
+				} else if (categoria == 1 && opcao == 2) {
+
+					ContentDetalheCosmeticoRegularizado contentDetalheCosmeticoRegularizado = new ContentDetalheCosmeticoRegularizado();
+
+					EmpresaDetentora empresaDetentora = new EmpresaDetentora();
+
+					empresaDetentora.setCnpj(JsonToObject.getValue(rootNode, "empresaDetentora", "cnpj"));
+					empresaDetentora.setRazaoSocial(JsonToObject.getValue(rootNode, "empresaDetentora", "razaoSocial"));
+					empresaDetentora.setAutorizacao(JsonToObject.getValue(rootNode, "empresaDetentora", "autorizacao"));
+
+					empresaDetentora.setUf(JsonToObject.getValue(rootNode, "empresaDetentora", "uf"));
+					empresaDetentora.setCidade(JsonToObject.getValue(rootNode, "empresaDetentora", "cidade"));
+					empresaDetentora
+							.setCodigoMunicipio(JsonToObject.getValue(rootNode, "empresaDetentora", "codigoMunicipio"));
+					contentDetalheCosmeticoRegularizado.setEmpresaDetentora(empresaDetentora);
+
+					CaracterizacaoVigente caracterizacaoVigente = new CaracterizacaoVigente();
+					caracterizacaoVigente
+							.setProcesso(JsonToObject.getValue(rootNode, "caracterizacaoVigente", "processo"));
+					caracterizacaoVigente.setGrupo(JsonToObject.getValue(rootNode, "caracterizacaoVigente", "grupo"));
+					caracterizacaoVigente
+							.setProduto(JsonToObject.getValue(rootNode, "caracterizacaoVigente", "produto"));
+					caracterizacaoVigente
+							.setFormaFisica(JsonToObject.getValue(rootNode, "caracterizacaoVigente", "formaFisica"));
+
+					contentDetalheCosmeticoRegularizado.setCaracterizacaoVigente(caracterizacaoVigente);
+
+					contentDetalheCosmeticoRegularizado
+							.setDestinacoes(JsonToObject.getArrayValue(rootNode, "destinacoes"));
+
+					contentDetalheCosmeticoRegularizado.setLocalNacional(rootNode, "locaisNacionais");
+
+					contentDetalheCosmeticoRegularizado.setApresentacoes(rootNode, "apresentacoes");
+
+					rootObject.setContentObject(contentDetalheCosmeticoRegularizado);
+
+				} else if (categoria == 2 && opcao == 0) {
+
+					ContentDetalheSaneanteProduct contentDetalheSaneanteProduct = new ContentDetalheSaneanteProduct();
+
+					contentDetalheSaneanteProduct.setProcesso(JsonToObject.getValue(rootNode, "processo", "numero"));
+					contentDetalheSaneanteProduct
+							.setClassesTerapeuticas(JsonToObject.getArrayValue(rootNode, "classesTerapeuticas"));
+					contentDetalheSaneanteProduct.setCnpj(JsonToObject.getValue(rootNode, "cnpj"));
+					contentDetalheSaneanteProduct.setNumeroAutorizacao(JsonToObject.getValue(rootNode, "numeroAutorizacao"));
+					contentDetalheSaneanteProduct.setNomeComercial(JsonToObject.getValue(rootNode, "nomeComercial"));
+					contentDetalheSaneanteProduct.setRazaoSocial(JsonToObject.getValue(rootNode, "razaoSocial"));
+					contentDetalheSaneanteProduct.setRegistro(JsonToObject.getValue(rootNode, "numeroRegistro"));
+					contentDetalheSaneanteProduct.setMesAnoVencimento(JsonToObject.getValue(rootNode, "mesAnoVencimento"));
+					contentDetalheSaneanteProduct.loadApresentaçoes(rootNode,"apresentacoes");
+					contentDetalheSaneanteProduct.setRotulos(JsonToObject.getArrayStringValue(rootNode, "rotulos"));
+					
+					ArrayList<String> rotulos = contentDetalheSaneanteProduct.getRotulos();
+					
+					for (String rotulo : rotulos) {
+						downloadLabel(contentDetalheSaneanteProduct.getProcesso(), rotulo);
+					}
+					
+					rootObject.setContentObject(contentDetalheSaneanteProduct);
+
+				} else if (categoria == 2 && opcao == 1) {
+
+					ContentDetalheSaneanteNotificado contentDetalheSaneanteNotificado = new ContentDetalheSaneanteNotificado();
+
+					String assunto = JsonToObject.getValue(rootNode, "assunto", "codigo") + " - "
+							+ JsonToObject.getValue(rootNode, "assunto", "descricao");
+					contentDetalheSaneanteNotificado.setAssunto(assunto);
+
+					String empresa = JsonToObject.getValue(rootNode, "empresa", "cnpj") + " - "
+							+ JsonToObject.getValue(rootNode, "empresa", "razaoSocial");
+					contentDetalheSaneanteNotificado.setEmpresa(empresa);
+
+					contentDetalheSaneanteNotificado.setProduto(JsonToObject.getValue(rootNode, "produto"));
+
+					contentDetalheSaneanteNotificado.setProcesso(JsonToObject.getValue(rootNode, "processo"));
+					contentDetalheSaneanteNotificado.setArea(JsonToObject.getValue(rootNode, "area"));
+					contentDetalheSaneanteNotificado
+							.setSituacao(JsonToObject.getValue(rootNode, "situacao", "situacao"));
+					contentDetalheSaneanteNotificado
+							.setDataNotificacao(JsonToObject.getValueDateToString(rootNode, "situacao", "data"));
+					contentDetalheSaneanteNotificado.setApresentacoes(rootNode, "apresentacoes");
+					contentDetalheSaneanteNotificado.setPeticoes(rootNode, "peticoes");
+					contentDetalheSaneanteNotificado.setRotulos(JsonToObject.getArrayStringValue(rootNode, "rotulos"));
+					
+					ArrayList<String> rotulos = contentDetalheSaneanteNotificado.getRotulos();
+					
+					for (String rotulo : rotulos) {
+						downloadSaneanteNotificadoLabel(contentDetalheSaneanteNotificado.getProcesso(),rotulo);
 					}
 
 					rootObject.setContentObject(contentDetalheSaneanteNotificado);
@@ -522,55 +722,56 @@ public class UrlToJson {
 		String urlString = URL_SANEANTE_LABEL.replace("[processo]", processo);
 		urlString = urlString.replace("[rotulo]",rotulo);
 
-			File dir = new File("/home/findinfo/findimage/" );
-			try {
+			File dir = new File("/home/findinfo/findimage/produto" );
+/*			try {
 				System.out.println("Caminho "+dir.getCanonicalPath());
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
-			}
+			}*/
 			
 			if (!dir.exists()) {
 				dir.mkdirs();
-				System.out.println("Diretorio criado");
+				//System.out.println("Diretorio criado");
 			} else {
-				System.out.println("Diretorio existe");
+				//System.out.println("Diretorio existe");
 			}
 			
 			File file = new File(dir,"rotulo_"+rotulo+".jpg");
 			if (!file.exists()) {
 				downloadFileFromURL(urlString, file);	
 			}
-		    System.out.println("Executou");
+		    // System.out.println("Executou");
 		
 	}
 
-public static void downloadSaneanteNotificadoLabel(String processo) {
+public static void downloadSaneanteNotificadoLabel(String processo,String rotulo) {
 		
 		
-		String urlString = URL_SANEANTE_LABEL.replace("[processo]", processo);
-		
+		String urlString = URL_SANEANTE_NOTIFICADO_LABEL.replace("[processo]", processo);
+		urlString = urlString.replace("[rotulo]",rotulo);
 
-			File dir = new File("/home/findinfo/findimage/" );
-			try {
+			File dir = new File("/home/findinfo/findimage/notificado" );
+			/*try {
 				System.out.println("Caminho "+dir.getCanonicalPath());
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
-			}
+			}*/
 			
 			if (!dir.exists()) {
 				dir.mkdirs();
-				System.out.println("Diretorio criado");
+				//System.out.println("Diretorio criado");
 			} else {
-				System.out.println("Diretorio existe");
+				//System.out.println("Diretorio existe");
 			}
 			
-			File file = new File(dir,"rotulo_"+processo+".jpg");
+			File file = new File(dir,"rotulo_"+rotulo+".jpg");
 			if (!file.exists()) {
 				downloadFileFromURL(urlString, file);	
+				
 			}
-		    System.out.println("Executou");
+		    //System.out.println("Executou");
 		
 	}
 	public static String validParameterTypeSearchProduct(String url, TypeSearchProductCosmetic typeSearchProduct) {
@@ -751,6 +952,16 @@ public static void downloadSaneanteNotificadoLabel(String processo) {
 		return url + valor;
 	}
 
+	public static String validParameterProductDetailCosmetic(String registrado,String peticao) {
+
+		String url = "";
+
+		
+
+		return url + valor;
+	}
+
+
 	public static void downloadFileFromURL(String urlString, File destination) {
 		try {
 			
@@ -764,7 +975,7 @@ public static void downloadSaneanteNotificadoLabel(String processo) {
 			
 			System.out.println("Arquivo baixado");
 			
-		} catch (IOException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
