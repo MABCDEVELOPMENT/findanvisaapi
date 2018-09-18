@@ -2,7 +2,8 @@ package com.anvisa.rest;
 
 public class QueryRecordDetail {
 
-	 Long category; 
+	 Long category;
+	 String process;
 	 Long option;
 	 String value;
 	 
@@ -17,6 +18,12 @@ public class QueryRecordDetail {
 	}
 	public void setOption(Long option) {
 		this.option = option;
+	}
+	public String getProcess() {
+		return process;
+	}
+	public void setProcess(String process) {
+		this.process = process;
 	}
 	public String getValue() {
 		if (this.value!=null) {

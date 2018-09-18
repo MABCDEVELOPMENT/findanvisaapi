@@ -22,6 +22,7 @@ import com.anvisa.rest.RootObject;
 import com.anvisa.rest.detalhe.alimento.ContentDetalheAlimento;
 import com.anvisa.rest.detalhe.comestico.notificado.ContentDetalheCosmeticoNotificado;
 import com.anvisa.rest.detalhe.comestico.registrado.ContentDetalheCosmeticoRegistrado;
+import com.anvisa.rest.detalhe.comestico.registrado.detalhe.apresentacao.DetalheCosmeticoRegistradoApresentacao;
 import com.anvisa.rest.detalhe.comestico.regularizado.CaracterizacaoVigente;
 import com.anvisa.rest.detalhe.comestico.regularizado.ContentDetalheCosmeticoRegularizado;
 import com.anvisa.rest.detalhe.comestico.regularizado.EmpresaDetentora;
@@ -49,13 +50,14 @@ public class UrlToJson {
 
 	public static String URL_COSMETIC_REGISTER = "https://consultas.anvisa.gov.br/api/consulta/cosmeticos/registrados?count=1000&page=1";
 	public static String URL_COSMETIC_REGISTER_DETAIL = "https://consultas.anvisa.gov.br/api/consulta/cosmeticos/registrados/";
+	public static String URL_COSMETIC_REGISTER_DETAIL_APRESENTACAO = "https://consultas.anvisa.gov.br/api/consulta/cosmeticos/registrados/[processo]/apresentacao/[apresentacao]";
+	public static String URL_COSMETIC_REGISTER_DETAIL_PETICAO = "https://consultas.anvisa.gov.br/api/consulta/cosmeticos/registrados/[processo]/peticao/[peticao]";
 
 	public static String URL_COSMETIC_NOTIFY = "https://consultas.anvisa.gov.br/api/consulta/cosmeticos/notificados?count=1000&page=1";
 	public static String URL_COSMETIC_NOTIFY_DETAIL = "https://consultas.anvisa.gov.br/api/consulta/cosmeticos/notificados/";
 
 	public static String URL_COSMETIC_REGULARIZED = "https://consultas.anvisa.gov.br/api/consulta/cosmeticos/regularizados?count=1000&page=1";
 	public static String URL_COSMETIC_REGULARIZED_DETAIL = "https://consultas.anvisa.gov.br/api/consulta/cosmeticos/regularizados/";
-	public static String 
 
 	public static String URL_FOOD = "https://consultas.anvisa.gov.br/api/consulta/produtos/6?count=1000&page=1";
 	public static String URL_FOOD_DETAIL = "https://consultas.anvisa.gov.br/api/consulta/produtos/6/";
@@ -326,7 +328,7 @@ public class UrlToJson {
 
 		Request url = null;
 
-		url = new Request.Builder().url(validParameterProductDetail(categoria, opcao, valor)).get()
+		url = new Request.Builder().url(validParameterProductDetail(categoria,  valor, opcao)).get()
 				.addHeader("authorization", "Guest").build();
 
 		try {
@@ -517,7 +519,7 @@ public class UrlToJson {
 
 	}
 	
-	public static RootObject findDetailCosmetic(String registrado, String peticao, Long opcao) {
+	public static RootObject findDetailCosmetic(String processo, String valor, Long opcao) {
 
 		RootObject rootObject = new RootObject();
 
@@ -525,7 +527,7 @@ public class UrlToJson {
 
 		Request url = null;
 
-		url = new Request.Builder().url(validParameterProductDetailCosmetic(registrado, peticao)).get()
+		url = new Request.Builder().url(validParameterProductDetailCosmetic(processo, valor, opcao)).get()
 				.addHeader("authorization", "Guest").build();
 
 		try {
@@ -546,29 +548,13 @@ public class UrlToJson {
 
 				if (opcao != null && opcao == 0) {
 
-					ContentDetalheAlimento contentDetalheAlimento = new ContentDetalheAlimento();
+					DetalheCosmeticoRegistradoApresentacao detalheRegistradoApresentacao = new DetalheCosmeticoRegistradoApresentacao();
+				
+					detalheRegistradoApresentacao.load(rootNode,"produto");
 
-					contentDetalheAlimento.setProcesso(JsonToObject.getValue(rootNode, "processo", "numero"));
-					contentDetalheAlimento
-							.setClassesTerapeuticas(JsonToObject.getArrayValue(rootNode, "classesTerapeuticas"));
-					contentDetalheAlimento.setCnpj(JsonToObject.getValue(rootNode, "cnpj"));
-					contentDetalheAlimento.setMarca(JsonToObject.getArrayValue(rootNode, "marcas"));
-					contentDetalheAlimento.setNomeComercial(JsonToObject.getValue(rootNode, "nomeComercial"));
-					contentDetalheAlimento.setRazaoSocial(JsonToObject.getValue(rootNode, "razaoSocial"));
-					contentDetalheAlimento.setRegistro(JsonToObject.getValue(rootNode, "numeroRegistro"));
-					contentDetalheAlimento.setMesAnoVencimento(JsonToObject.getValue(rootNode, "mesAnoVencimento"));
-					contentDetalheAlimento.setPrincipioAtivo(JsonToObject.getValue(rootNode, "principioAtivo"));
-					contentDetalheAlimento
-							.setEmbalagemPrimaria(JsonToObject.getValue(rootNode, "embalagemPrimaria", "tipo"));
-					contentDetalheAlimento
-							.setViasAdministrativa(JsonToObject.getArrayValue(rootNode, "viasAdministracao"));
-					String ifaUnico = JsonToObject.getValue(rootNode, "ifaUnico");
-					contentDetalheAlimento.setIfaUnico(ifaUnico.equals("true") ? "Sim" : "Não");
-					contentDetalheAlimento.setConservacao(JsonToObject.getArrayValue(rootNode, "conservacao"));
+					rootObject.setContentObject(detalheRegistradoApresentacao);
 
-					rootObject.setContentObject(contentDetalheAlimento);
-
-				} else if (categoria == 1 && opcao == 0) {
+				} else if (opcao != null && opcao == 1) {
 
 					ContentDetalheCosmeticoRegistrado contentDetalheCosmeticoRegistrado = new ContentDetalheCosmeticoRegistrado();
 					contentDetalheCosmeticoRegistrado
@@ -587,122 +573,6 @@ public class UrlToJson {
 					contentDetalheCosmeticoRegistrado.setPeticoes(rootNode, "peticoes");
 
 					rootObject.setContentObject(contentDetalheCosmeticoRegistrado);
-
-				} else if (categoria == 1 && opcao == 1) {
-
-					ContentDetalheCosmeticoNotificado contentDetalheCosmeticoNotificado = new ContentDetalheCosmeticoNotificado();
-
-					String assunto = JsonToObject.getValue(rootNode, "assunto", "codigo") + " - "
-							+ JsonToObject.getValue(rootNode, "assunto", "descricao");
-					contentDetalheCosmeticoNotificado.setAssunto(assunto);
-
-					String empresa = JsonToObject.getValue(rootNode, "empresa", "cnpj") + " - "
-							+ JsonToObject.getValue(rootNode, "empresa", "razaoSocial");
-					contentDetalheCosmeticoNotificado.setEmpresa(empresa);
-
-					contentDetalheCosmeticoNotificado.setProduto(JsonToObject.getValue(rootNode, "produto"));
-
-					contentDetalheCosmeticoNotificado.setProcesso(JsonToObject.getValue(rootNode, "processo"));
-					contentDetalheCosmeticoNotificado.setArea(JsonToObject.getValue(rootNode, "area"));
-					contentDetalheCosmeticoNotificado
-							.setSituacao(JsonToObject.getValue(rootNode, "situacao", "situacao"));
-					contentDetalheCosmeticoNotificado
-							.setDataNotificacao(JsonToObject.getValueDateToString(rootNode, "situacao", "data"));
-					contentDetalheCosmeticoNotificado.setApresentacoes(rootNode, "apresentacoes");
-
-					rootObject.setContentObject(contentDetalheCosmeticoNotificado);
-
-				} else if (categoria == 1 && opcao == 2) {
-
-					ContentDetalheCosmeticoRegularizado contentDetalheCosmeticoRegularizado = new ContentDetalheCosmeticoRegularizado();
-
-					EmpresaDetentora empresaDetentora = new EmpresaDetentora();
-
-					empresaDetentora.setCnpj(JsonToObject.getValue(rootNode, "empresaDetentora", "cnpj"));
-					empresaDetentora.setRazaoSocial(JsonToObject.getValue(rootNode, "empresaDetentora", "razaoSocial"));
-					empresaDetentora.setAutorizacao(JsonToObject.getValue(rootNode, "empresaDetentora", "autorizacao"));
-
-					empresaDetentora.setUf(JsonToObject.getValue(rootNode, "empresaDetentora", "uf"));
-					empresaDetentora.setCidade(JsonToObject.getValue(rootNode, "empresaDetentora", "cidade"));
-					empresaDetentora
-							.setCodigoMunicipio(JsonToObject.getValue(rootNode, "empresaDetentora", "codigoMunicipio"));
-					contentDetalheCosmeticoRegularizado.setEmpresaDetentora(empresaDetentora);
-
-					CaracterizacaoVigente caracterizacaoVigente = new CaracterizacaoVigente();
-					caracterizacaoVigente
-							.setProcesso(JsonToObject.getValue(rootNode, "caracterizacaoVigente", "processo"));
-					caracterizacaoVigente.setGrupo(JsonToObject.getValue(rootNode, "caracterizacaoVigente", "grupo"));
-					caracterizacaoVigente
-							.setProduto(JsonToObject.getValue(rootNode, "caracterizacaoVigente", "produto"));
-					caracterizacaoVigente
-							.setFormaFisica(JsonToObject.getValue(rootNode, "caracterizacaoVigente", "formaFisica"));
-
-					contentDetalheCosmeticoRegularizado.setCaracterizacaoVigente(caracterizacaoVigente);
-
-					contentDetalheCosmeticoRegularizado
-							.setDestinacoes(JsonToObject.getArrayValue(rootNode, "destinacoes"));
-
-					contentDetalheCosmeticoRegularizado.setLocalNacional(rootNode, "locaisNacionais");
-
-					contentDetalheCosmeticoRegularizado.setApresentacoes(rootNode, "apresentacoes");
-
-					rootObject.setContentObject(contentDetalheCosmeticoRegularizado);
-
-				} else if (categoria == 2 && opcao == 0) {
-
-					ContentDetalheSaneanteProduct contentDetalheSaneanteProduct = new ContentDetalheSaneanteProduct();
-
-					contentDetalheSaneanteProduct.setProcesso(JsonToObject.getValue(rootNode, "processo", "numero"));
-					contentDetalheSaneanteProduct
-							.setClassesTerapeuticas(JsonToObject.getArrayValue(rootNode, "classesTerapeuticas"));
-					contentDetalheSaneanteProduct.setCnpj(JsonToObject.getValue(rootNode, "cnpj"));
-					contentDetalheSaneanteProduct.setNumeroAutorizacao(JsonToObject.getValue(rootNode, "numeroAutorizacao"));
-					contentDetalheSaneanteProduct.setNomeComercial(JsonToObject.getValue(rootNode, "nomeComercial"));
-					contentDetalheSaneanteProduct.setRazaoSocial(JsonToObject.getValue(rootNode, "razaoSocial"));
-					contentDetalheSaneanteProduct.setRegistro(JsonToObject.getValue(rootNode, "numeroRegistro"));
-					contentDetalheSaneanteProduct.setMesAnoVencimento(JsonToObject.getValue(rootNode, "mesAnoVencimento"));
-					contentDetalheSaneanteProduct.loadApresentaçoes(rootNode,"apresentacoes");
-					contentDetalheSaneanteProduct.setRotulos(JsonToObject.getArrayStringValue(rootNode, "rotulos"));
-					
-					ArrayList<String> rotulos = contentDetalheSaneanteProduct.getRotulos();
-					
-					for (String rotulo : rotulos) {
-						downloadLabel(contentDetalheSaneanteProduct.getProcesso(), rotulo);
-					}
-					
-					rootObject.setContentObject(contentDetalheSaneanteProduct);
-
-				} else if (categoria == 2 && opcao == 1) {
-
-					ContentDetalheSaneanteNotificado contentDetalheSaneanteNotificado = new ContentDetalheSaneanteNotificado();
-
-					String assunto = JsonToObject.getValue(rootNode, "assunto", "codigo") + " - "
-							+ JsonToObject.getValue(rootNode, "assunto", "descricao");
-					contentDetalheSaneanteNotificado.setAssunto(assunto);
-
-					String empresa = JsonToObject.getValue(rootNode, "empresa", "cnpj") + " - "
-							+ JsonToObject.getValue(rootNode, "empresa", "razaoSocial");
-					contentDetalheSaneanteNotificado.setEmpresa(empresa);
-
-					contentDetalheSaneanteNotificado.setProduto(JsonToObject.getValue(rootNode, "produto"));
-
-					contentDetalheSaneanteNotificado.setProcesso(JsonToObject.getValue(rootNode, "processo"));
-					contentDetalheSaneanteNotificado.setArea(JsonToObject.getValue(rootNode, "area"));
-					contentDetalheSaneanteNotificado
-							.setSituacao(JsonToObject.getValue(rootNode, "situacao", "situacao"));
-					contentDetalheSaneanteNotificado
-							.setDataNotificacao(JsonToObject.getValueDateToString(rootNode, "situacao", "data"));
-					contentDetalheSaneanteNotificado.setApresentacoes(rootNode, "apresentacoes");
-					contentDetalheSaneanteNotificado.setPeticoes(rootNode, "peticoes");
-					contentDetalheSaneanteNotificado.setRotulos(JsonToObject.getArrayStringValue(rootNode, "rotulos"));
-					
-					ArrayList<String> rotulos = contentDetalheSaneanteNotificado.getRotulos();
-					
-					for (String rotulo : rotulos) {
-						downloadSaneanteNotificadoLabel(contentDetalheSaneanteNotificado.getProcesso(),rotulo);
-					}
-
-					rootObject.setContentObject(contentDetalheSaneanteNotificado);
 
 				}
 
@@ -912,7 +782,7 @@ public static void downloadSaneanteNotificadoLabel(String processo,String rotulo
 		return url;
 	}
 
-	public static String validParameterProductDetail(Long categoria, Long opcao, String valor) {
+	public static String validParameterProductDetail(Long categoria, String valor, Long opcao) {
 
 		String url = "";
 
@@ -920,7 +790,7 @@ public static void downloadSaneanteNotificadoLabel(String processo,String rotulo
 
 			url = URL_FOOD_DETAIL;
 
-		} else if (categoria == 1) { // Cosmeticos
+		} else if (categoria == 1) {
 
 			if (opcao == 0) {
 
@@ -952,13 +822,25 @@ public static void downloadSaneanteNotificadoLabel(String processo,String rotulo
 		return url + valor;
 	}
 
-	public static String validParameterProductDetailCosmetic(String registrado,String peticao) {
+	public static String validParameterProductDetailCosmetic(String processo, String valor, Long opcao) {
 
 		String url = "";
 
-		
+		if (opcao == 0) {
 
-		return url + valor;
+			url = URL_COSMETIC_REGISTER_DETAIL_APRESENTACAO.replace("[apresentacao]", valor);
+
+		} else if (opcao == 1) {
+
+			url = URL_COSMETIC_REGISTER_DETAIL_PETICAO.replace("[peticao]", valor);;			
+
+		}
+
+		
+		url = url.replace("[processo]", processo);
+		
+		return url;
+		
 	}
 
 
