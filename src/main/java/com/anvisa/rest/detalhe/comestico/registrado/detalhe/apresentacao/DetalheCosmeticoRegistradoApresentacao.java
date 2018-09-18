@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import com.anvisa.core.json.JsonToObject;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 
 public class DetalheCosmeticoRegistradoApresentacao {
 
@@ -99,19 +100,30 @@ public class DetalheCosmeticoRegistradoApresentacao {
 			this.setApresentacao(JsonToObject.getValue(element, "apresentacao","embalagemPrimaria"));
 			this.setCategoria(JsonToObject.getValue(element, "categoria"));
 			
-			JsonNode elementLocalFabricacao = node.findValue(attribute);
+			ArrayList<RegistradoApresentacaoFabricantesNacionais> fabricantes = new ArrayList<RegistradoApresentacaoFabricantesNacionais>(); 
+			
+			ArrayNode elementLocalFabricacao = (ArrayNode) node.findValue("fabricantesNacionais"); 
 			
 			if (elementLocalFabricacao != null) {
 				
-				RegistradoApresentacaoFabricantesNacionais fabricante = new RegistradoApresentacaoFabricantesNacionais();
-				fabricante.setCnpj(JsonToObject.getValue(elementLocalFabricacao, "cnpj"));
-				fabricante.setRazaoSocial(JsonToObject.getValue(elementLocalFabricacao, "razaoSocial"));
-				fabricante.setCidade(JsonToObject.getValue(elementLocalFabricacao, "cidade"));
-				fabricante.setUf(JsonToObject.getValue(elementLocalFabricacao, "uf"));
-				fabricante.setPais(JsonToObject.getValue(elementLocalFabricacao, "pais"));
-				fabricante.setTipo(JsonToObject.getValue(elementLocalFabricacao, "tipo"));
+				for (JsonNode jsonNode : elementLocalFabricacao) {
+					
+					RegistradoApresentacaoFabricantesNacionais fabricante = new RegistradoApresentacaoFabricantesNacionais();
+					
+					fabricante.setCnpj(JsonToObject.getValue(jsonNode, "cnpj"));
+					fabricante.setRazaoSocial(JsonToObject.getValue(jsonNode, "razaoSocial"));
+					fabricante.setCidade(JsonToObject.getValue(jsonNode, "cidade"));
+					fabricante.setUf(JsonToObject.getValue(jsonNode, "uf"));
+					fabricante.setPais(JsonToObject.getValue(jsonNode, "pais"));
+					fabricante.setTipo(JsonToObject.getValue(jsonNode, "tipo"));
+					
+					fabricantes.add(fabricante);
+				}
+				
 				
 			}
+			
+			this.setFabricantesNacionais(fabricantes);
 			
 			this.setFormaFisica(JsonToObject.getValue(element, "formaFisica"));
 			this.setTonalidade(JsonToObject.getValue(element, "formaFisica"));
