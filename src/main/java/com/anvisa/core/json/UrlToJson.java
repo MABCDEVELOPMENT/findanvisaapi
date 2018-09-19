@@ -23,6 +23,7 @@ import com.anvisa.rest.detalhe.alimento.ContentDetalheAlimento;
 import com.anvisa.rest.detalhe.comestico.notificado.ContentDetalheCosmeticoNotificado;
 import com.anvisa.rest.detalhe.comestico.registrado.ContentDetalheCosmeticoRegistrado;
 import com.anvisa.rest.detalhe.comestico.registrado.detalhe.apresentacao.DetalheCosmeticoRegistradoApresentacao;
+import com.anvisa.rest.detalhe.comestico.registrado.detalhe.peticao.DetalheCosmeticoRegistradoPeticao;
 import com.anvisa.rest.detalhe.comestico.regularizado.CaracterizacaoVigente;
 import com.anvisa.rest.detalhe.comestico.regularizado.ContentDetalheCosmeticoRegularizado;
 import com.anvisa.rest.detalhe.comestico.regularizado.EmpresaDetentora;
@@ -556,23 +557,12 @@ public class UrlToJson {
 
 				} else if (opcao != null && opcao == 1) {
 
-					ContentDetalheCosmeticoRegistrado contentDetalheCosmeticoRegistrado = new ContentDetalheCosmeticoRegistrado();
-					contentDetalheCosmeticoRegistrado
-							.setRazaoSocial(JsonToObject.getValue(rootNode, "empresa", "razaoSocial"));
-					contentDetalheCosmeticoRegistrado.setCnpj(JsonToObject.getValue(rootNode, "empresa", "cnpj"));
-					contentDetalheCosmeticoRegistrado
-							.setAutorizacao(JsonToObject.getValue(rootNode, "empresa", "autorizacao"));
-					contentDetalheCosmeticoRegistrado.setNomeProduto(JsonToObject.getValue(rootNode, "nomeProduto"));
-					contentDetalheCosmeticoRegistrado.setCategoria(JsonToObject.getValue(rootNode, "categoria"));
-					contentDetalheCosmeticoRegistrado.setProcesso(JsonToObject.getValue(rootNode, "processo"));
-					contentDetalheCosmeticoRegistrado.setVencimentoRegistro(
-							JsonToObject.getValueDateToString(rootNode, "vencimento", "vencimento"));
-					contentDetalheCosmeticoRegistrado
-							.setPublicacaoRgistro(JsonToObject.getValueDateToString(rootNode, "publicacao"));
-					contentDetalheCosmeticoRegistrado.setApresentacoes(rootNode, "apresentacoes");
-					contentDetalheCosmeticoRegistrado.setPeticoes(rootNode, "peticoes");
+					DetalheCosmeticoRegistradoPeticao detalheRegistradoPeticao = new DetalheCosmeticoRegistradoPeticao();
+					
+					detalheRegistradoPeticao.load(rootNode,"produto");
 
-					rootObject.setContentObject(contentDetalheCosmeticoRegistrado);
+					rootObject.setContentObject(detalheRegistradoPeticao);
+
 
 				}
 

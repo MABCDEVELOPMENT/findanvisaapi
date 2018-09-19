@@ -97,8 +97,12 @@ public class DetalheCosmeticoRegistradoApresentacao {
 			
 			this.setNomeProduto(JsonToObject.getValue(element, "nomeProduto"));
 			this.setProcesso(JsonToObject.getValue(element, "processo"));
-			this.setApresentacao(JsonToObject.getValue(element, "apresentacao","embalagemPrimaria"));
+			this.setApresentacao(JsonToObject.getValue(node, "apresentacao","embalagemPrimaria"));
 			this.setCategoria(JsonToObject.getValue(element, "categoria"));
+			
+			this.setFormaFisica(JsonToObject.getValue(node, "formaFisica"));
+			this.setTonalidade(JsonToObject.getValue(node, "tonalidade"));
+			this.setPrazoValidade(JsonToObject.getValue(node,"prazoValidade"));
 			
 			ArrayList<RegistradoApresentacaoFabricantesNacionais> fabricantes = new ArrayList<RegistradoApresentacaoFabricantesNacionais>(); 
 			
@@ -125,16 +129,11 @@ public class DetalheCosmeticoRegistradoApresentacao {
 			
 			this.setFabricantesNacionais(fabricantes);
 			
-			this.setFormaFisica(JsonToObject.getValue(element, "formaFisica"));
-			this.setTonalidade(JsonToObject.getValue(element, "formaFisica"));
+
 			
-			this.setApresentacao(JsonToObject.getValue(element, "apresentacao","tonalidade"));
-			
-			this.setPrazoValidade(JsonToObject.getValue(element,"prazoValidade"));
-			
-			this.setConservacao(JsonToObject.getArrayStringValue(element,"conservacao"));
-			this.setDestinacao(JsonToObject.getArrayStringValue(element,"destinacao"));
-			this.setRestricao(JsonToObject.getArrayStringValue(element,"restricao"));
+			this.setConservacao(JsonToObject.getArrayStringValue(node,"conservacao"));
+			this.setDestinacao(JsonToObject.getArrayStringValue(node,"destinacao"));
+			this.setRestricao(JsonToObject.getArrayStringValue(node,"restricao"));
 			
 		}
 		
