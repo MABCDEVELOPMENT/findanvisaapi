@@ -2,7 +2,6 @@ package com.anvisa.core.json;
 
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.net.URL;
 import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
@@ -12,14 +11,14 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.concurrent.TimeUnit;
 
-import com.anvisa.FindAnvisaApplication;
 import com.anvisa.core.type.TypeSearchProductCosmetic;
-import com.anvisa.rest.Content;
-import com.anvisa.rest.ContentProcesso;
+import com.anvisa.model.persistence.rest.Content;
+import com.anvisa.model.persistence.rest.foot.ContentDetalFoot;
+import com.anvisa.model.persistence.rest.foot.ContentFoot;
+import com.anvisa.persistence.rest.ContentProcesso;
 import com.anvisa.rest.QueryRecordParameter;
 import com.anvisa.rest.QueryRecordProcessParameter;
 import com.anvisa.rest.RootObject;
-import com.anvisa.rest.detalhe.alimento.ContentDetalheAlimento;
 import com.anvisa.rest.detalhe.comestico.notificado.ContentDetalheCosmeticoNotificado;
 import com.anvisa.rest.detalhe.comestico.registrado.ContentDetalheCosmeticoRegistrado;
 import com.anvisa.rest.detalhe.comestico.registrado.detalhe.apresentacao.DetalheCosmeticoRegistradoApresentacao;
@@ -170,7 +169,7 @@ public class UrlToJson {
 
 					content.setProduto(JsonToObject.getProduto(jsonNode));
 
-					ContentProduto contentProduto = new ContentProduto(content);
+					ContentFoot contentProduto = new ContentFoot(content);
 
 					// contentProduto.setSituacao(content.getProduto().getCategoria().getDescricao());
 
@@ -350,7 +349,7 @@ public class UrlToJson {
 
 				if (categoria == 0 && opcao == null) {
 
-					ContentDetalheAlimento contentDetalheAlimento = new ContentDetalheAlimento();
+					ContentDetalFoot contentDetalheAlimento = new ContentDetalFoot();
 
 					contentDetalheAlimento.setProcesso(JsonToObject.getValue(rootNode, "processo", "numero"));
 					contentDetalheAlimento

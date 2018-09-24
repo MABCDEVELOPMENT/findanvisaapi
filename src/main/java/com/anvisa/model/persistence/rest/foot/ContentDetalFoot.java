@@ -1,6 +1,6 @@
-package com.anvisa.rest.detalhe.alimento;
+package com.anvisa.model.persistence.rest.foot;
 
-public class ContentDetalheAlimento {
+public class ContentDetalFoot {
 	
 	String razaoSocial;
 	String cnpj;

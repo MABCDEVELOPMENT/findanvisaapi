@@ -2,7 +2,7 @@ package com.anvisa.rest.model.deserializer;
 
 import java.io.IOException;
 
-import com.anvisa.rest.Content;
+import com.anvisa.model.persistence.rest.Content;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.ObjectCodec;

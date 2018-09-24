@@ -1,25 +1,60 @@
-package com.anvisa.rest.model;
+package com.anvisa.model.persistence.rest.foot;
 
 import java.time.LocalDate;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Table;
+
+import com.anvisa.model.persistence.AbstractBaseEntity;
 import com.anvisa.model.persistence.rest.Content;
+import com.fasterxml.jackson.annotation.JsonAlias;
 
+@Entity
+@Table(name = "foot")
+public class ContentFoot extends AbstractBaseEntity {
 
-
-public class ContentProduto {
-
+	@Column(name = "code", length = 20, nullable = false)
+	@JsonAlias(value = "codigo")
 	int codigo;
+	
+	@Column(name = "product", nullable = false)
+	@JsonAlias(value = "product")
 	String produto;
+
+	@Column(name = "register", length = 20, nullable = false)
+	@JsonAlias(value = "registro")
 	String registro;
+	
+	@Column(name = "process",  length = 20, nullable = false)
+	@JsonAlias(value = "processo")	
 	String processo;
+
+	@Column(name = "company", nullable = false)
+	@JsonAlias(value = "empresa")
 	String empresa;
+
+	@Column(name = "cnpj", length = 14, nullable = false)
+	@JsonAlias(value = "cnpj")
 	String cnpj;
+	
+	@Column(name = "situation", length = 60, nullable = false)
+	@JsonAlias(value = "situacao")
 	String situacao;
+
+	@Column(name = "vencimento", length = 8, nullable = true)
+	@JsonAlias(value = "vencimento")
 	String vencimento;
+	
+	@Column(name = "statusVencimento", length = 60, nullable = true)
+	@JsonAlias(value = "statusVencimento")	
 	String statusVencimento;
+	
+	@Column(name = "dataVencimento", nullable = true)
+	@JsonAlias(value = "dataVencimento")	
 	LocalDate dataVencimento;
 	
-	public ContentProduto(Content content) {
+	public ContentFoot(Content content) {
 		// TODO Auto-generated constructor stub
 		
 		this.setCodigo(content.getProduto().getCodigo());
@@ -118,3 +153,4 @@ public class ContentProduto {
 	
 	
 }
+

@@ -1,4 +1,6 @@
-package com.anvisa.rest;
+package com.anvisa.persistence.rest;
+
+import com.anvisa.model.persistence.rest.Content;
 
 public class ContentProcesso {
 	

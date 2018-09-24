@@ -1,4 +1,4 @@
-package com.anvisa.rest;
+package com.anvisa.model.persistence.rest;
 
 import java.time.LocalDate;
 import java.util.Date;
