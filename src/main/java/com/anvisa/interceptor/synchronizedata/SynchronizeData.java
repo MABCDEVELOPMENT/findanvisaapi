@@ -3,6 +3,8 @@ package com.anvisa.interceptor.synchronizedata;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+import org.springframework.data.jpa.repository.JpaRepository;
+
 import com.anvisa.model.persistence.AbstractBaseEntity;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -13,7 +15,10 @@ import okhttp3.Response;
 
 public class SynchronizeData {
 	
-
+	public String URL = "";
+	
+	public JpaRepository<Object, Long> repository = null;
+	
 	public ArrayList<AbstractBaseEntity> loadData(IntSynchronize intSynchronize,String cnpj) {
 		// TODO Auto-generated method stub
 		ArrayList<AbstractBaseEntity> rootObject = new ArrayList<AbstractBaseEntity>();
@@ -24,7 +29,7 @@ public class SynchronizeData {
 
 
 		url = new Request.Builder()
-				.url(intSynchronize.URL.replace("[cnpj]", cnpj))
+				.url(URL+cnpj)
 				.get().addHeader("authorization", "Guest").build();
 		
 		try {

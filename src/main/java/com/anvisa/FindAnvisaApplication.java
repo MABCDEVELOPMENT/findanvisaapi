@@ -18,6 +18,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.resource.VersionResourceResolver;
 
 import com.anvisa.interceptor.ScheduledTasks;
+import com.anvisa.interceptor.synchronizedata.SynchronizeDataTask;
 import com.fasterxml.jackson.databind.util.ISO8601DateFormat;
 
 @SpringBootApplication
@@ -73,6 +74,7 @@ public class FindAnvisaApplication extends SpringBootServletInitializer implemen
 		SpringApplication.run(FindAnvisaApplication.class, args);
 		
 		System.out.println(IMAGE_DIR);
+		//SynchronizeDataTask.synchronizeData();
 		
 	}
 }

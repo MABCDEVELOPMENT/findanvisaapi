@@ -8,17 +8,25 @@ import com.anvisa.interceptor.synchronizedata.SynchronizeData;
 import com.anvisa.model.persistence.AbstractBaseEntity;
 import com.anvisa.model.persistence.rest.Content;
 import com.anvisa.model.persistence.rest.foot.ContentFoot;
+import com.anvisa.repository.generic.FootRepository;
 import com.fasterxml.jackson.databind.JsonNode;
 
 
 public class SynchronizeFoot extends SynchronizeData  implements IntSynchronize {
 	
-	public static String URL = "https://consultas.anvisa.gov.br/api/consulta/produtos/6?cnpj=[cnpj]";
+	//public static String URL = "https://consultas.anvisa.gov.br/api/consulta/produtos/6?count=1000&page=1&cnpj=[cnpj]";
 
+	public FootRepository repository; 
+
+	public SynchronizeFoot(FootRepository repository) {
+		// TODO Auto-generated constructor stub
+		this.repository = repository;
+		URL = "https://consultas.anvisa.gov.br/api/consulta/produtos/6?count=1000&page=1&filter[cnpj]=";
 	
+	}
 
 	@Override
-	public AbstractBaseEntity parseData(JsonNode jsonNode) {
+	public ContentFoot parseData(JsonNode jsonNode) {
 		// TODO Auto-generated method stub
 		Content content = new Content();
 

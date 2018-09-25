@@ -13,7 +13,10 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import com.anvisa.interceptor.synchronizedata.foot.SynchronizeFoot;
+import com.anvisa.model.persistence.AbstractBaseEntity;
 import com.anvisa.model.persistence.RegisterCNPJ;
+import com.anvisa.model.persistence.rest.foot.ContentFoot;
+import com.anvisa.repository.generic.FootRepository;
 import com.anvisa.repository.generic.RegisterCNPJRepository;
 import com.anvisa.repository.generic.RepositoryScheduledEmail;
 import com.anvisa.rest.RootObject;
@@ -28,36 +31,44 @@ import okhttp3.Response;
 public class SynchronizeDataTask {
 
 	@Autowired
-	static RegisterCNPJRepository registerCNPJRepository;
+	private static RegisterCNPJRepository registerCNPJRepository;
+	@Autowired
+	private static FootRepository footRepository;
 
 	/*@Autowired
 	private static JavaMailSender mailSender;*/
 
 	@Autowired
-	public void setService(RegisterCNPJRepository registerCNPJRepository) {
+	public void setService(RegisterCNPJRepository registerCNPJRepository,
+						   FootRepository footRepository) {
 		this.registerCNPJRepository = registerCNPJRepository;
+		this.footRepository         = footRepository;
 	}
 
 	private static final Logger log = LoggerFactory.getLogger(SynchronizeDataTask.class);
 
 	private static final SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
 
-	@Scheduled(fixedRate = 5000000)
+	@Scheduled(fixedRate = 500000000)
 	public static void synchronizeData() {
 
-		log.info("scheduledEmail ", dateFormat.format(new Date()));
+		log.info("SynchronizeData ", dateFormat.format(new Date()));
 		
-		List<RegisterCNPJ> registerCNPJs = registerCNPJRepository.findAll();
+		List<RegisterCNPJ> registerCNPJs = registerCNPJRepository.findAll(0);
 	
-		IntSynchronize[]  intSynchronize = {new SynchronizeFoot()};
+		IntSynchronize[]  intSynchronize = {new SynchronizeFoot(footRepository)};
 		
 		for (RegisterCNPJ registerCNPJ : registerCNPJs) {
 			
-			ListArray<> intSynchronize[0].loadData(registerCNPJ.getCnpj());
+			List<AbstractBaseEntity> itens = intSynchronize[0].loadData(registerCNPJ.getCnpj());
+			for (Iterator<AbstractBaseEntity> iterator = itens.iterator(); iterator.hasNext();) {
+				ContentFoot abstractBaseEntity = (ContentFoot) iterator.next();
+				IntSynchronize.repository.saveAndFlush(abstractBaseEntity);
+			}
 			
 		}
 	
 	}
-
+	
 	
 }
