@@ -2,6 +2,7 @@ package com.anvisa.model.persistence.rest.foot;
 
 import java.time.LocalDate;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
@@ -57,8 +58,10 @@ public class ContentFoot extends AbstractBaseEntity {
 	@JsonAlias(value = "dataVencimento")	
 	LocalDate dataVencimento;
 	
-	@JoinColumn
-	ContentDetalFoot contentDateil;
+	@ManyToOne(cascade = CascadeType.ALL, targetEntity = ContentDetalFoot.class)
+	@JoinColumn(name="contentDetalFoot")
+	@Column(name = "contentDetalFoot", nullable = true)
+	ContentDetalFoot contentDetalFoot;
 	
 	
 	public ContentFoot(Content content) {
@@ -157,13 +160,15 @@ public class ContentFoot extends AbstractBaseEntity {
 		this.statusVencimento = statusVencimento;
 	}
 
-	public ContentDetalFoot getContentDateil() {
-		return contentDateil;
+	public ContentDetalFoot getContentDetalFoot() {
+		return contentDetalFoot;
 	}
 
-	public void setContentDateil(ContentDetalFoot contentDateil) {
-		this.contentDateil = contentDateil;
+	public void setContentDetalFoot(ContentDetalFoot contentDetalFoot) {
+		this.contentDetalFoot = contentDetalFoot;
 	}
+
+
 
 }
 

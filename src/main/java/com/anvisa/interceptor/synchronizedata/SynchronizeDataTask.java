@@ -14,6 +14,7 @@ import org.springframework.stereotype.Component;
 import com.anvisa.interceptor.synchronizedata.foot.SynchronizeFoot;
 import com.anvisa.model.persistence.AbstractBaseEntity;
 import com.anvisa.model.persistence.RegisterCNPJ;
+import com.anvisa.model.persistence.rest.foot.ContentDetalFoot;
 import com.anvisa.model.persistence.rest.foot.ContentFoot;
 import com.anvisa.repository.generic.FootRepository;
 import com.anvisa.repository.generic.RegisterCNPJRepository;
@@ -23,6 +24,7 @@ public class SynchronizeDataTask {
 
 	@Autowired
 	private static RegisterCNPJRepository registerCNPJRepository;
+	
 	@Autowired
 	private static FootRepository footRepository;
 
@@ -54,6 +56,8 @@ public class SynchronizeDataTask {
 			List<AbstractBaseEntity> itens = intSynchronize[0].loadData(registerCNPJ.getCnpj());
 			for (Iterator<AbstractBaseEntity> iterator = itens.iterator(); iterator.hasNext();) {
 				ContentFoot abstractBaseEntity = (ContentFoot) iterator.next();
+				ContentDetalFoot detail = (ContentDetalFoot) intSynchronize[0].loadDetailData(abstractBaseEntity.getProcesso());
+				abstractBaseEntity.setContentDetalFoot(detail);
 				footRepository.saveAndFlush(abstractBaseEntity);
 			}
 			

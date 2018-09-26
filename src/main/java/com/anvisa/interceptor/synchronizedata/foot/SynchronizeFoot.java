@@ -77,22 +77,22 @@ public class SynchronizeFoot extends SynchronizeData  implements IntSynchronize 
 	@Override
 	public ArrayList<AbstractBaseEntity> loadData(String cnpj) {
 		// TODO Auto-generated method stub
-		 ArrayList<AbstractBaseEntity> list = super.loadData(this, cnpj);
-		 ArrayList<AbstractBaseEntity> listReturn = new ArrayList<AbstractBaseEntity>();
+//		 ArrayList<AbstractBaseEntity> list = super.loadData(this, cnpj);
+//		 ArrayList<AbstractBaseEntity> listReturn = new ArrayList<AbstractBaseEntity>();
+//		 
+//		 for (AbstractBaseEntity abstractBaseEntity : list) {
+//			 
+//			 ContentFoot foot = (ContentFoot) abstractBaseEntity;
+//			 
+//			 ContentDetalFoot detailFoot = (ContentDetalFoot) this.loadDetailData(foot.getProcesso());
+//			
+//			 foot.setContentDateil(detailFoot);
+//			 
+//			 listReturn.add(foot); 
+//			 
+//		 }
 		 
-		 for (AbstractBaseEntity abstractBaseEntity : list) {
-			 
-			 ContentFoot foot = (ContentFoot) abstractBaseEntity;
-			 
-			 ContentDetalFoot detailFoot = (ContentDetalFoot) this.loadDetailData(foot.getProcesso());
-			
-			 foot.setContentDateil(detailFoot);
-			 
-			 listReturn.add(foot); 
-			 
-		 }
-		 
-		return listReturn;
+		return super.loadData(this, cnpj);
 	}
 
 	@Override
