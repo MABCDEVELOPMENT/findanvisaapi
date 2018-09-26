@@ -82,14 +82,10 @@ public class SynchronizeData {
 			ObjectMapper objectMapper = new ObjectMapper();
 
 			JsonNode rootNode = objectMapper.readTree(response.body().string());
+			
+			if (rootNode!=null) {
 
-			Iterator<JsonNode> elementsContents = rootNode.path("content").iterator();
-
-			while (elementsContents.hasNext()) {
-
-				JsonNode jsonNode = (JsonNode) elementsContents.next();
-
-				rootObject = intSynchronize.parseDetailData(jsonNode);
+				rootObject = intSynchronize.parseDetailData(rootNode);
 			}
 			response.close();
 			return rootObject;

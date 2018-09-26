@@ -349,9 +349,17 @@ public class JsonToObject {
 	public static String getValue(JsonNode node, String content, String attribute) {
 		JsonNode element = node.findValue(content);
 		if (element != null) {
-			return element.get(attribute).asText();
+			
+			String strReturn = "";
+			
+			if (element.get(attribute) !=null) {
+				strReturn = element.get(attribute).asText();
+			}
+			
+			return strReturn;
+			
 		}
-		return null;
+		return "";
 	}
 
 	public static LocalDate getValueDate(JsonNode node, String attribute) {

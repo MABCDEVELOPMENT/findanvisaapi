@@ -58,9 +58,10 @@ public class ContentFoot extends AbstractBaseEntity {
 	@JsonAlias(value = "dataVencimento")	
 	LocalDate dataVencimento;
 	
-	@ManyToOne(cascade = CascadeType.ALL, targetEntity = ContentDetalFoot.class)
-	@JoinColumn(name="contentDetalFoot")
-	@Column(name = "contentDetalFoot", nullable = true)
+
+	@JsonAlias(value = "contentDetalFoot")
+	@ManyToOne
+	@JoinColumn(name="contentDetalFootFK")
 	ContentDetalFoot contentDetalFoot;
 	
 	
@@ -166,6 +167,113 @@ public class ContentFoot extends AbstractBaseEntity {
 
 	public void setContentDetalFoot(ContentDetalFoot contentDetalFoot) {
 		this.contentDetalFoot = contentDetalFoot;
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((cnpj == null) ? 0 : cnpj.hashCode());
+		result = prime * result + codigo;
+		result = prime * result + ((contentDetalFoot == null) ? 0 : contentDetalFoot.hashCode());
+		result = prime * result + ((dataVencimento == null) ? 0 : dataVencimento.hashCode());
+		result = prime * result + ((empresa == null) ? 0 : empresa.hashCode());
+		result = prime * result + ((processo == null) ? 0 : processo.hashCode());
+		result = prime * result + ((produto == null) ? 0 : produto.hashCode());
+		result = prime * result + ((registro == null) ? 0 : registro.hashCode());
+		result = prime * result + ((situacao == null) ? 0 : situacao.hashCode());
+		result = prime * result + ((statusVencimento == null) ? 0 : statusVencimento.hashCode());
+		result = prime * result + ((vencimento == null) ? 0 : vencimento.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null) {
+			return false;
+		}
+		if (!(obj instanceof ContentFoot)) {
+			return false;
+		}
+		
+		ContentFoot other = (ContentFoot) obj;
+		if (cnpj == null) {
+			if (other.cnpj != null) {
+				return false;
+			}
+		} else if (!cnpj.equals(other.cnpj)) {
+			return false;
+		}
+		if (codigo != other.codigo) {
+			return false;
+		}
+		if (contentDetalFoot == null) {
+			if (other.contentDetalFoot != null) {
+				return false;
+			}
+		} else if (!contentDetalFoot.equals(other.contentDetalFoot)) {
+			return false;
+		}
+		if (dataVencimento == null) {
+			if (other.dataVencimento != null) {
+				return false;
+			}
+		} else if (!dataVencimento.equals(other.dataVencimento)) {
+			return false;
+		}
+		if (empresa == null) {
+			if (other.empresa != null) {
+				return false;
+			}
+		} else if (!empresa.equals(other.empresa)) {
+			return false;
+		}
+		if (processo == null) {
+			if (other.processo != null) {
+				return false;
+			}
+		} else if (!processo.equals(other.processo)) {
+			return false;
+		}
+		if (produto == null) {
+			if (other.produto != null) {
+				return false;
+			}
+		} else if (!produto.equals(other.produto)) {
+			return false;
+		}
+		if (registro == null) {
+			if (other.registro != null) {
+				return false;
+			}
+		} else if (!registro.equals(other.registro)) {
+			return false;
+		}
+		if (situacao == null) {
+			if (other.situacao != null) {
+				return false;
+			}
+		} else if (!situacao.equals(other.situacao)) {
+			return false;
+		}
+		if (statusVencimento == null) {
+			if (other.statusVencimento != null) {
+				return false;
+			}
+		} else if (!statusVencimento.equals(other.statusVencimento)) {
+			return false;
+		}
+		if (vencimento == null) {
+			if (other.vencimento != null) {
+				return false;
+			}
+		} else if (!vencimento.equals(other.vencimento)) {
+			return false;
+		}
+		return true;
 	}
 
 

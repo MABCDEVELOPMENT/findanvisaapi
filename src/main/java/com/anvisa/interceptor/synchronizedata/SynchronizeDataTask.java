@@ -16,6 +16,7 @@ import com.anvisa.model.persistence.AbstractBaseEntity;
 import com.anvisa.model.persistence.RegisterCNPJ;
 import com.anvisa.model.persistence.rest.foot.ContentDetalFoot;
 import com.anvisa.model.persistence.rest.foot.ContentFoot;
+import com.anvisa.repository.generic.FootDetailRepository;
 import com.anvisa.repository.generic.FootRepository;
 import com.anvisa.repository.generic.RegisterCNPJRepository;
 
@@ -27,15 +28,20 @@ public class SynchronizeDataTask {
 	
 	@Autowired
 	private static FootRepository footRepository;
+	
+	@Autowired
+	private static FootDetailRepository footDetailRepository;
 
 	/*@Autowired
 	private static JavaMailSender mailSender;*/
 
 	@Autowired
 	public void setService(RegisterCNPJRepository registerCNPJRepository,
-						   FootRepository footRepository) {
+						   FootRepository footRepository,
+						   FootDetailRepository footDetailRepository) {
 		this.registerCNPJRepository = registerCNPJRepository;
 		this.footRepository         = footRepository;
+		this.footDetailRepository   = footDetailRepository;
 	}
 
 	private static final Logger log = LoggerFactory.getLogger(SynchronizeDataTask.class);
@@ -54,10 +60,15 @@ public class SynchronizeDataTask {
 		for (RegisterCNPJ registerCNPJ : registerCNPJs) {
 			
 			List<AbstractBaseEntity> itens = intSynchronize[0].loadData(registerCNPJ.getCnpj());
+			
+			
 			for (Iterator<AbstractBaseEntity> iterator = itens.iterator(); iterator.hasNext();) {
 				ContentFoot abstractBaseEntity = (ContentFoot) iterator.next();
 				ContentDetalFoot detail = (ContentDetalFoot) intSynchronize[0].loadDetailData(abstractBaseEntity.getProcesso());
-				abstractBaseEntity.setContentDetalFoot(detail);
+				if (detail!=null) {
+					footDetailRepository.saveAndFlush(detail);
+					abstractBaseEntity.setContentDetalFoot(detail);
+				}	
 				footRepository.saveAndFlush(abstractBaseEntity);
 			}
 			
