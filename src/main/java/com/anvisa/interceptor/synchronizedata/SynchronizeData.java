@@ -17,6 +17,8 @@ public class SynchronizeData {
 	
 	public String URL = "";
 	
+	public String URL_DETAIL = "";
+	
 	public JpaRepository<Object, Long> repository = null;
 	
 	public ArrayList<AbstractBaseEntity> loadData(IntSynchronize intSynchronize,String cnpj) {
@@ -45,10 +47,51 @@ public class SynchronizeData {
 			while (elementsContents.hasNext()) {
 
 				JsonNode jsonNode = (JsonNode) elementsContents.next();
-
-				rootObject.add(intSynchronize.parseData(jsonNode));
+				
+				AbstractBaseEntity abstractBaseEntity = intSynchronize.parseData(jsonNode);
+				
+				rootObject.add(abstractBaseEntity);
 			}
+			response.close();
+			return rootObject;
 			
+	   } catch (Exception e) {
+		// TODO: handle exception
+		   e.printStackTrace();
+	   }
+		
+		return null;
+	}
+	
+	public AbstractBaseEntity loadDetailData(IntSynchronize intSynchronize,String concat) {
+		// TODO Auto-generated method stub
+		AbstractBaseEntity rootObject = null;
+		OkHttpClient client = new OkHttpClient();
+
+		Request url = null;
+
+
+		url = new Request.Builder()
+				.url(URL_DETAIL+concat)
+				.get().addHeader("authorization", "Guest").build();
+		
+		try {
+
+			Response response = client.newCall(url).execute();
+
+			ObjectMapper objectMapper = new ObjectMapper();
+
+			JsonNode rootNode = objectMapper.readTree(response.body().string());
+
+			Iterator<JsonNode> elementsContents = rootNode.path("content").iterator();
+
+			while (elementsContents.hasNext()) {
+
+				JsonNode jsonNode = (JsonNode) elementsContents.next();
+
+				rootObject = intSynchronize.parseDetailData(jsonNode);
+			}
+			response.close();
 			return rootObject;
 			
 	   } catch (Exception e) {

@@ -162,7 +162,7 @@ public class LoginController {
 			scheduledEmail.setEmail(user.getEmail());
 			scheduledEmail.setName(user.getFullName());
 			scheduledEmail.setInsertUser(user);
-			scheduledEmail.setInsertDate(GregorianCalendar.getInstance().getTime());
+			//scheduledEmail.setInsertDate(new);
 			scheduledEmail.setSubject("Re-definição de senha.");
 			scheduledEmail.setBody("http://findinfo.kinghost.net/findanvisa/#/redefine?id=" + user.getId());
 

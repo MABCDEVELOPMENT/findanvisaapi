@@ -1,7 +1,6 @@
 package com.anvisa.interceptor.synchronizedata;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
@@ -18,14 +17,6 @@ import com.anvisa.model.persistence.RegisterCNPJ;
 import com.anvisa.model.persistence.rest.foot.ContentFoot;
 import com.anvisa.repository.generic.FootRepository;
 import com.anvisa.repository.generic.RegisterCNPJRepository;
-import com.anvisa.repository.generic.RepositoryScheduledEmail;
-import com.anvisa.rest.RootObject;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.Response;
 
 @Component
 public class SynchronizeDataTask {
@@ -63,7 +54,7 @@ public class SynchronizeDataTask {
 			List<AbstractBaseEntity> itens = intSynchronize[0].loadData(registerCNPJ.getCnpj());
 			for (Iterator<AbstractBaseEntity> iterator = itens.iterator(); iterator.hasNext();) {
 				ContentFoot abstractBaseEntity = (ContentFoot) iterator.next();
-				IntSynchronize.repository.saveAndFlush(abstractBaseEntity);
+				footRepository.saveAndFlush(abstractBaseEntity);
 			}
 			
 		}

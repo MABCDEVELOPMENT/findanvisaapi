@@ -1,23 +1,74 @@
 package com.anvisa.model.persistence.rest.foot;
 
-public class ContentDetalFoot {
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Table;
+
+import com.anvisa.model.persistence.AbstractBaseEntity;
+import com.fasterxml.jackson.annotation.JsonAlias;
+
+@Entity
+@Table(name = "foot_detail")
+public class ContentDetalFoot extends AbstractBaseEntity {
 	
+
+	@Column(name = "social_reason", length = 100, nullable = false)
+	@JsonAlias(value = "razaoSocial")
 	String razaoSocial;
+	
+	@Column(name = "cnpj", length = 14, nullable = false)
+	@JsonAlias(value = "cnpj")
 	String cnpj;
+	
+	@Column(name = "comercial_name", length = 100, nullable = false)
+	@JsonAlias(value = "nomeComercial")
 	String nomeComercial;
+	
+	@Column(name = "therapeutic_classes", length = 100, nullable = false)
+	@JsonAlias(value = "classesTerapeuticas")
 	String classesTerapeuticas;
+	
+	@Column(name = "register", length = 20, nullable = false)
+	@JsonAlias(value = "registro")
 	String registro;
+	
+	@Column(name = "process", length = 20, nullable = false)
+	@JsonAlias(value = "processo")
 	String processo;
+	
+	@Column(name = "month_Year_maturity", length = 6, nullable = false)
+	@JsonAlias(value = "mesAnoVencimento")
 	String mesAnoVencimento;
+	
+
+	@Column(name = "brand", length = 20, nullable = false)
+	@JsonAlias(value = "marca")
 	String marca;
+	
+	
+	@Column(name = "active principle", length = 60, nullable = false)
+	@JsonAlias(value = "principioAtivo")
 	String principioAtivo;
+	
+	@Column(name = "active_principle", length = 60, nullable = false)
+	@JsonAlias(value = "principioAtivo")
 	String embalagemPrimaria;
+	
+	@Column(name = "manufacturing_site", length = 60, nullable = false)
+	@JsonAlias(value = "localFabricacao")
 	String localFabricacao;
+	
+	@Column(name = "administrative_routes", length = 60, nullable = false)
+	@JsonAlias(value = "viasAdministrativa")	
 	String viasAdministrativa;
+
+	@Column(name = "ifa_unique", length = 3, nullable = false)
+	@JsonAlias(value = "ifaUnico")	
 	String ifaUnico;
+	
+	@Column(name = "conservation", length = 60, nullable = false)
+	@JsonAlias(value = "conservacao")	
 	String conservacao;
-	
-	
 	
 	public String getRazaoSocial() {
 		return razaoSocial;
@@ -103,5 +154,6 @@ public class ContentDetalFoot {
 	public void setConservacao(String conservacao) {
 		this.conservacao = conservacao;
 	}
+
 
 }

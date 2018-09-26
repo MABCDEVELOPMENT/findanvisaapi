@@ -121,7 +121,7 @@ public class UserController {
 
 				email.setName(user.getFullName());
 				email.setInsertUser(user);
-				email.setInsertDate(user.getInsertDate());
+				//email.setInsertDate(user.getInsertDate());
 				email.setSubject("Ativação de conta");
 				email.setEmail(usermail.getEmail());
 				email.setBody(sb.toString());

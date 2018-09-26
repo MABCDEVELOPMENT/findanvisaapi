@@ -74,7 +74,7 @@ public class FindAnvisaApplication extends SpringBootServletInitializer implemen
 		SpringApplication.run(FindAnvisaApplication.class, args);
 		
 		System.out.println(IMAGE_DIR);
-		//SynchronizeDataTask.synchronizeData();
+		SynchronizeDataTask.synchronizeData();
 		
 	}
 }

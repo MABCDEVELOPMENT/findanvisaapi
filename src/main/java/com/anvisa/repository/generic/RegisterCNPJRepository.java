@@ -7,9 +7,6 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import com.anvisa.model.persistence.RegisterCNPJ;
-import com.anvisa.model.persistence.User;
-
-import antlr.collections.List;
 
 public interface RegisterCNPJRepository extends JpaRepository<RegisterCNPJ, Long> {
 

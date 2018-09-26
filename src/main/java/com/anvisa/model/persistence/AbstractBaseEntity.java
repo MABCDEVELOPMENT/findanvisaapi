@@ -2,18 +2,19 @@ package com.anvisa.model.persistence;
 
 import java.util.Date;
 
+
 import javax.persistence.Column;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.MappedSuperclass;
+import javax.persistence.PrePersist;
+import javax.persistence.PreUpdate;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 import org.hibernate.annotations.ColumnDefault;
-import org.hibernate.annotations.ManyToAny;
 
 import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -36,7 +37,7 @@ public abstract class AbstractBaseEntity {
 	private User insertUser;
 	
 	@JsonFormat(pattern = "dd/MM/yyyy")
-	@Column(name = "insert_date")
+	@Column(name = "insert_date",  insertable = true, updatable = false)
 	@Temporal(TemporalType.DATE)
 	private Date insertDate;
 
@@ -47,7 +48,7 @@ public abstract class AbstractBaseEntity {
 	
 	@JsonFormat(pattern = "dd/MM/yyyy")
 	@JsonAlias(value = "updateDate")
-	@Column(name = "update_date")
+	@Column(name = "update_date", insertable = false, updatable = true)
 	@Temporal(TemporalType.DATE)
 	private Date updateDate;
 
@@ -110,6 +111,16 @@ public abstract class AbstractBaseEntity {
 
 	public void setOwnerUser(User ownerUser) {
 		this.ownerUser = ownerUser;
+	}
+	
+	@PrePersist
+	void onCreate() {
+		this.setInsertDate(new Date(System.currentTimeMillis()));
+	}
+	
+	@PreUpdate
+	void onPersist() {
+		this.setUpdateDate(new Date(System.currentTimeMillis()));
 	}
 
 }

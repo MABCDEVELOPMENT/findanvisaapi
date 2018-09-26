@@ -4,6 +4,9 @@ import java.time.LocalDate;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import com.anvisa.model.persistence.AbstractBaseEntity;
@@ -54,15 +57,19 @@ public class ContentFoot extends AbstractBaseEntity {
 	@JsonAlias(value = "dataVencimento")	
 	LocalDate dataVencimento;
 	
+	@JoinColumn
+	ContentDetalFoot contentDateil;
+	
+	
 	public ContentFoot(Content content) {
 		// TODO Auto-generated constructor stub
 		
 		this.setCodigo(content.getProduto().getCodigo());
 		this.setProduto(content.getProduto().getNome());
-		this.setRegistro(content.getProduto().getNumeroRegistroFormatado());
-		this.setProcesso(content.getProcesso().getNumeroProcessoFormatado());
+		this.setRegistro(content.getProduto().getNumeroRegistro());
+		this.setProcesso(content.getProcesso().getNumero());
 		this.setEmpresa(content.getEmpresa().getRazaoSocial());
-		this.setCnpj(content.getEmpresa().getCnpjFormatado());
+		this.setCnpj(content.getEmpresa().getCnpj());
 		this.setSituacao(content.getProcesso().getSituacao());
 		this.setVencimento(content.getProduto().getMesAnoVencimentoFormatado());
 		this.setDataVencimento(content.getProduto().getDataVencimentoRegistro());
@@ -149,8 +156,14 @@ public class ContentFoot extends AbstractBaseEntity {
 	public void setStatusVencimento(String statusVencimento) {
 		this.statusVencimento = statusVencimento;
 	}
-	
-	
-	
+
+	public ContentDetalFoot getContentDateil() {
+		return contentDateil;
+	}
+
+	public void setContentDateil(ContentDetalFoot contentDateil) {
+		this.contentDateil = contentDateil;
+	}
+
 }
 
