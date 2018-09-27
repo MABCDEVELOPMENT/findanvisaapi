@@ -8,7 +8,12 @@ import com.fasterxml.jackson.annotation.JsonAlias;
 
 @Entity
 @Table(name = "scheduled_email")
-public class ScheduledEmail extends AbstractBaseEntity {
+public class ScheduledEmail extends BaseEntityAudit {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 
 	@Column(name = "email", nullable = false)
 	@JsonAlias(value = "email")

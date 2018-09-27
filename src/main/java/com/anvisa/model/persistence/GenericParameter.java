@@ -18,8 +18,13 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 
 @Entity
 @Table(name = "GenericParameter")
-public class GenericParameter extends AbstractBaseEntity {
+public class GenericParameter extends BaseEntityAudit {
 
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
@@ -27,9 +32,9 @@ public class GenericParameter extends AbstractBaseEntity {
 	@JsonAlias(value = "id")
 	private Long id;
 
-	@Column(name = "version", length = 20, nullable = false, unique = false)
+	@Column(name = "versao", length = 20, nullable = false, unique = false)
 	@JsonAlias(value = "version")
-	private String version;
+	private String versao;
 
 	@Column(name = "systemName", length = 40, nullable = false, unique = false)
 	@JsonAlias(value = "systemName")
@@ -96,12 +101,12 @@ public class GenericParameter extends AbstractBaseEntity {
 		this.id = id;
 	}
 
-	public String getVersion() {
-		return version;
+	public String getVersao() {
+		return versao;
 	}
 
-	public void setVersion(String version) {
-		this.version = version;
+	public void setVersao(String versao) {
+		this.versao = versao;
 	}
 
 	public String getSystemName() {

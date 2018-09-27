@@ -3,7 +3,7 @@ package com.anvisa.interceptor.synchronizedata;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-import com.anvisa.model.persistence.AbstractBaseEntity;
+import com.anvisa.model.persistence.BaseEntityAudit;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -18,9 +18,9 @@ public class SynchronizeData {
 	
 	public String URL_DETAIL = "";
 	
-	public ArrayList<AbstractBaseEntity> loadData(IntSynchronize intSynchronize,String cnpj) {
+	public ArrayList<BaseEntityAudit> loadData(IntSynchronize intSynchronize,String cnpj) {
 		// TODO Auto-generated method stub
-		ArrayList<AbstractBaseEntity> rootObject = new ArrayList<AbstractBaseEntity>();
+		ArrayList<BaseEntityAudit> rootObject = new ArrayList<BaseEntityAudit>();
 
 		OkHttpClient client = new OkHttpClient();
 		
@@ -45,9 +45,9 @@ public class SynchronizeData {
 
 				JsonNode jsonNode = (JsonNode) elementsContents.next();
 				
-				AbstractBaseEntity abstractBaseEntity = intSynchronize.parseData(jsonNode);
+				BaseEntityAudit BaseEntityAudit = intSynchronize.parseData(jsonNode);
 	
-				rootObject.add(abstractBaseEntity);	
+				rootObject.add(BaseEntityAudit);	
 
 				
 			}
@@ -62,9 +62,9 @@ public class SynchronizeData {
 		return null;
 	}
 	
-	public AbstractBaseEntity loadDetailData(IntSynchronize intSynchronize,String concat) {
+	public BaseEntityAudit loadDetailData(IntSynchronize intSynchronize,String concat) {
 		// TODO Auto-generated method stub
-		AbstractBaseEntity rootObject = null;
+		BaseEntityAudit rootObject = null;
 		OkHttpClient client = new OkHttpClient();
 
 		Request url = null;

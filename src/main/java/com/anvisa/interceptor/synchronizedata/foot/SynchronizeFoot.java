@@ -9,7 +9,8 @@ import org.springframework.stereotype.Component;
 import com.anvisa.core.json.JsonToObject;
 import com.anvisa.interceptor.synchronizedata.IntSynchronize;
 import com.anvisa.interceptor.synchronizedata.SynchronizeData;
-import com.anvisa.model.persistence.AbstractBaseEntity;
+import com.anvisa.model.persistence.BaseEntity;
+import com.anvisa.model.persistence.BaseEntityAudit;
 import com.anvisa.model.persistence.rest.Content;
 import com.anvisa.model.persistence.rest.foot.ContentDetalFoot;
 import com.anvisa.model.persistence.rest.foot.ContentFoot;
@@ -84,29 +85,29 @@ public class SynchronizeFoot extends SynchronizeData implements IntSynchronize {
 	}
 
 	@Override
-	public ArrayList<AbstractBaseEntity> loadData(String cnpj) {
+	public ArrayList<BaseEntityAudit> loadData(String cnpj) {
 		return super.loadData(this, cnpj);
 	}
 
 	@Override
-	public AbstractBaseEntity loadDetailData(String concat) {
+	public BaseEntityAudit loadDetailData(String concat) {
 		return super.loadDetailData(this, concat);
 	}
 
 	@Override
-	public void persist(ArrayList<AbstractBaseEntity> itens) {
+	public void persist(ArrayList<BaseEntityAudit> itens) {
 
-		for (Iterator<AbstractBaseEntity> iterator = itens.iterator(); iterator.hasNext();) {
+		for (Iterator<BaseEntityAudit> iterator = itens.iterator(); iterator.hasNext();) {
 
-			ContentFoot abstractBaseEntity = (ContentFoot) iterator.next();
+			ContentFoot BaseEntity = (ContentFoot) iterator.next();
 
-			ContentFoot localFoot = footRepository.findByProcessCnpjCodigoRegistro(abstractBaseEntity.getProcesso(),
-					abstractBaseEntity.getCnpj(), abstractBaseEntity.getCodigo(), abstractBaseEntity.getRegistro(),
-					abstractBaseEntity.getDataVencimento());
+			ContentFoot localFoot = footRepository.findByProcessCnpjCodigoRegistro(BaseEntity.getProcesso(),
+					BaseEntity.getCnpj(), BaseEntity.getCodigo(), BaseEntity.getRegistro(),
+					BaseEntity.getDataVencimento());
 
 			boolean newFoot = (localFoot == null);
 
-			ContentDetalFoot detail = (ContentDetalFoot) this.loadDetailData(abstractBaseEntity.getProcesso());
+			ContentDetalFoot detail = (ContentDetalFoot) this.loadDetailData(BaseEntity.getProcesso());
 
 			if (detail != null) {
 
@@ -115,7 +116,7 @@ public class SynchronizeFoot extends SynchronizeData implements IntSynchronize {
 					if (localFoot.getContentDetalFoot() != null && !detail.equals(localFoot.getContentDetalFoot())) {
 						detail.setId(localFoot.getContentDetalFoot().getId());
 						footDetailRepository.saveAndFlush(detail);
-						abstractBaseEntity.setContentDetalFoot(detail);
+						BaseEntity.setContentDetalFoot(detail);
 					} else {
 					    detail.setId(localFoot.getContentDetalFoot().getId());
 					}    
@@ -123,25 +124,25 @@ public class SynchronizeFoot extends SynchronizeData implements IntSynchronize {
 
 					footDetailRepository.saveAndFlush(detail);
 
-					abstractBaseEntity.setContentDetalFoot(detail);
+					BaseEntity.setContentDetalFoot(detail);
 				}
 
 			}
 
 			if (localFoot != null) {
 
-				if (!localFoot.equals(abstractBaseEntity)) {
+				if (!localFoot.equals(BaseEntity)) {
 
-					abstractBaseEntity.setId(localFoot.getId());
+					BaseEntity.setId(localFoot.getId());
 					detail.setId(localFoot.getContentDetalFoot().getId());
-					abstractBaseEntity.setContentDetalFoot(detail);
-					footRepository.saveAndFlush(abstractBaseEntity);
+					BaseEntity.setContentDetalFoot(detail);
+					footRepository.saveAndFlush(BaseEntity);
 
 				}
 
 			} else {
 
-				footRepository.saveAndFlush(abstractBaseEntity);
+				footRepository.saveAndFlush(BaseEntity);
 
 			}
 

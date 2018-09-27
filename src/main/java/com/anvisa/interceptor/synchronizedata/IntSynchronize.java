@@ -2,17 +2,17 @@ package com.anvisa.interceptor.synchronizedata;
 
 import java.util.ArrayList;
 
-import com.anvisa.model.persistence.AbstractBaseEntity;
+import com.anvisa.model.persistence.BaseEntityAudit;
 import com.fasterxml.jackson.databind.JsonNode;
 
 public interface IntSynchronize {
 	
 	
-	ArrayList<AbstractBaseEntity> loadData(String cnpj);
-	AbstractBaseEntity loadDetailData(String concat);
+	ArrayList<BaseEntityAudit> loadData(String cnpj);
+	BaseEntityAudit loadDetailData(String concat);
 	
-	AbstractBaseEntity parseData(JsonNode node);
-	AbstractBaseEntity parseDetailData(JsonNode node);
-	void persist(ArrayList<AbstractBaseEntity> itens);
+	BaseEntityAudit parseData(JsonNode node);
+	BaseEntityAudit parseDetailData(JsonNode node);
+	void persist(ArrayList<BaseEntityAudit> itens);
 	
 }

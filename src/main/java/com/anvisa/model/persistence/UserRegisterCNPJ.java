@@ -10,13 +10,14 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name = "user_register_cnpj")
-public class UserRegisterCNPJ {
+public class UserRegisterCNPJ extends BaseEntityAudit {
 	
-	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
-	@Column(name = "ID", nullable = false)
-	public Long id;
-	
+		
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	@ManyToOne
 	private User user;
 
@@ -35,16 +36,6 @@ public class UserRegisterCNPJ {
 	@Column(name = "saneante", nullable = false, columnDefinition = "boolean default false")
 	private boolean saneante = false ;
 	
-
-		
-	public Long getId() {
-		return id;
-	}
-
-	public void setId(Long id) {
-		this.id = id;
-	}
-
 	public User getUser() {
 		return user;
 	}

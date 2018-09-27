@@ -3,7 +3,6 @@ package com.anvisa.interceptor.synchronizedata;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -13,7 +12,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import com.anvisa.interceptor.synchronizedata.foot.SynchronizeFoot;
-import com.anvisa.model.persistence.AbstractBaseEntity;
+import com.anvisa.model.persistence.BaseEntityAudit;
 import com.anvisa.model.persistence.RegisterCNPJ;
 import com.anvisa.repository.generic.RegisterCNPJRepository;
 
@@ -43,11 +42,9 @@ public class SynchronizeDataTask {
 		
 		for (RegisterCNPJ registerCNPJ : registerCNPJs) {
 			
-			ArrayList<AbstractBaseEntity> itens = intSynchronize[0].loadData(registerCNPJ.getCnpj());
-			//for (Iterator iterator = itens.iterator(); iterator.hasNext();) {
-				 //AbstractBaseEntity abstractBaseEntity = (AbstractBaseEntity) iterator.next();
-				 intSynchronize[0].persist(itens);
-			//}//
+			ArrayList<BaseEntityAudit> itens = intSynchronize[0].loadData(registerCNPJ.getCnpj());
+
+			intSynchronize[0].persist(itens);
 			
 			
 			

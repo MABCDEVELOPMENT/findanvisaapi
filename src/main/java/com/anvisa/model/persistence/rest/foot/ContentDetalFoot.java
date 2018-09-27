@@ -4,13 +4,19 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 
-import com.anvisa.model.persistence.AbstractBaseEntity;
+import com.anvisa.model.persistence.BaseEntity;
+import com.anvisa.model.persistence.BaseEntityAudit;
 import com.fasterxml.jackson.annotation.JsonAlias;
 
 @Entity
 @Table(name = "foot_detail")
-public class ContentDetalFoot extends AbstractBaseEntity {
+public class ContentDetalFoot extends BaseEntityAudit {
 	
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 
 	@Column(name = "social_reason", length = 200, nullable = false)
 	@JsonAlias(value = "razaoSocial")

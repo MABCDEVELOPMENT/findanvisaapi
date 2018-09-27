@@ -2,21 +2,24 @@ package com.anvisa.model.persistence.rest.foot;
 
 import java.time.LocalDate;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
-import com.anvisa.model.persistence.AbstractBaseEntity;
+import com.anvisa.model.persistence.BaseEntityAudit;
 import com.anvisa.model.persistence.rest.Content;
 import com.fasterxml.jackson.annotation.JsonAlias;
 
 @Entity
 @Table(name = "foot")
-public class ContentFoot extends AbstractBaseEntity {
+public class ContentFoot extends BaseEntityAudit {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 
 	@Column(name = "code", length = 20, nullable = false)
 	@JsonAlias(value = "codigo")

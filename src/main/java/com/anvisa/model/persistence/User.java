@@ -20,8 +20,13 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 
 @Entity
 @Table(name = "user")
-public class User extends AbstractBaseEntity  {
+public class User extends BaseEntityAudit  {
 
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 
 	@Column(name = "user_name", length = 40, nullable = true)
 	@JsonAlias(value = "userName")
