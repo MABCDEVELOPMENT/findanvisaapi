@@ -64,6 +64,9 @@ public class ContentFoot extends AbstractBaseEntity {
 	@JoinColumn(name="contentDetalFootFK")
 	ContentDetalFoot contentDetalFoot;
 	
+	public ContentFoot() {
+		// TODO Auto-generated constructor stub
+	}
 	
 	public ContentFoot(Content content) {
 		// TODO Auto-generated constructor stub
@@ -210,13 +213,13 @@ public class ContentFoot extends AbstractBaseEntity {
 		if (codigo != other.codigo) {
 			return false;
 		}
-		if (contentDetalFoot == null) {
+/*		if (contentDetalFoot == null) {
 			if (other.contentDetalFoot != null) {
 				return false;
 			}
 		} else if (!contentDetalFoot.equals(other.contentDetalFoot)) {
 			return false;
-		}
+		}*/
 		if (dataVencimento == null) {
 			if (other.dataVencimento != null) {
 				return false;

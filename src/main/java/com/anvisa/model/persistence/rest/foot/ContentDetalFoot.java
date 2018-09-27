@@ -12,7 +12,7 @@ import com.fasterxml.jackson.annotation.JsonAlias;
 public class ContentDetalFoot extends AbstractBaseEntity {
 	
 
-	@Column(name = "social_reason", length = 100, nullable = false)
+	@Column(name = "social_reason", length = 200, nullable = false)
 	@JsonAlias(value = "razaoSocial")
 	String razaoSocial;
 	
@@ -20,11 +20,11 @@ public class ContentDetalFoot extends AbstractBaseEntity {
 	@JsonAlias(value = "cnpj")
 	String cnpj;
 	
-	@Column(name = "comercial_name", length = 100, nullable = false)
+	@Column(name = "comercial_name", length = 200, nullable = false)
 	@JsonAlias(value = "nomeComercial")
 	String nomeComercial;
 	
-	@Column(name = "therapeutic_classes", length = 100, nullable = false)
+	@Column(name = "therapeutic_classes", length = 200, nullable = false)
 	@JsonAlias(value = "classesTerapeuticas")
 	String classesTerapeuticas;
 	
@@ -69,6 +69,10 @@ public class ContentDetalFoot extends AbstractBaseEntity {
 	@Column(name = "conservation", length = 60, nullable = true)
 	@JsonAlias(value = "conservacao")	
 	String conservacao;
+	
+	public ContentDetalFoot() {
+		// TODO Auto-generated constructor stub
+	}
 	
 	public String getRazaoSocial() {
 		return razaoSocial;

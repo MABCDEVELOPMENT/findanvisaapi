@@ -1,5 +1,6 @@
 package com.anvisa.model.persistence;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 
 
@@ -38,8 +39,7 @@ public abstract class AbstractBaseEntity {
 	
 	@JsonFormat(pattern = "dd/MM/yyyy")
 	@Column(name = "insert_date",  insertable = true, updatable = false)
-	@Temporal(TemporalType.DATE)
-	private Date insertDate;
+	private LocalDateTime insertDate;
 
 	@JsonAlias(value = "updateUser")
 	@ManyToOne
@@ -49,8 +49,7 @@ public abstract class AbstractBaseEntity {
 	@JsonFormat(pattern = "dd/MM/yyyy")
 	@JsonAlias(value = "updateDate")
 	@Column(name = "update_date", insertable = false, updatable = true)
-	@Temporal(TemporalType.DATE)
-	private Date updateDate;
+	private LocalDateTime updateDate;
 
 	@JsonAlias(value = "ownerUser")
 	@ManyToOne	
@@ -81,11 +80,11 @@ public abstract class AbstractBaseEntity {
 		this.insertUser = insertUser;
 	}
 
-	public Date getInsertDate() {
+	public LocalDateTime getInsertDate() {
 		return insertDate;
 	}
 
-	public void setInsertDate(Date insertDate) {
+	public void setInsertDate(LocalDateTime insertDate) {
 		this.insertDate = insertDate;
 	}
 
@@ -97,11 +96,11 @@ public abstract class AbstractBaseEntity {
 		this.updateUser = updateUser;
 	}
 
-	public Date getUpdateDate() {
+	public LocalDateTime getUpdateDate() {
 		return updateDate;
 	}
 
-	public void setUpdateDate(Date updateDate) {
+	public void setUpdateDate(LocalDateTime updateDate) {
 		this.updateDate = updateDate;
 	}
 
@@ -115,12 +114,12 @@ public abstract class AbstractBaseEntity {
 	
 	@PrePersist
 	void onCreate() {
-		this.setInsertDate(new Date(System.currentTimeMillis()));
+		this.setInsertDate(LocalDateTime.now());
 	}
 	
 	@PreUpdate
 	void onPersist() {
-		this.setUpdateDate(new Date(System.currentTimeMillis()));
+		this.setUpdateDate(LocalDateTime.now());
 	}
 
 }

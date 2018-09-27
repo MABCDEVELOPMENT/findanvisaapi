@@ -1,6 +1,7 @@
 package com.anvisa.interceptor.synchronizedata;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
@@ -14,10 +15,6 @@ import org.springframework.stereotype.Component;
 import com.anvisa.interceptor.synchronizedata.foot.SynchronizeFoot;
 import com.anvisa.model.persistence.AbstractBaseEntity;
 import com.anvisa.model.persistence.RegisterCNPJ;
-import com.anvisa.model.persistence.rest.foot.ContentDetalFoot;
-import com.anvisa.model.persistence.rest.foot.ContentFoot;
-import com.anvisa.repository.generic.FootDetailRepository;
-import com.anvisa.repository.generic.FootRepository;
 import com.anvisa.repository.generic.RegisterCNPJRepository;
 
 @Component
@@ -27,21 +24,8 @@ public class SynchronizeDataTask {
 	private static RegisterCNPJRepository registerCNPJRepository;
 	
 	@Autowired
-	private static FootRepository footRepository;
-	
-	@Autowired
-	private static FootDetailRepository footDetailRepository;
-
-	/*@Autowired
-	private static JavaMailSender mailSender;*/
-
-	@Autowired
-	public void setService(RegisterCNPJRepository registerCNPJRepository,
-						   FootRepository footRepository,
-						   FootDetailRepository footDetailRepository) {
+	public void setService(RegisterCNPJRepository registerCNPJRepository) {
 		this.registerCNPJRepository = registerCNPJRepository;
-		this.footRepository         = footRepository;
-		this.footDetailRepository   = footDetailRepository;
 	}
 
 	private static final Logger log = LoggerFactory.getLogger(SynchronizeDataTask.class);
@@ -55,22 +39,17 @@ public class SynchronizeDataTask {
 		
 		List<RegisterCNPJ> registerCNPJs = registerCNPJRepository.findAll(0);
 	
-		IntSynchronize[]  intSynchronize = {new SynchronizeFoot(footRepository)};
+		IntSynchronize[]  intSynchronize = {new SynchronizeFoot()};
 		
 		for (RegisterCNPJ registerCNPJ : registerCNPJs) {
 			
-			List<AbstractBaseEntity> itens = intSynchronize[0].loadData(registerCNPJ.getCnpj());
+			ArrayList<AbstractBaseEntity> itens = intSynchronize[0].loadData(registerCNPJ.getCnpj());
+			//for (Iterator iterator = itens.iterator(); iterator.hasNext();) {
+				 //AbstractBaseEntity abstractBaseEntity = (AbstractBaseEntity) iterator.next();
+				 intSynchronize[0].persist(itens);
+			//}//
 			
 			
-			for (Iterator<AbstractBaseEntity> iterator = itens.iterator(); iterator.hasNext();) {
-				ContentFoot abstractBaseEntity = (ContentFoot) iterator.next();
-				ContentDetalFoot detail = (ContentDetalFoot) intSynchronize[0].loadDetailData(abstractBaseEntity.getProcesso());
-				if (detail!=null) {
-					footDetailRepository.saveAndFlush(detail);
-					abstractBaseEntity.setContentDetalFoot(detail);
-				}	
-				footRepository.saveAndFlush(abstractBaseEntity);
-			}
 			
 		}
 	

@@ -3,8 +3,6 @@ package com.anvisa.interceptor.synchronizedata;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-import org.springframework.data.jpa.repository.JpaRepository;
-
 import com.anvisa.model.persistence.AbstractBaseEntity;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -13,20 +11,19 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 
+
 public class SynchronizeData {
 	
 	public String URL = "";
 	
 	public String URL_DETAIL = "";
 	
-	public JpaRepository<Object, Long> repository = null;
-	
 	public ArrayList<AbstractBaseEntity> loadData(IntSynchronize intSynchronize,String cnpj) {
 		// TODO Auto-generated method stub
 		ArrayList<AbstractBaseEntity> rootObject = new ArrayList<AbstractBaseEntity>();
 
 		OkHttpClient client = new OkHttpClient();
-
+		
 		Request url = null;
 
 
@@ -35,9 +32,9 @@ public class SynchronizeData {
 				.get().addHeader("authorization", "Guest").build();
 		
 		try {
-
+			
 			Response response = client.newCall(url).execute();
-
+			
 			ObjectMapper objectMapper = new ObjectMapper();
 
 			JsonNode rootNode = objectMapper.readTree(response.body().string());
@@ -49,8 +46,10 @@ public class SynchronizeData {
 				JsonNode jsonNode = (JsonNode) elementsContents.next();
 				
 				AbstractBaseEntity abstractBaseEntity = intSynchronize.parseData(jsonNode);
+	
+				rootObject.add(abstractBaseEntity);	
+
 				
-				rootObject.add(abstractBaseEntity);
 			}
 			response.close();
 			return rootObject;
