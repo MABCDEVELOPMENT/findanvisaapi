@@ -107,6 +107,7 @@ public class LoginController {
 						registerCNPJsNew.add(registerCNPJ);
 					}
 				} catch(Exception e) {
+					e.printStackTrace();
 					System.out.println("user "+user.getId() +" registerCNPJ "+registerCNPJ.getId()+" Não carregou !");
 				}
 				

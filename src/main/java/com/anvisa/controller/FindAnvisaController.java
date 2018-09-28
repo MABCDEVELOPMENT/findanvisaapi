@@ -24,6 +24,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.anvisa.controller.find.FindData;
 import com.anvisa.core.json.UrlToJson;
 import com.anvisa.core.type.TypeArea;
 import com.anvisa.rest.QueryRecordDetail;
@@ -71,10 +72,12 @@ public class FindAnvisaController {
 
 	@RequestMapping(value = "/product", method = RequestMethod.POST, produces = "application/json")
 	public RootObject findProduct(@RequestBody QueryRecordParameter queryRecordParameter) {
-		
-		RootObject rootObject = UrlToJson.find(queryRecordParameter);
-		
-		return rootObject;
+		if (queryRecordParameter.getCategory()!=0) {
+		    RootObject rootObject = UrlToJson.find(queryRecordParameter);
+		    return rootObject;
+		} else {
+		    return FindData.find(queryRecordParameter);
+		}    
 	}
 	
 	@ApiOperation(value = "View a detail of produtc")

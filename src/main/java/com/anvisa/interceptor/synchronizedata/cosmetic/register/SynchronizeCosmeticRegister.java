@@ -1,4 +1,4 @@
-package com.anvisa.interceptor.synchronizedata.foot;
+package com.anvisa.interceptor.synchronizedata.cosmetic.register;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -18,7 +18,7 @@ import com.anvisa.repository.generic.FootRepository;
 import com.fasterxml.jackson.databind.JsonNode;
 
 @Component
-public class SynchronizeFoot extends SynchronizeData implements IntSynchronize {
+public class SynchronizeCosmeticRegister extends SynchronizeData implements IntSynchronize {
 
 	@Autowired
 	private static FootRepository footRepository;
@@ -34,11 +34,11 @@ public class SynchronizeFoot extends SynchronizeData implements IntSynchronize {
 
 	}
 
-	public SynchronizeFoot() {
+	public SynchronizeCosmeticRegister() {
 
-		URL = "https://consultas.anvisa.gov.br/api/consulta/produtos/6?count=2000&page=1&filter[cnpj]=";
+		URL = "https://consultas.anvisa.gov.br/api/consulta/cosmeticos/registrados?count=1000&page=1&filter[cnpj]=";
 
-		URL_DETAIL = "https://consultas.anvisa.gov.br/api/consulta/produtos/6/";
+		URL_DETAIL = "https://consultas.anvisa.gov.br/api/consulta/cosmeticos/registrados/";
 
 	}
 

@@ -34,7 +34,7 @@ public class SynchronizeDataTask {
 	@Scheduled(fixedRate = 500000000)
 	public static void synchronizeData() {
 
-		log.info("SynchronizeData ", dateFormat.format(new Date()));
+		log.info("SynchronizeData", dateFormat.format(new Date()));
 		
 		List<RegisterCNPJ> registerCNPJs = registerCNPJRepository.findAll(0);
 	
