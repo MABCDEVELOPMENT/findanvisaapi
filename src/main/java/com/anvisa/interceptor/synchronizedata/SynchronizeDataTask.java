@@ -11,7 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
-import com.anvisa.interceptor.synchronizedata.foot.SynchronizeFoot;
+import com.anvisa.interceptor.synchronizedata.entity.SynchronizeFoot;
 import com.anvisa.model.persistence.BaseEntityAudit;
 import com.anvisa.model.persistence.RegisterCNPJ;
 import com.anvisa.repository.generic.RegisterCNPJRepository;

@@ -34,15 +34,41 @@ public class ContentCosmeticRegister extends BaseEntityAudit {
 	@JsonAlias(value = "processo")
     String processo;
 	
+	@Column(name = "expedient_process", length = 20, nullable = false)
+	@JsonAlias(value = "expedienteProcesso")
     String expedienteProcesso;
+	
+	@Column(name = "product", length = 300, nullable = false)
+	@JsonAlias(value = "produto")
     String produto;
+	
+	@Column(name = "cnpj", length = 14, nullable = false)
+	@JsonAlias(value = "cnpj")	
     String cnpj;
+	
+	@Column(name = "social_reason", length = 300, nullable = false)
+	@JsonAlias(value = "razaoSocial")		
     String razaoSocial;
+	
+	@Column(name = "situation", length = 300, nullable = false)
+	@JsonAlias(value = "situacao")		
     String situacao;
+	
+	@Column(name = "maturity", length = 8, nullable = false)
+	@JsonAlias(value = "vencimento")	
     LocalDate vencimento;
+
+	@Column(name = "status_maturity", length = 8, nullable = false)
+	@JsonAlias(value = "statusVencimento")	
     String statusVencimento;
+	
+	@Column(name = "company", length = 8, nullable = false)
+	@JsonAlias(value = "empresa")		
     String empresa;
     
+	@Column(name = "detail_cosmetic_register", nullable = false)
+	@JsonAlias(value = "contentDetailCosmeticRegister")		
+    ContentDetailCosmeticRegister contentDetailCosmeticRegister;
     
 	public String getAssunto() {
 		return assunto;

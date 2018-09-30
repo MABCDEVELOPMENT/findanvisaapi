@@ -1,4 +1,4 @@
-package com.anvisa.interceptor.synchronizedata.foot;
+package com.anvisa.interceptor.synchronizedata.entity;
 
 import java.util.ArrayList;
 import java.util.Iterator;
