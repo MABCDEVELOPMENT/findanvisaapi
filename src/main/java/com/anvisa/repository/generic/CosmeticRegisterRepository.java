@@ -12,7 +12,7 @@ import com.anvisa.model.persistence.rest.foot.ContentFoot;
 
 public interface CosmeticRegisterRepository extends JpaRepository<ContentCosmeticRegister, Long>,JpaSpecificationExecutor<ContentFoot> {
 
-	@Query("select f from ContentFoot f where f.processo =:processo and f.cnpj=:cnpj and f.codigo=:codigo and f.registro=:registro and f.dataVencimento =:dataVencimento")
+	@Query("select f from ContentCosmeticRegister f where f.processo =:processo and f.cnpj=:cnpj and f.vencimento =:dataVencimento")
 	public ContentCosmeticRegister findByProcessCnpjVencimento(@Param("processo") String process, @Param("cnpj") String cnpj,
 			 @Param("dataVencimento") LocalDate dataVencimento);
 

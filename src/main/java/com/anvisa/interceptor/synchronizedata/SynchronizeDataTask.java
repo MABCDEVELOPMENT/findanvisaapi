@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
+import com.anvisa.interceptor.synchronizedata.entity.SynchronizeCosmeticRegister;
 import com.anvisa.interceptor.synchronizedata.entity.SynchronizeFoot;
 import com.anvisa.model.persistence.BaseEntityAudit;
 import com.anvisa.model.persistence.RegisterCNPJ;
@@ -36,20 +37,29 @@ public class SynchronizeDataTask {
 
 		log.info("SynchronizeData", dateFormat.format(new Date()));
 		
-		List<RegisterCNPJ> registerCNPJs = registerCNPJRepository.findAll(0);
-	
-		IntSynchronize[]  intSynchronize = {new SynchronizeFoot()};
+		IntSynchronize[] intSynchronize = { new SynchronizeFoot(), new SynchronizeCosmeticRegister() };
 		
+//		List<RegisterCNPJ> registerCNPJs = registerCNPJRepository.findAll(0);
+//	
+//		
+//		
+//		for (RegisterCNPJ registerCNPJ : registerCNPJs) {
+//			
+//			ArrayList<BaseEntityAudit> itens = intSynchronize[0].loadData(registerCNPJ.getCnpj());
+//
+//			intSynchronize[0].persist(itens);
+//			
+//		}
+		
+		List<RegisterCNPJ> registerCNPJs = registerCNPJRepository.findAll(1);
+	
 		for (RegisterCNPJ registerCNPJ : registerCNPJs) {
 			
-			ArrayList<BaseEntityAudit> itens = intSynchronize[0].loadData(registerCNPJ.getCnpj());
+			ArrayList<BaseEntityAudit> itens = intSynchronize[1].loadData(registerCNPJ.getCnpj());
 
-			intSynchronize[0].persist(itens);
-			
-			
+			intSynchronize[1].persist(itens);
 			
 		}
-	
 	}
 	
 	

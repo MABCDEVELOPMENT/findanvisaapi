@@ -11,8 +11,8 @@ import com.anvisa.interceptor.synchronizedata.IntSynchronize;
 import com.anvisa.interceptor.synchronizedata.SynchronizeData;
 import com.anvisa.model.persistence.BaseEntityAudit;
 import com.anvisa.model.persistence.rest.Content;
-import com.anvisa.model.persistence.rest.foot.ContentDetalFoot;
 import com.anvisa.model.persistence.rest.foot.ContentFoot;
+import com.anvisa.model.persistence.rest.foot.ContentFootDetail;
 import com.anvisa.repository.generic.FootDetailRepository;
 import com.anvisa.repository.generic.FootRepository;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -61,26 +61,26 @@ public class SynchronizeFoot extends SynchronizeData implements IntSynchronize {
 	}
 
 	@Override
-	public ContentDetalFoot parseDetailData(JsonNode jsonNode) {
+	public ContentFootDetail parseDetailData(JsonNode jsonNode) {
 		// TODO Auto-generated method stub
-		ContentDetalFoot contentDetalFoot = new ContentDetalFoot();
+		ContentFootDetail contentFootDetail = new ContentFootDetail();
 
-		contentDetalFoot.setProcesso(JsonToObject.getValue(jsonNode, "processo", "numero"));
-		contentDetalFoot.setClassesTerapeuticas(JsonToObject.getArrayValue(jsonNode, "classesTerapeuticas"));
-		contentDetalFoot.setCnpj(JsonToObject.getValue(jsonNode, "cnpj"));
-		contentDetalFoot.setMarca(JsonToObject.getArrayValue(jsonNode, "marcas"));
-		contentDetalFoot.setNomeComercial(JsonToObject.getValue(jsonNode, "nomeComercial"));
-		contentDetalFoot.setRazaoSocial(JsonToObject.getValue(jsonNode, "razaoSocial"));
-		contentDetalFoot.setRegistro(JsonToObject.getValue(jsonNode, "numeroRegistro"));
-		contentDetalFoot.setMesAnoVencimento(JsonToObject.getValue(jsonNode, "mesAnoVencimento"));
-		contentDetalFoot.setPrincipioAtivo(JsonToObject.getValue(jsonNode, "principioAtivo"));
-		contentDetalFoot.setEmbalagemPrimaria(JsonToObject.getValue(jsonNode, "embalagemPrimaria", "tipo"));
-		contentDetalFoot.setViasAdministrativa(JsonToObject.getArrayValue(jsonNode, "viasAdministracao"));
+		contentFootDetail.setProcesso(JsonToObject.getValue(jsonNode, "processo", "numero"));
+		contentFootDetail.setClassesTerapeuticas(JsonToObject.getArrayValue(jsonNode, "classesTerapeuticas"));
+		contentFootDetail.setCnpj(JsonToObject.getValue(jsonNode, "cnpj"));
+		contentFootDetail.setMarca(JsonToObject.getArrayValue(jsonNode, "marcas"));
+		contentFootDetail.setNomeComercial(JsonToObject.getValue(jsonNode, "nomeComercial"));
+		contentFootDetail.setRazaoSocial(JsonToObject.getValue(jsonNode, "razaoSocial"));
+		contentFootDetail.setRegistro(JsonToObject.getValue(jsonNode, "numeroRegistro"));
+		contentFootDetail.setMesAnoVencimento(JsonToObject.getValue(jsonNode, "mesAnoVencimento"));
+		contentFootDetail.setPrincipioAtivo(JsonToObject.getValue(jsonNode, "principioAtivo"));
+		contentFootDetail.setEmbalagemPrimaria(JsonToObject.getValue(jsonNode, "embalagemPrimaria", "tipo"));
+		contentFootDetail.setViasAdministrativa(JsonToObject.getArrayValue(jsonNode, "viasAdministracao"));
 		String ifaUnico = JsonToObject.getValue(jsonNode, "ifaUnico");
-		contentDetalFoot.setIfaUnico(ifaUnico.equals("true") ? "Sim" : "Não");
-		contentDetalFoot.setConservacao(JsonToObject.getArrayValue(jsonNode, "conservacao"));
+		contentFootDetail.setIfaUnico(ifaUnico.equals("true") ? "Sim" : "Não");
+		contentFootDetail.setConservacao(JsonToObject.getArrayValue(jsonNode, "conservacao"));
 
-		return contentDetalFoot;
+		return contentFootDetail;
 	}
 
 	@Override
@@ -106,24 +106,24 @@ public class SynchronizeFoot extends SynchronizeData implements IntSynchronize {
 
 			boolean newFoot = (localFoot == null);
 
-			ContentDetalFoot detail = (ContentDetalFoot) this.loadDetailData(BaseEntity.getProcesso());
+			ContentFootDetail detail = (ContentFootDetail) this.loadDetailData(BaseEntity.getProcesso());
 
 			if (detail != null) {
 
 				if (!newFoot) {
 
-					if (localFoot.getContentDetalFoot() != null && !detail.equals(localFoot.getContentDetalFoot())) {
-						detail.setId(localFoot.getContentDetalFoot().getId());
+					if (localFoot.getContentFootDetail() != null && !detail.equals(localFoot.getContentFootDetail())) {
+						detail.setId(localFoot.getContentFootDetail().getId());
 						footDetailRepository.saveAndFlush(detail);
-						BaseEntity.setContentDetalFoot(detail);
+						BaseEntity.setContentFootDetail(detail);
 					} else {
-					    detail.setId(localFoot.getContentDetalFoot().getId());
+					    detail.setId(localFoot.getContentFootDetail().getId());
 					}    
 				} else {
 
 					footDetailRepository.saveAndFlush(detail);
 
-					BaseEntity.setContentDetalFoot(detail);
+					BaseEntity.setContentFootDetail(detail);
 				}
 
 			}
@@ -133,8 +133,8 @@ public class SynchronizeFoot extends SynchronizeData implements IntSynchronize {
 				if (!localFoot.equals(BaseEntity)) {
 
 					BaseEntity.setId(localFoot.getId());
-					detail.setId(localFoot.getContentDetalFoot().getId());
-					BaseEntity.setContentDetalFoot(detail);
+					detail.setId(localFoot.getContentFootDetail().getId());
+					BaseEntity.setContentFootDetail(detail);
 					footRepository.saveAndFlush(BaseEntity);
 
 				}

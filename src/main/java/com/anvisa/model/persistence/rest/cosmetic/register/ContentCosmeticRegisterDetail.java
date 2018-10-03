@@ -1,21 +1,23 @@
 package com.anvisa.model.persistence.rest.cosmetic.register;
 
-import java.util.ArrayList;
+import java.time.LocalDate;
+import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.MapsId;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import com.anvisa.model.persistence.BaseEntityAudit;
-import com.anvisa.rest.detalhe.comestico.registrado.ApresentacaoCosmeticoRegistrado;
-import com.anvisa.rest.detalhe.comestico.registrado.PeticaoCosmeticoRegistrado;
 import com.fasterxml.jackson.annotation.JsonAlias;
 
 @Entity
 @Table(name = "cosmetic_register_detail")
-public class ContentDetailCosmeticRegister extends BaseEntityAudit {
+public class ContentCosmeticRegisterDetail extends BaseEntityAudit {
 
 	/**
 	 * 
@@ -30,15 +32,15 @@ public class ContentDetailCosmeticRegister extends BaseEntityAudit {
 	@JsonAlias(value = "cnpj")
 	String cnpj;
 	
-	@Column(name = "comercial_name", length = 20, nullable = false)
-	@JsonAlias(value = "nomeComercial")
+	@Column(name = "autorization", length = 20, nullable = false)
+	@JsonAlias(value = "autorizacao")
 	String autorizacao;
 	
 	@Column(name = "product_name", length = 300, nullable = false)
 	@JsonAlias(value = "nomeProduto")
 	String nomeProduto;
 	
-	@Column(name = "category", length = 60, nullable = false)
+	@Column(name = "category", length = 200, nullable = false)
 	@JsonAlias(value = "categoria")
 	String categoria;
 	
@@ -48,16 +50,20 @@ public class ContentDetailCosmeticRegister extends BaseEntityAudit {
 	
 	@Column(name = "maturity_Registration", length = 20, nullable = false)
 	@JsonAlias(value = "vencimentoRegistro")
-	String vencimentoRegistro;
+	LocalDate vencimentoRegistro;
 	
 	@Column(name = "publication_Record", length = 20, nullable = false)
 	@JsonAlias(value = "publicacaoRgistro")	
-	String publicacaoRgistro;
+	LocalDate publicacaoRgistro;
 	
-	@OneToMany(fetch = FetchType.LAZY)
-	ArrayList<ApresentacaoCosmeticoRegistrado> apresentacoes;
+	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+	List<CosmeticRegisterPresentation> apresentacoes;
 	
-	ArrayList<PeticaoCosmeticoRegistrado> peticoes;
+	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+	List<CosmeticRegisterPetition> peticoes;
+	
+	@OneToMany
+    private ContentCosmeticRegister contentCosmeticRegister;
 	
 	public String getRazaoSocial() {
 		return razaoSocial;
@@ -95,28 +101,34 @@ public class ContentDetailCosmeticRegister extends BaseEntityAudit {
 	public void setProcesso(String processo) {
 		this.processo = processo;
 	}
-	public String getVencimentoRegistro() {
+	public LocalDate getVencimentoRegistro() {
 		return vencimentoRegistro;
 	}
-	public void setVencimentoRegistro(String vencimentoRegistro) {
+	public void setVencimentoRegistro(LocalDate vencimentoRegistro) {
 		this.vencimentoRegistro = vencimentoRegistro;
 	}
-	public String getPublicacaoRgistro() {
+	public LocalDate getPublicacaoRgistro() {
 		return publicacaoRgistro;
 	}
-	public void setPublicacaoRgistro(String publicacaoRgistro) {
+	public void setPublicacaoRgistro(LocalDate publicacaoRgistro) {
 		this.publicacaoRgistro = publicacaoRgistro;
 	}
-	public ArrayList<ApresentacaoCosmeticoRegistrado> getApresentacoes() {
+	public List<CosmeticRegisterPresentation> getApresentacoes() {
 		return apresentacoes;
 	}
-	public void setApresentacoes(ArrayList<ApresentacaoCosmeticoRegistrado> apresentacoes) {
+	public void setApresentacoes(List<CosmeticRegisterPresentation> apresentacoes) {
 		this.apresentacoes = apresentacoes;
 	}
-	public ArrayList<PeticaoCosmeticoRegistrado> getPeticoes() {
+	public List<CosmeticRegisterPetition> getPeticoes() {
 		return peticoes;
 	}
-	public void setPeticoes(ArrayList<PeticaoCosmeticoRegistrado> peticoes) {
+	public void setPeticoes(List<CosmeticRegisterPetition> peticoes) {
 		this.peticoes = peticoes;
+	}
+	public ContentCosmeticRegister getContentCosmeticRegister() {
+		return contentCosmeticRegister;
+	}
+	public void setContentCosmeticRegister(ContentCosmeticRegister contentCosmeticRegister) {
+		this.contentCosmeticRegister = contentCosmeticRegister;
 	}
 }

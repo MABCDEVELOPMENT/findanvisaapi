@@ -10,7 +10,7 @@ import com.fasterxml.jackson.annotation.JsonAlias;
 
 @Entity
 @Table(name = "foot_detail")
-public class ContentDetalFoot extends BaseEntityAudit {
+public class ContentFootDetail extends BaseEntityAudit {
 	
 
 	/**
@@ -76,7 +76,7 @@ public class ContentDetalFoot extends BaseEntityAudit {
 	@JsonAlias(value = "conservacao")	
 	String conservacao;
 	
-	public ContentDetalFoot() {
+	public ContentFootDetail() {
 		// TODO Auto-generated constructor stub
 	}
 	
@@ -193,10 +193,10 @@ public class ContentDetalFoot extends BaseEntityAudit {
 		if (obj == null) {
 			return false;
 		}
-		if (!(obj instanceof ContentDetalFoot)) {
+		if (!(obj instanceof ContentFootDetail)) {
 			return false;
 		}
-		ContentDetalFoot other = (ContentDetalFoot) obj;
+		ContentFootDetail other = (ContentFootDetail) obj;
 		if (classesTerapeuticas == null) {
 			if (other.classesTerapeuticas != null) {
 				return false;

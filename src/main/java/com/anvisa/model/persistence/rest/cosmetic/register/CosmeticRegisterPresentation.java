@@ -5,6 +5,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.MapsId;
 import javax.persistence.Table;
 
 import com.anvisa.model.persistence.BaseEntityAudit;
@@ -23,23 +24,23 @@ public class CosmeticRegisterPresentation extends BaseEntityAudit {
 	@JsonAlias(value = "codigo")
 	String codigo;
 	
-	@Column(name = "number", length = 20, nullable = false)
+	@Column(name = "number", length = 20, nullable = true)
 	@JsonAlias(value = "numero")	
     String numero;
 	
-	@Column(name = "primary_package", length = 20, nullable = false)
+	@Column(name = "primary_package", length = 100, nullable = true)
 	@JsonAlias(value = "embalagemPrimaria")	
     String embalagemPrimaria;
 	
-	@Column(name = "second_package", length = 20, nullable = false)
+	@Column(name = "second_package", length = 100, nullable = true)
 	@JsonAlias(value = "embalagemSecundaria")	
     String embalagemSecundaria;
 	
-	@Column(name = "tonality", length = 40, nullable = false)
+	@Column(name = "tonality", length = 40, nullable = true)
 	@JsonAlias(value = "tonalidade")	
     String tonalidade;
 
-	@Column(name = "situation", length = 60, nullable = false)
+	@Column(name = "situation", length = 60, nullable = true)
 	@JsonAlias(value = "situacao")
     String situacao;
 	
@@ -47,13 +48,13 @@ public class CosmeticRegisterPresentation extends BaseEntityAudit {
 	@JsonAlias(value = "destaque")
     boolean destaque;
 	
-	@Column(name = "register", length = 20, nullable = false)
+	@Column(name = "register", length = 20, nullable = true)
 	@JsonAlias(value = "registro")
     String registro;
     
-    @JoinColumn(name = "cosmetic_detail_register_", referencedColumnName = "id")
-    @ManyToOne(optional = false, cascade = CascadeType.DETACH)
-    private ContentDetailCosmeticRegister contentDetailCosmeticRegister;
+	@ManyToOne
+	@MapsId
+    private ContentCosmeticRegisterDetail contentDetailCosmeticRegister;
     
 	public String getCodigo() {
 		return codigo;
@@ -103,10 +104,10 @@ public class CosmeticRegisterPresentation extends BaseEntityAudit {
 	public void setRegistro(String registro) {
 		this.registro = registro;
 	}
-	public ContentDetailCosmeticRegister getContentDetailCosmeticRegister() {
+	public ContentCosmeticRegisterDetail getContentDetailCosmeticRegister() {
 		return contentDetailCosmeticRegister;
 	}
-	public void setContentDetailCosmeticRegister(ContentDetailCosmeticRegister contentDetailCosmeticRegister) {
+	public void setContentDetailCosmeticRegister(ContentCosmeticRegisterDetail contentDetailCosmeticRegister) {
 		this.contentDetailCosmeticRegister = contentDetailCosmeticRegister;
 	}
 	

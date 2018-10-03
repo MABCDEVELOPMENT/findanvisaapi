@@ -13,7 +13,6 @@ import java.util.concurrent.TimeUnit;
 
 import com.anvisa.core.type.TypeSearchProductCosmetic;
 import com.anvisa.model.persistence.rest.Content;
-import com.anvisa.model.persistence.rest.foot.ContentDetalFoot;
 import com.anvisa.model.persistence.rest.foot.ContentFoot;
 import com.anvisa.persistence.rest.ContentProcesso;
 import com.anvisa.rest.QueryRecordParameter;
@@ -180,9 +179,9 @@ public class UrlToJson {
 					// Registrados
 					ContentProdutoRegistrado contentProdutoRegistrado = new ContentProdutoRegistrado();
 
-					Assunto assunto = JsonToObject.getAssunto(jsonNode);
+					//Assunto assunto = JsonToObject.getAssunto(jsonNode);
 
-					contentProdutoRegistrado.setAssunto(assunto.toString());
+					contentProdutoRegistrado.setAssunto("");
 
 					contentProdutoRegistrado.setProcesso(JsonToObject.getValue(jsonNode, "processo"));
 
@@ -245,9 +244,9 @@ public class UrlToJson {
 
 					ContentProdutoNotificado contentProdutoNotificado = new ContentProdutoNotificado();
 
-					Assunto assunto = JsonToObject.getAssunto(jsonNode);
+					String assunto = JsonToObject.getAssunto(jsonNode);
 
-					contentProdutoNotificado.setAssunto(assunto.toString());
+					contentProdutoNotificado.setAssunto(assunto);
 
 					contentProdutoNotificado.setProcesso(JsonToObject.getValue(jsonNode, "processo"));
 
@@ -349,27 +348,27 @@ public class UrlToJson {
 
 				if (categoria == 0 && opcao == null) {
 
-					ContentDetalFoot contentDetalheAlimento = new ContentDetalFoot();
-
-					contentDetalheAlimento.setProcesso(JsonToObject.getValue(rootNode, "processo", "numero"));
-					contentDetalheAlimento
-							.setClassesTerapeuticas(JsonToObject.getArrayValue(rootNode, "classesTerapeuticas"));
-					contentDetalheAlimento.setCnpj(JsonToObject.getValue(rootNode, "cnpj"));
-					contentDetalheAlimento.setMarca(JsonToObject.getArrayValue(rootNode, "marcas"));
-					contentDetalheAlimento.setNomeComercial(JsonToObject.getValue(rootNode, "nomeComercial"));
-					contentDetalheAlimento.setRazaoSocial(JsonToObject.getValue(rootNode, "razaoSocial"));
-					contentDetalheAlimento.setRegistro(JsonToObject.getValue(rootNode, "numeroRegistro"));
-					contentDetalheAlimento.setMesAnoVencimento(JsonToObject.getValue(rootNode, "mesAnoVencimento"));
-					contentDetalheAlimento.setPrincipioAtivo(JsonToObject.getValue(rootNode, "principioAtivo"));
-					contentDetalheAlimento
-							.setEmbalagemPrimaria(JsonToObject.getValue(rootNode, "embalagemPrimaria", "tipo"));
-					contentDetalheAlimento
-							.setViasAdministrativa(JsonToObject.getArrayValue(rootNode, "viasAdministracao"));
-					String ifaUnico = JsonToObject.getValue(rootNode, "ifaUnico");
-					contentDetalheAlimento.setIfaUnico(ifaUnico.equals("true") ? "Sim" : "Não");
-					contentDetalheAlimento.setConservacao(JsonToObject.getArrayValue(rootNode, "conservacao"));
-
-					rootObject.setContentObject(contentDetalheAlimento);
+//					ContentDetalFoot contentDetalheAlimento = new ContentDetalFoot();
+//
+//					contentDetalheAlimento.setProcesso(JsonToObject.getValue(rootNode, "processo", "numero"));
+//					contentDetalheAlimento
+//							.setClassesTerapeuticas(JsonToObject.getArrayValue(rootNode, "classesTerapeuticas"));
+//					contentDetalheAlimento.setCnpj(JsonToObject.getValue(rootNode, "cnpj"));
+//					contentDetalheAlimento.setMarca(JsonToObject.getArrayValue(rootNode, "marcas"));
+//					contentDetalheAlimento.setNomeComercial(JsonToObject.getValue(rootNode, "nomeComercial"));
+//					contentDetalheAlimento.setRazaoSocial(JsonToObject.getValue(rootNode, "razaoSocial"));
+//					contentDetalheAlimento.setRegistro(JsonToObject.getValue(rootNode, "numeroRegistro"));
+//					contentDetalheAlimento.setMesAnoVencimento(JsonToObject.getValue(rootNode, "mesAnoVencimento"));
+//					contentDetalheAlimento.setPrincipioAtivo(JsonToObject.getValue(rootNode, "principioAtivo"));
+//					contentDetalheAlimento
+//							.setEmbalagemPrimaria(JsonToObject.getValue(rootNode, "embalagemPrimaria", "tipo"));
+//					contentDetalheAlimento
+//							.setViasAdministrativa(JsonToObject.getArrayValue(rootNode, "viasAdministracao"));
+//					String ifaUnico = JsonToObject.getValue(rootNode, "ifaUnico");
+//					contentDetalheAlimento.setIfaUnico(ifaUnico.equals("true") ? "Sim" : "Não");
+//					contentDetalheAlimento.setConservacao(JsonToObject.getArrayValue(rootNode, "conservacao"));
+//
+//					rootObject.setContentObject(contentDetalheAlimento);
 
 				} else if (categoria == 1 && opcao == 0) {
 

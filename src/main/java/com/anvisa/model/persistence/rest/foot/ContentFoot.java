@@ -62,10 +62,10 @@ public class ContentFoot extends BaseEntityAudit {
 	LocalDate dataVencimento;
 	
 
-	@JsonAlias(value = "contentDetalFoot")
+	@JsonAlias(value = "contentFootDetail")
 	@ManyToOne
-	@JoinColumn(name="contentDetalFootFK")
-	ContentDetalFoot contentDetalFoot;
+	@JoinColumn(name="contentFootDetailFK")
+	ContentFootDetail contentFootDetail;
 	
 	public ContentFoot() {
 		// TODO Auto-generated constructor stub
@@ -167,12 +167,12 @@ public class ContentFoot extends BaseEntityAudit {
 		this.statusVencimento = statusVencimento;
 	}
 
-	public ContentDetalFoot getContentDetalFoot() {
-		return contentDetalFoot;
+	public ContentFootDetail getContentFootDetail() {
+		return contentFootDetail;
 	}
 
-	public void setContentDetalFoot(ContentDetalFoot contentDetalFoot) {
-		this.contentDetalFoot = contentDetalFoot;
+	public void setContentFootDetail(ContentFootDetail contentFootDetail) {
+		this.contentFootDetail = contentFootDetail;
 	}
 
 	@Override
@@ -181,7 +181,7 @@ public class ContentFoot extends BaseEntityAudit {
 		int result = 1;
 		result = prime * result + ((cnpj == null) ? 0 : cnpj.hashCode());
 		result = prime * result + codigo;
-		result = prime * result + ((contentDetalFoot == null) ? 0 : contentDetalFoot.hashCode());
+		result = prime * result + ((contentFootDetail == null) ? 0 : contentFootDetail.hashCode());
 		result = prime * result + ((dataVencimento == null) ? 0 : dataVencimento.hashCode());
 		result = prime * result + ((empresa == null) ? 0 : empresa.hashCode());
 		result = prime * result + ((processo == null) ? 0 : processo.hashCode());

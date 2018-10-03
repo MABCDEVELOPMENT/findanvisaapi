@@ -128,14 +128,14 @@ public class JsonToObject {
 		return peticao;
 	}
 
-	public static Assunto getAssunto(JsonNode node) {
+	public static String getAssunto(JsonNode node) {
 
 		JsonNode element = node.findValue("assunto");
 
-		Assunto assunto = null;
+		String assunto = null;
 
 		if (element != null) {
-			assunto = new Assunto(element.get("codigo").asText(), element.get("descricao").asText());
+			assunto = element.get("codigo").asText()+" - "+element.get("descricao").asText();
 		}
 
 		return assunto;

@@ -2,8 +2,11 @@ package com.anvisa.model.persistence.rest.cosmetic.register;
 
 import java.time.LocalDate;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import com.anvisa.model.persistence.BaseEntityAudit;
@@ -22,7 +25,7 @@ public class ContentCosmeticRegister extends BaseEntityAudit {
 	@JsonAlias(value = "assunto")
 	String assunto; 
 	
-	@Column(name = "office_hour", length = 20, nullable = false)
+	@Column(name = "office_hour", length = 20, nullable = true)
 	@JsonAlias(value = "expedientePeticao")
     String expedientePeticao;
 	
@@ -54,21 +57,20 @@ public class ContentCosmeticRegister extends BaseEntityAudit {
 	@JsonAlias(value = "situacao")		
     String situacao;
 	
-	@Column(name = "maturity", length = 8, nullable = false)
+	@Column(name = "maturity", length = 8, nullable = true)
 	@JsonAlias(value = "vencimento")	
     LocalDate vencimento;
 
-	@Column(name = "status_maturity", length = 8, nullable = false)
+	@Column(name = "status_maturity", length = 60, nullable = true)
 	@JsonAlias(value = "statusVencimento")	
     String statusVencimento;
 	
-	@Column(name = "company", length = 8, nullable = false)
+	@Column(name = "company", length = 200, nullable = true)
 	@JsonAlias(value = "empresa")		
     String empresa;
     
-	@Column(name = "detail_cosmetic_register", nullable = false)
-	@JsonAlias(value = "contentDetailCosmeticRegister")		
-    ContentDetailCosmeticRegister contentDetailCosmeticRegister;
+	@ManyToOne(cascade = CascadeType.ALL, optional = true)
+    ContentCosmeticRegisterDetail contentCosmeticRegisterDetail;
     
 	public String getAssunto() {
 		return assunto;
@@ -142,6 +144,12 @@ public class ContentCosmeticRegister extends BaseEntityAudit {
 	}
 	public void setEmpresa(String empresa) {
 		this.empresa = empresa;
+	}
+	public ContentCosmeticRegisterDetail getContentCosmeticRegisterDetail() {
+		return contentCosmeticRegisterDetail;
+	}
+	public void setContentCosmeticRegisterDetail(ContentCosmeticRegisterDetail contentCosmeticRegisterDetail) {
+		this.contentCosmeticRegisterDetail = contentCosmeticRegisterDetail;
 	}
 
 }
