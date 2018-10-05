@@ -5,7 +5,11 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.MapKey;
+import javax.persistence.MapKeyClass;
 import javax.persistence.MapsId;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import com.anvisa.model.persistence.BaseEntityAudit;
@@ -52,8 +56,10 @@ public class CosmeticRegisterPresentation extends BaseEntityAudit {
 	@JsonAlias(value = "registro")
     String registro;
     
-	@ManyToOne
-	@MapsId
+
+    @JoinColumn(name = "detail_id")
+    @MapKey(name = "Id")
+    @MapKeyClass(Long.class)
     private ContentCosmeticRegisterDetail contentDetailCosmeticRegister;
     
 	public String getCodigo() {

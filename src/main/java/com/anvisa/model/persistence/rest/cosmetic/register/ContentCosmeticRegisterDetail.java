@@ -7,10 +7,11 @@ import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
-import javax.persistence.MapsId;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
 import javax.persistence.Table;
+
+import org.hibernate.annotations.Fetch;
 
 import com.anvisa.model.persistence.BaseEntityAudit;
 import com.fasterxml.jackson.annotation.JsonAlias;
@@ -48,21 +49,23 @@ public class ContentCosmeticRegisterDetail extends BaseEntityAudit {
 	@JsonAlias(value = "processo")
 	String processo;
 	
-	@Column(name = "maturity_Registration", length = 20, nullable = false)
+	@Column(name = "maturity_Registration", length = 20, nullable = true)
 	@JsonAlias(value = "vencimentoRegistro")
 	LocalDate vencimentoRegistro;
 	
-	@Column(name = "publication_Record", length = 20, nullable = false)
+	@Column(name = "publication_Record", length = 20, nullable = true)
 	@JsonAlias(value = "publicacaoRgistro")	
 	LocalDate publicacaoRgistro;
 	
-	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+	@OneToMany(fetch=FetchType.LAZY, cascade={CascadeType.PERSIST,  CascadeType.REMOVE})
+	@Fetch(org.hibernate.annotations.FetchMode.SUBSELECT)
 	List<CosmeticRegisterPresentation> apresentacoes;
 	
-	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+	@OneToMany(fetch=FetchType.LAZY, cascade={CascadeType.PERSIST,  CascadeType.REMOVE})
+	@Fetch(org.hibernate.annotations.FetchMode.SUBSELECT)
 	List<CosmeticRegisterPetition> peticoes;
 	
-	@OneToMany
+	@ManyToOne
     private ContentCosmeticRegister contentCosmeticRegister;
 	
 	public String getRazaoSocial() {

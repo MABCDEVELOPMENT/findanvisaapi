@@ -7,7 +7,10 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.MapKey;
+import javax.persistence.MapKeyClass;
 import javax.persistence.MapsId;
+import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
@@ -43,8 +46,10 @@ public class CosmeticRegisterPetition extends BaseEntityAudit {
 	@JsonAlias(value = "situacao")
     String situacao;
 	
-	@ManyToOne
-    @MapsId
+
+    @JoinColumn(name = "detail_id")
+    @MapKey(name = "Id")
+    @MapKeyClass(Long.class)
     private ContentCosmeticRegisterDetail contentDetailCosmeticRegister;
     
 	public String getExpediente() {

@@ -92,7 +92,7 @@ public class SynchronizeCosmeticRegister extends SynchronizeData implements IntS
 		contentCosmeticRegisterDetail
 				.setPublicacaoRgistro(JsonToObject.getValueDate(jsonNode, "publicacao"));
 		contentCosmeticRegisterDetail.setApresentacoes(parseDetailApresentationData(jsonNode, "apresentacoes"));
-		//contentCosmeticRegisterDetail.setPeticoes(parseDetailPetitionData(jsonNode, "peticoes"));
+		contentCosmeticRegisterDetail.setPeticoes(parseDetailPetitionData(jsonNode, "peticoes"));
 
 
 		return contentCosmeticRegisterDetail;
@@ -204,14 +204,14 @@ public class SynchronizeCosmeticRegister extends SynchronizeData implements IntS
 
 					if (localFoot.getContentCosmeticRegisterDetail() != null && !detail.equals(localFoot.getContentCosmeticRegisterDetail())) {
 						detail.setId(localFoot.getContentCosmeticRegisterDetail().getId());
-						cosmeticRegisterDetailRepository.save(detail);
-						BaseEntity.setContentCosmeticRegisterDetail(detail);
+						cosmeticRegisterDetailRepository.saveAndFlush(detail);
+						//BaseEntity.setContentCosmeticRegisterDetail(detail);
 					} else {
-						detail.setId(localFoot.getContentCosmeticRegisterDetail().getId());
+						//detail.setId(localFoot.getContentCosmeticRegisterDetail().getId());
 					}
 				} else {
 
-					cosmeticRegisterDetailRepository.saveAndFlush(detail);
+					//cosmeticRegisterDetailRepository.saveAndFlush(detail);
 
 					BaseEntity.setContentCosmeticRegisterDetail(detail);
 				}
