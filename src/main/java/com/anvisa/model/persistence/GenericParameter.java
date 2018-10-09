@@ -18,7 +18,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 
 @Entity
 @Table(name = "GenericParameter")
-public class GenericParameter extends BaseEntityAudit {
+public class GenericParameter extends BaseEntity {
 
 
 	/**

@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 import com.anvisa.core.json.JsonToObject;
 import com.anvisa.interceptor.synchronizedata.IntSynchronize;
 import com.anvisa.interceptor.synchronizedata.SynchronizeData;
-import com.anvisa.model.persistence.BaseEntityAudit;
+import com.anvisa.model.persistence.BaseEntity;
 import com.anvisa.model.persistence.rest.Content;
 import com.anvisa.model.persistence.rest.foot.ContentFoot;
 import com.anvisa.model.persistence.rest.foot.ContentFootDetail;
@@ -84,19 +84,19 @@ public class SynchronizeFoot extends SynchronizeData implements IntSynchronize {
 	}
 
 	@Override
-	public ArrayList<BaseEntityAudit> loadData(String cnpj) {
+	public ArrayList<BaseEntity> loadData(String cnpj) {
 		return super.loadData(this, cnpj);
 	}
 
 	@Override
-	public BaseEntityAudit loadDetailData(String concat) {
+	public BaseEntity loadDetailData(String concat) {
 		return super.loadDetailData(this, concat);
 	}
 
 	@Override
-	public void persist(ArrayList<BaseEntityAudit> itens) {
+	public void persist(ArrayList<BaseEntity> itens) {
 
-		for (Iterator<BaseEntityAudit> iterator = itens.iterator(); iterator.hasNext();) {
+		for (Iterator<BaseEntity> iterator = itens.iterator(); iterator.hasNext();) {
 
 			ContentFoot BaseEntity = (ContentFoot) iterator.next();
 

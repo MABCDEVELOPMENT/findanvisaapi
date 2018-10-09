@@ -10,7 +10,7 @@ import com.fasterxml.jackson.annotation.JsonAlias;
 
 @Entity
 @Table(name = "RegisterCNPJ")
-public class RegisterCNPJ extends BaseEntityAudit  {
+public class RegisterCNPJ extends BaseEntity  {
 
 
 	/**

@@ -1,15 +1,20 @@
 package com.anvisa.interceptor.synchronizedata.entity;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Iterator;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.anvisa.core.json.JsonToObject;
 import com.anvisa.interceptor.synchronizedata.IntSynchronize;
 import com.anvisa.interceptor.synchronizedata.SynchronizeData;
-import com.anvisa.model.persistence.BaseEntityAudit;
+import com.anvisa.interceptor.synchronizedata.SynchronizeDataTask;
+import com.anvisa.model.persistence.BaseEntity;
 import com.anvisa.model.persistence.rest.cosmetic.register.ContentCosmeticRegister;
 import com.anvisa.model.persistence.rest.cosmetic.register.ContentCosmeticRegisterDetail;
 import com.anvisa.model.persistence.rest.cosmetic.register.CosmeticRegisterPetition;
@@ -39,7 +44,7 @@ public class SynchronizeCosmeticRegister extends SynchronizeData implements IntS
 
 	public SynchronizeCosmeticRegister() {
 
-		URL = "https://consultas.anvisa.gov.br/api/consulta/cosmeticos/registrados?count=1000&page=1&filter[cnpj]=";
+		URL = "https://consultas.anvisa.gov.br/api/consulta/cosmeticos/registrados?count=10&page=1&filter[cnpj]=";
 
 		URL_DETAIL = "https://consultas.anvisa.gov.br/api/consulta/cosmeticos/registrados/";
 
@@ -98,7 +103,7 @@ public class SynchronizeCosmeticRegister extends SynchronizeData implements IntS
 		return contentCosmeticRegisterDetail;
 	}
 
-
+	
 	public ArrayList<CosmeticRegisterPresentation> parseDetailApresentationData(JsonNode jsonNode,String attribute) {
 		
 		ArrayNode element = (ArrayNode)jsonNode.findValue(attribute);
@@ -142,7 +147,6 @@ public class SynchronizeCosmeticRegister extends SynchronizeData implements IntS
 		
 		if (element!=null) {
 				
-		
 				
 				for (Iterator<JsonNode> it = element.iterator(); it.hasNext();) {
 					
@@ -173,70 +177,74 @@ public class SynchronizeCosmeticRegister extends SynchronizeData implements IntS
 	}
 	
 	@Override
-	public ArrayList<BaseEntityAudit> loadData(String cnpj) {
+	public ArrayList<BaseEntity> loadData(String cnpj) {
 		return super.loadData(this, cnpj);
 	}
 
 	@Override
-	public BaseEntityAudit loadDetailData(String concat) {
+	public BaseEntity loadDetailData(String concat) {
 		return super.loadDetailData(this, concat);
 	}
 	
+	private static final Logger log = LoggerFactory.getLogger(SynchronizeDataTask.class);
+
+	private static final SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
 
 	@Override
-	public void persist(ArrayList<BaseEntityAudit> itens) {
+	public void persist(ArrayList<BaseEntity> itens) {
 
-		for (Iterator<BaseEntityAudit> iterator = itens.iterator(); iterator.hasNext();) {
+		log.info("SynchronizeData", dateFormat.format(new Date()));
+		
+		for (Iterator<BaseEntity> iterator = itens.iterator(); iterator.hasNext();) {
 
-			ContentCosmeticRegister BaseEntity = (ContentCosmeticRegister) iterator.next();
+			ContentCosmeticRegister baseEntity = (ContentCosmeticRegister) iterator.next();
 
-			ContentCosmeticRegister localFoot = cosmeticRegisterRepository.findByProcessCnpjVencimento(
-					BaseEntity.getProcesso(), BaseEntity.getCnpj(), BaseEntity.getVencimento());
+			ContentCosmeticRegister localCosmetic = cosmeticRegisterRepository.findByProcessCnpjVencimento(
+					baseEntity.getProcesso(), baseEntity.getCnpj());
+			
+			
 
-			boolean newFoot = (localFoot == null);
+			boolean newFoot = (localCosmetic == null);
 
 			ContentCosmeticRegisterDetail detail = (ContentCosmeticRegisterDetail) this
-					.loadDetailData(BaseEntity.getProcesso());
-
+					.loadDetailData(baseEntity.getProcesso());
+			
 			if (detail != null) {
 
 				if (!newFoot) {
 
-					if (localFoot.getContentCosmeticRegisterDetail() != null && !detail.equals(localFoot.getContentCosmeticRegisterDetail())) {
-						detail.setId(localFoot.getContentCosmeticRegisterDetail().getId());
+					if (localCosmetic.getContentCosmeticRegisterDetail() != null && !detail.equals(localCosmetic.getContentCosmeticRegisterDetail())) {
+						detail.setId(localCosmetic.getContentCosmeticRegisterDetail().getId());
 						cosmeticRegisterDetailRepository.saveAndFlush(detail);
-						//BaseEntity.setContentCosmeticRegisterDetail(detail);
-					} else {
-						//detail.setId(localFoot.getContentCosmeticRegisterDetail().getId());
 					}
+					
 				} else {
-
-					//cosmeticRegisterDetailRepository.saveAndFlush(detail);
-
-					BaseEntity.setContentCosmeticRegisterDetail(detail);
+ 					 baseEntity.setContentCosmeticRegisterDetail(detail);
 				}
 
 			}
 
-			if (localFoot != null) {
+			if (localCosmetic != null) {
 
-				if (!localFoot.equals(BaseEntity)) {
+				if (!localCosmetic.equals(baseEntity)) {
 
-					BaseEntity.setId(localFoot.getId());
-					detail.setId(localFoot.getContentCosmeticRegisterDetail().getId());
-					BaseEntity.setContentCosmeticRegisterDetail(detail);
-					cosmeticRegisterRepository.saveAndFlush(BaseEntity);
+					baseEntity.setId(localCosmetic.getId());
+					detail.setId(localCosmetic.getContentCosmeticRegisterDetail().getId());
+					baseEntity.setContentCosmeticRegisterDetail(detail);
+					cosmeticRegisterRepository.saveAndFlush(baseEntity);
 
 				}
 
 			} else {
 
-				cosmeticRegisterRepository.saveAndFlush(BaseEntity);
+				cosmeticRegisterRepository.saveAndFlush(baseEntity);
 
 			}
+			
+			log.info(baseEntity.toString());
 
 		}
-
+		
 	}
 
 }

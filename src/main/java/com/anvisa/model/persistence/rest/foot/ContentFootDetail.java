@@ -5,12 +5,12 @@ import javax.persistence.Entity;
 import javax.persistence.Table;
 
 import com.anvisa.model.persistence.BaseEntity;
-import com.anvisa.model.persistence.BaseEntityAudit;
+import com.anvisa.model.persistence.BaseEntity;
 import com.fasterxml.jackson.annotation.JsonAlias;
 
 @Entity
 @Table(name = "foot_detail")
-public class ContentFootDetail extends BaseEntityAudit {
+public class ContentFootDetail extends BaseEntity {
 	
 
 	/**
@@ -297,8 +297,5 @@ public class ContentFootDetail extends BaseEntityAudit {
 		}
 		return true;
 	}
-	
-	
-
 
 }

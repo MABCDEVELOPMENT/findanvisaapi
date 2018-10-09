@@ -8,13 +8,13 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
-import com.anvisa.model.persistence.BaseEntityAudit;
+import com.anvisa.model.persistence.BaseEntity;
 import com.anvisa.model.persistence.rest.Content;
 import com.fasterxml.jackson.annotation.JsonAlias;
 
 @Entity
 @Table(name = "foot")
-public class ContentFoot extends BaseEntityAudit {
+public class ContentFoot extends BaseEntity {
 
 	/**
 	 * 
@@ -165,6 +165,12 @@ public class ContentFoot extends BaseEntityAudit {
 
 	public void setStatusVencimento(String statusVencimento) {
 		this.statusVencimento = statusVencimento;
+	}
+
+	@Override
+	public Long getId() {
+		// TODO Auto-generated method stub
+		return super.getId();
 	}
 
 	public ContentFootDetail getContentFootDetail() {

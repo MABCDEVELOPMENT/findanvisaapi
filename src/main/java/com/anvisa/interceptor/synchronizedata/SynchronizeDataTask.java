@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
 
 import com.anvisa.interceptor.synchronizedata.entity.SynchronizeCosmeticRegister;
 import com.anvisa.interceptor.synchronizedata.entity.SynchronizeFoot;
-import com.anvisa.model.persistence.BaseEntityAudit;
+import com.anvisa.model.persistence.BaseEntity;
 import com.anvisa.model.persistence.RegisterCNPJ;
 import com.anvisa.repository.generic.RegisterCNPJRepository;
 
@@ -45,7 +45,7 @@ public class SynchronizeDataTask {
 //		
 //		for (RegisterCNPJ registerCNPJ : registerCNPJs) {
 //			
-//			ArrayList<BaseEntityAudit> itens = intSynchronize[0].loadData(registerCNPJ.getCnpj());
+//			ArrayList<BaseEntity> itens = intSynchronize[0].loadData(registerCNPJ.getCnpj());
 //
 //			intSynchronize[0].persist(itens);
 //			
@@ -55,7 +55,7 @@ public class SynchronizeDataTask {
 	
 		for (RegisterCNPJ registerCNPJ : registerCNPJs) {
 			
-			ArrayList<BaseEntityAudit> itens = intSynchronize[1].loadData(registerCNPJ.getCnpj());
+			ArrayList<BaseEntity> itens = intSynchronize[1].loadData(registerCNPJ.getCnpj());
 
 			intSynchronize[1].persist(itens);
 			

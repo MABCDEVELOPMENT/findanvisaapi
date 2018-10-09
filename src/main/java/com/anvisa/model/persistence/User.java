@@ -20,7 +20,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 
 @Entity
 @Table(name = "user")
-public class User extends BaseEntityAudit  {
+public class User extends BaseEntity  {
 
 
 	/**
@@ -80,13 +80,6 @@ public class User extends BaseEntityAudit  {
 		this.registerCNPJs = registerCNPJs;
 	}
 	
-	public Long getId() {
-		return id;
-	}
-
-	public void setId(Long id) {
-		this.id = id;
-	}
 
 	public String getUserName() {
 		return userName;

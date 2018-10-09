@@ -14,19 +14,19 @@ import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
-import com.anvisa.model.persistence.BaseEntityAudit;
+import com.anvisa.model.persistence.BaseEntity;
 import com.fasterxml.jackson.annotation.JsonAlias;
 
 @Entity
 @Table(name = "cosmetic_register_petition")
-public class CosmeticRegisterPetition extends BaseEntityAudit {
+public class CosmeticRegisterPetition extends BaseEntity {
 	   
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
 
-	@Column(name = "expedient", length = 20, nullable = false)
+	@Column(name = "expedient", length = 20)
 	@JsonAlias(value = "expediente")
 	String expediente;
 	

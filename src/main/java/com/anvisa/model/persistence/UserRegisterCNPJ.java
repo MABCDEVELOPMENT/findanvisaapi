@@ -10,7 +10,7 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name = "user_register_cnpj")
-public class UserRegisterCNPJ extends BaseEntityAudit {
+public class UserRegisterCNPJ extends BaseEntity {
 	
 		
 	/**
