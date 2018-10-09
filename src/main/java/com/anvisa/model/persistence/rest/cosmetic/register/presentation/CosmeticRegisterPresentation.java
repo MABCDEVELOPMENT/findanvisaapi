@@ -1,14 +1,13 @@
-package com.anvisa.model.persistence.rest.cosmetic.register;
+package com.anvisa.model.persistence.rest.cosmetic.register.presentation;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.MapKey;
 import javax.persistence.MapKeyClass;
-import javax.persistence.MapsId;
-import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
@@ -61,6 +60,9 @@ public class CosmeticRegisterPresentation extends BaseEntity {
     @MapKey(name = "Id")
     @MapKeyClass(Long.class)
     private ContentCosmeticRegisterDetail contentDetailCosmeticRegister;
+    
+    @OneToOne(cascade=CascadeType.ALL)
+    private CosmeticRegisterPresentationDetail cosmeticRegisterPresentationDetail;
     
 	public String getCodigo() {
 		return codigo;
@@ -116,6 +118,15 @@ public class CosmeticRegisterPresentation extends BaseEntity {
 	public void setContentDetailCosmeticRegister(ContentCosmeticRegisterDetail contentDetailCosmeticRegister) {
 		this.contentDetailCosmeticRegister = contentDetailCosmeticRegister;
 	}
+	public CosmeticRegisterPresentationDetail getCosmeticRegisterPresentationDetail() {
+		return cosmeticRegisterPresentationDetail;
+	}
+	public void setCosmeticRegisterPresentationDetail(
+			CosmeticRegisterPresentationDetail cosmeticRegisterPresentationDetail) {
+		this.cosmeticRegisterPresentationDetail = cosmeticRegisterPresentationDetail;
+	}
+
+	
 	
     
 }

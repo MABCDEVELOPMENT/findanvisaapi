@@ -1,20 +1,16 @@
-package com.anvisa.model.persistence.rest.cosmetic.register;
+package com.anvisa.model.persistence.rest.cosmetic.register.petition;
 
 import java.time.LocalDate;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import javax.persistence.MapKey;
 import javax.persistence.MapKeyClass;
-import javax.persistence.MapsId;
-import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import com.anvisa.model.persistence.BaseEntity;
+import com.anvisa.model.persistence.rest.cosmetic.register.presentation.ContentCosmeticRegisterDetail;
 import com.fasterxml.jackson.annotation.JsonAlias;
 
 @Entity
@@ -46,7 +42,6 @@ public class CosmeticRegisterPetition extends BaseEntity {
 	@JsonAlias(value = "situacao")
     String situacao;
 	
-
     @JoinColumn(name = "detail_id")
     @MapKey(name = "Id")
     @MapKeyClass(Long.class)

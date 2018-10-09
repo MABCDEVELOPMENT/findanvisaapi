@@ -4,6 +4,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
+import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,26 +17,38 @@ import com.anvisa.interceptor.synchronizedata.SynchronizeData;
 import com.anvisa.interceptor.synchronizedata.SynchronizeDataTask;
 import com.anvisa.model.persistence.BaseEntity;
 import com.anvisa.model.persistence.rest.cosmetic.register.ContentCosmeticRegister;
-import com.anvisa.model.persistence.rest.cosmetic.register.ContentCosmeticRegisterDetail;
-import com.anvisa.model.persistence.rest.cosmetic.register.CosmeticRegisterPetition;
-import com.anvisa.model.persistence.rest.cosmetic.register.CosmeticRegisterPresentation;
+import com.anvisa.model.persistence.rest.cosmetic.register.petition.CosmeticRegisterPetition;
+import com.anvisa.model.persistence.rest.cosmetic.register.presentation.ContentCosmeticRegisterDetail;
+import com.anvisa.model.persistence.rest.cosmetic.register.presentation.CosmeticRegisterPresentation;
+import com.anvisa.model.persistence.rest.cosmetic.register.presentation.CosmeticRegisterPresentationDetail;
+import com.anvisa.model.persistence.rest.cosmetic.register.presentation.PresentationConservation;
+import com.anvisa.model.persistence.rest.cosmetic.register.presentation.PresentationCountryManufacturer;
+import com.anvisa.model.persistence.rest.cosmetic.register.presentation.PresentationDestination;
+import com.anvisa.model.persistence.rest.cosmetic.register.presentation.PresentationRestriction;
 import com.anvisa.repository.generic.CosmeticRegisterDetailRepository;
 import com.anvisa.repository.generic.CosmeticRegisterRepository;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
+
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 
 @Component
 public class SynchronizeCosmeticRegister extends SynchronizeData implements IntSynchronize {
 
+	String URL_COSMETIC_REGISTER_DETAIL_APRESENTACAO = "";
+
 	@Autowired
 	private static CosmeticRegisterRepository cosmeticRegisterRepository;
-	
+
 	@Autowired
 	private static CosmeticRegisterDetailRepository cosmeticRegisterDetailRepository;
 
 	@Autowired
 	public void setService(CosmeticRegisterRepository cosmeticRegisterRepository,
-						   CosmeticRegisterDetailRepository cosmeticRegisterDetailRepository) {
+			CosmeticRegisterDetailRepository cosmeticRegisterDetailRepository) {
 
 		this.cosmeticRegisterRepository = cosmeticRegisterRepository;
 		this.cosmeticRegisterDetailRepository = cosmeticRegisterDetailRepository;
@@ -47,6 +60,8 @@ public class SynchronizeCosmeticRegister extends SynchronizeData implements IntS
 		URL = "https://consultas.anvisa.gov.br/api/consulta/cosmeticos/registrados?count=10&page=1&filter[cnpj]=";
 
 		URL_DETAIL = "https://consultas.anvisa.gov.br/api/consulta/cosmeticos/registrados/";
+
+		URL_COSMETIC_REGISTER_DETAIL_APRESENTACAO = "https://consultas.anvisa.gov.br/api/consulta/cosmeticos/registrados/[processo]/apresentacao/[apresentacao]";
 
 	}
 
@@ -94,88 +109,175 @@ public class SynchronizeCosmeticRegister extends SynchronizeData implements IntS
 		contentCosmeticRegisterDetail.setProcesso(JsonToObject.getValue(jsonNode, "processo"));
 		contentCosmeticRegisterDetail
 				.setVencimentoRegistro(JsonToObject.getValueDate(jsonNode, "vencimento", "vencimento"));
-		contentCosmeticRegisterDetail
-				.setPublicacaoRgistro(JsonToObject.getValueDate(jsonNode, "publicacao"));
-		contentCosmeticRegisterDetail.setApresentacoes(parseDetailApresentationData(jsonNode, "apresentacoes"));
+		contentCosmeticRegisterDetail.setPublicacaoRgistro(JsonToObject.getValueDate(jsonNode, "publicacao"));
+		contentCosmeticRegisterDetail.setApresentacoes(parseDetailApresentationData(jsonNode, "apresentacoes",contentCosmeticRegisterDetail.getProcesso()));
 		contentCosmeticRegisterDetail.setPeticoes(parseDetailPetitionData(jsonNode, "peticoes"));
-
 
 		return contentCosmeticRegisterDetail;
 	}
 
-	
-	public ArrayList<CosmeticRegisterPresentation> parseDetailApresentationData(JsonNode jsonNode,String attribute) {
-		
-		ArrayNode element = (ArrayNode)jsonNode.findValue(attribute);
-		
+	public ArrayList<CosmeticRegisterPresentation> parseDetailApresentationData(JsonNode jsonNode, String attribute, String processo) {
+
+		ArrayNode element = (ArrayNode) jsonNode.findValue(attribute);
+
 		ArrayList<CosmeticRegisterPresentation> apresentacoes = new ArrayList<CosmeticRegisterPresentation>();
-		
-		if (element!=null) {
+
+		if (element != null) {
+
+			for (Iterator<JsonNode> it = element.iterator(); it.hasNext();) {
+
+				JsonNode nodeIt = it.next();
+
+				CosmeticRegisterPresentation apresentacaoCosmeticoRegistrado = new CosmeticRegisterPresentation();
+
+				apresentacaoCosmeticoRegistrado.setCodigo(JsonToObject.getValue(nodeIt, "codigo"));
+				apresentacaoCosmeticoRegistrado.setNumero(JsonToObject.getValue(nodeIt, "numero"));
+				apresentacaoCosmeticoRegistrado
+						.setEmbalagemPrimaria(JsonToObject.getValue(nodeIt, "embalagemPrimaria"));
+				apresentacaoCosmeticoRegistrado
+						.setEmbalagemSecundaria(JsonToObject.getValue(nodeIt, "embalagemSecundaria"));
+				apresentacaoCosmeticoRegistrado.setTonalidade(JsonToObject.getValue(nodeIt, "tonalidade"));
+				apresentacaoCosmeticoRegistrado.setRegistro(JsonToObject.getValue(nodeIt, "registro", "registro"));
+				apresentacaoCosmeticoRegistrado.setSituacao(JsonToObject.getValue(nodeIt, "registro", "situacao"));
 				
-		
+				CosmeticRegisterPresentationDetail cosmeticRegisterPresentationDetail = (CosmeticRegisterPresentationDetail) this.loadPresentationDetail(processo, apresentacaoCosmeticoRegistrado.getCodigo());
+				apresentacaoCosmeticoRegistrado.setCosmeticRegisterPresentationDetail(cosmeticRegisterPresentationDetail);
 				
-				for (Iterator<JsonNode> it = element.iterator(); it.hasNext();) {
-					
-					JsonNode nodeIt = it.next();
-					
-					CosmeticRegisterPresentation apresentacaoCosmeticoRegistrado = new CosmeticRegisterPresentation();
-					
-					apresentacaoCosmeticoRegistrado.setCodigo(JsonToObject.getValue(nodeIt,"codigo"));
-					apresentacaoCosmeticoRegistrado.setNumero(JsonToObject.getValue(nodeIt,"numero"));
-					apresentacaoCosmeticoRegistrado.setEmbalagemPrimaria(JsonToObject.getValue(nodeIt,"embalagemPrimaria"));
-					apresentacaoCosmeticoRegistrado.setEmbalagemSecundaria(JsonToObject.getValue(nodeIt,"embalagemSecundaria"));
-					apresentacaoCosmeticoRegistrado.setTonalidade(JsonToObject.getValue(nodeIt,"tonalidade"));
-					apresentacaoCosmeticoRegistrado.setRegistro(JsonToObject.getValue(nodeIt, "registro", "registro"));
-					apresentacaoCosmeticoRegistrado.setSituacao(JsonToObject.getValue(nodeIt, "registro", "situacao"));
-					apresentacoes.add(apresentacaoCosmeticoRegistrado);
-					
-				}
-			
-			
-			
+				apresentacoes.add(apresentacaoCosmeticoRegistrado);
+
+			}
+
 		}
-		
+
 		return apresentacoes;
-		
+
 	}
-	
-	public ArrayList<CosmeticRegisterPetition> parseDetailPetitionData(JsonNode jsonNode,String attribute) {
+
+	public CosmeticRegisterPresentationDetail parseDetailAprentation(JsonNode jsonNode, String attribute) {
+		// TODO Auto-generated method stub
 		
-		ArrayNode element = (ArrayNode)jsonNode.findValue(attribute);
+		JsonNode element = jsonNode.findValue(attribute);
 		
-		ArrayList<CosmeticRegisterPetition> peticoes = new ArrayList<CosmeticRegisterPetition>();
+		CosmeticRegisterPresentationDetail cosmeticRegisterPresentationDetail = null;
 		
-		if (element!=null) {
-				
-				
-				for (Iterator<JsonNode> it = element.iterator(); it.hasNext();) {
-					
-					JsonNode nodeIt = it.next();
-					
-					CosmeticRegisterPetition cosmeticRegisterPetition = new CosmeticRegisterPetition();
-					
-					cosmeticRegisterPetition.setExpediente(JsonToObject.getValue(nodeIt,"expediente"));
-					cosmeticRegisterPetition.setPublicacao(JsonToObject.getValueDate(nodeIt,"publicacao"));
-					cosmeticRegisterPetition.setTransacao(JsonToObject.getValue(nodeIt,"transacao"));
-					
-					String assunto = JsonToObject.getValue(nodeIt, "assunto", "codigo")+" "+JsonToObject.getValue(nodeIt, "assunto", "descricao");
-					cosmeticRegisterPetition.setAssunto(assunto);
-					
-					String situacao = JsonToObject.getValue(nodeIt, "situacao", "situacao")+" "+JsonToObject.getValueDateToString(nodeIt, "situacao", "data");
-					cosmeticRegisterPetition.setSituacao(situacao);
-					
-					peticoes.add(cosmeticRegisterPetition);
-					
+		if (element != null) {
+			
+			cosmeticRegisterPresentationDetail = new CosmeticRegisterPresentationDetail();
+			
+			cosmeticRegisterPresentationDetail.setNomeProduto(JsonToObject.getValue(element, "nomeProduto"));
+			cosmeticRegisterPresentationDetail.setProcesso(JsonToObject.getValue(element, "processo"));
+			cosmeticRegisterPresentationDetail
+					.setApresentacao(JsonToObject.getValue(jsonNode, "apresentacao", "embalagemPrimaria"));
+			cosmeticRegisterPresentationDetail.setCategoria(JsonToObject.getValue(element, "categoria"));
+
+			cosmeticRegisterPresentationDetail.setFormaFisica(JsonToObject.getValue(jsonNode, "formaFisica"));
+			cosmeticRegisterPresentationDetail.setTonalidade(JsonToObject.getValue(jsonNode, "tonalidade"));
+			cosmeticRegisterPresentationDetail.setPrazoValidade(JsonToObject.getValue(jsonNode, "prazoValidade"));
+
+			ArrayList<PresentationCountryManufacturer> fabricantes = new ArrayList<PresentationCountryManufacturer>();
+
+			ArrayNode elementLocalFabricacao = (ArrayNode) jsonNode.findValue("fabricantesNacionais");
+
+			if (elementLocalFabricacao != null) {
+
+				for (JsonNode jsonNode2 : elementLocalFabricacao) {
+
+					PresentationCountryManufacturer fabricante = new PresentationCountryManufacturer();
+
+					fabricante.setCnpj(JsonToObject.getValue(jsonNode2, "cnpj"));
+					fabricante.setRazaoSocial(JsonToObject.getValue(jsonNode2, "razaoSocial"));
+					fabricante.setCidade(JsonToObject.getValue(jsonNode2, "cidade"));
+					fabricante.setUf(JsonToObject.getValue(jsonNode2, "uf"));
+					fabricante.setPais(JsonToObject.getValue(jsonNode, "pais"));
+					fabricante.setTipo(JsonToObject.getValue(jsonNode, "tipo"));
+
+					fabricantes.add(fabricante);
 				}
-			
-			
-			
+
+			}
+
+			cosmeticRegisterPresentationDetail.setFabricantesNacionais(fabricantes);
+
+			ArrayList<String> conservacao = JsonToObject.getArrayStringValue(jsonNode, "conservacao");
+			List<PresentationConservation> presentationConservations = new ArrayList<PresentationConservation>();
+
+			for (Iterator<String> iterator = conservacao.iterator(); iterator.hasNext();) {
+
+				String valor = (String) iterator.next();
+
+				presentationConservations.add(new PresentationConservation(valor));
+
+			}
+			cosmeticRegisterPresentationDetail.setConservacao(presentationConservations);
+
+			ArrayList<String> destinacao = JsonToObject.getArrayStringValue(jsonNode, "destinacao");
+			List<PresentationDestination> presentationDestinacoes = new ArrayList<PresentationDestination>();
+
+			for (Iterator<String> iterator = destinacao.iterator(); iterator.hasNext();) {
+
+				String valor = (String) iterator.next();
+
+				presentationDestinacoes.add(new PresentationDestination(valor));
+
+			}
+			cosmeticRegisterPresentationDetail.setDestinacao(presentationDestinacoes);
+
+			ArrayList<String> restricao = JsonToObject.getArrayStringValue(jsonNode, "restricao");
+			List<PresentationRestriction> presentationRestricoes = new ArrayList<PresentationRestriction>();
+
+			for (Iterator<String> iterator = restricao.iterator(); iterator.hasNext();) {
+
+				String valor = (String) iterator.next();
+
+				presentationRestricoes.add(new PresentationRestriction(valor));
+
+			}
+
+			cosmeticRegisterPresentationDetail.setRestricao(presentationRestricoes);
+
+
 		}
 		
-		return peticoes;
+		return cosmeticRegisterPresentationDetail;
 		
 	}
-	
+
+	public ArrayList<CosmeticRegisterPetition> parseDetailPetitionData(JsonNode jsonNode, String attribute) {
+
+		ArrayNode element = (ArrayNode) jsonNode.findValue(attribute);
+
+		ArrayList<CosmeticRegisterPetition> peticoes = new ArrayList<CosmeticRegisterPetition>();
+
+		if (element != null) {
+
+			for (Iterator<JsonNode> it = element.iterator(); it.hasNext();) {
+
+				JsonNode nodeIt = it.next();
+
+				CosmeticRegisterPetition cosmeticRegisterPetition = new CosmeticRegisterPetition();
+
+				cosmeticRegisterPetition.setExpediente(JsonToObject.getValue(nodeIt, "expediente"));
+				cosmeticRegisterPetition.setPublicacao(JsonToObject.getValueDate(nodeIt, "publicacao"));
+				cosmeticRegisterPetition.setTransacao(JsonToObject.getValue(nodeIt, "transacao"));
+
+				String assunto = JsonToObject.getValue(nodeIt, "assunto", "codigo") + " "
+						+ JsonToObject.getValue(nodeIt, "assunto", "descricao");
+				cosmeticRegisterPetition.setAssunto(assunto);
+
+				String situacao = JsonToObject.getValue(nodeIt, "situacao", "situacao") + " "
+						+ JsonToObject.getValueDateToString(nodeIt, "situacao", "data");
+				cosmeticRegisterPetition.setSituacao(situacao);
+
+				peticoes.add(cosmeticRegisterPetition);
+
+			}
+
+		}
+
+		return peticoes;
+
+	}
+
 	@Override
 	public ArrayList<BaseEntity> loadData(String cnpj) {
 		return super.loadData(this, cnpj);
@@ -185,7 +287,42 @@ public class SynchronizeCosmeticRegister extends SynchronizeData implements IntS
 	public BaseEntity loadDetailData(String concat) {
 		return super.loadDetailData(this, concat);
 	}
-	
+
+	public BaseEntity loadPresentationDetail(String processo, String apresentacao) {
+
+		BaseEntity rootObject = null;
+		OkHttpClient client = new OkHttpClient();
+
+		Request url = null;
+
+		String strUrl = URL_COSMETIC_REGISTER_DETAIL_APRESENTACAO
+				.replace("[processo]", processo)
+				.replace("[apresentacao]", apresentacao);
+		url = new Request.Builder().url(strUrl).get().addHeader("authorization", "Guest").build();
+
+		try {
+
+			Response response = client.newCall(url).execute();
+
+			ObjectMapper objectMapper = new ObjectMapper();
+
+			JsonNode rootNode = objectMapper.readTree(response.body().string());
+
+			if (rootNode != null) {
+
+				rootObject = this.parseDetailAprentation(rootNode,"produto");
+			}
+			response.close();
+			return rootObject;
+
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+		}
+
+		return null;
+	}
+
 	private static final Logger log = LoggerFactory.getLogger(SynchronizeDataTask.class);
 
 	private static final SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
@@ -194,32 +331,31 @@ public class SynchronizeCosmeticRegister extends SynchronizeData implements IntS
 	public void persist(ArrayList<BaseEntity> itens) {
 
 		log.info("SynchronizeData", dateFormat.format(new Date()));
-		
+
 		for (Iterator<BaseEntity> iterator = itens.iterator(); iterator.hasNext();) {
 
 			ContentCosmeticRegister baseEntity = (ContentCosmeticRegister) iterator.next();
 
-			ContentCosmeticRegister localCosmetic = cosmeticRegisterRepository.findByProcessCnpjVencimento(
-					baseEntity.getProcesso(), baseEntity.getCnpj());
-			
-			
+			ContentCosmeticRegister localCosmetic = cosmeticRegisterRepository
+					.findByProcessCnpjVencimento(baseEntity.getProcesso(), baseEntity.getCnpj());
 
 			boolean newFoot = (localCosmetic == null);
 
 			ContentCosmeticRegisterDetail detail = (ContentCosmeticRegisterDetail) this
 					.loadDetailData(baseEntity.getProcesso());
-			
+
 			if (detail != null) {
 
 				if (!newFoot) {
 
-					if (localCosmetic.getContentCosmeticRegisterDetail() != null && !detail.equals(localCosmetic.getContentCosmeticRegisterDetail())) {
+					if (localCosmetic.getContentCosmeticRegisterDetail() != null
+							&& !detail.equals(localCosmetic.getContentCosmeticRegisterDetail())) {
 						detail.setId(localCosmetic.getContentCosmeticRegisterDetail().getId());
 						cosmeticRegisterDetailRepository.saveAndFlush(detail);
 					}
-					
+
 				} else {
- 					 baseEntity.setContentCosmeticRegisterDetail(detail);
+					baseEntity.setContentCosmeticRegisterDetail(detail);
 				}
 
 			}
@@ -240,11 +376,11 @@ public class SynchronizeCosmeticRegister extends SynchronizeData implements IntS
 				cosmeticRegisterRepository.saveAndFlush(baseEntity);
 
 			}
-			
+
 			log.info(baseEntity.toString());
 
 		}
-		
+
 	}
 
 }

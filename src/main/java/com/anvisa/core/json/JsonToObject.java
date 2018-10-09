@@ -6,8 +6,10 @@ import java.time.format.FormatStyle;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Locale;
 
+import com.anvisa.model.persistence.rest.cosmetic.register.presentation.StringListGeneric;
 import com.anvisa.rest.detalhe.saneante.notificado.Ean;
 import com.anvisa.rest.model.Assunto;
 import com.anvisa.rest.model.Categoria;
@@ -326,6 +328,7 @@ public class JsonToObject {
 
 		return sb;
 	}
+	
 
 	public static ArrayList<String> getArrayStringValue(JsonNode node, String attribute) {
 

@@ -1,4 +1,4 @@
-package com.anvisa.model.persistence.rest.cosmetic.register;
+package com.anvisa.model.persistence.rest.cosmetic.register.presentation;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -14,7 +14,8 @@ import javax.persistence.Table;
 import org.hibernate.annotations.Fetch;
 
 import com.anvisa.model.persistence.BaseEntity;
-import com.anvisa.model.persistence.rest.foot.ContentFoot;
+import com.anvisa.model.persistence.rest.cosmetic.register.ContentCosmeticRegister;
+import com.anvisa.model.persistence.rest.cosmetic.register.petition.CosmeticRegisterPetition;
 import com.fasterxml.jackson.annotation.JsonAlias;
 
 @Entity

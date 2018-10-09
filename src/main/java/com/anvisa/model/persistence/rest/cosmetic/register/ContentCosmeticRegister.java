@@ -9,6 +9,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 import com.anvisa.model.persistence.BaseEntity;
+import com.anvisa.model.persistence.rest.cosmetic.register.presentation.ContentCosmeticRegisterDetail;
 import com.fasterxml.jackson.annotation.JsonAlias;
 
 @Entity
