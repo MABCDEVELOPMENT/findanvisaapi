@@ -47,11 +47,11 @@ public class FindDataFoot {
                 }
                 
                 if(queryRecordParameter.getProductName()!=null && !queryRecordParameter.getProductName().isEmpty()) {
-                    predicates.add(criteriaBuilder.and(criteriaBuilder.like(root.get("produto"), "%"+queryRecordParameter.getProductName()+"%")));
+                    predicates.add(criteriaBuilder.and(criteriaBuilder.like(root.get("produto"), "%"+queryRecordParameter.getProductName().toUpperCase()+"%")));
                 }
                 
                 if(queryRecordParameter.getBrand()!=null && !queryRecordParameter.getBrand().isEmpty()) {
-                    predicates.add(criteriaBuilder.and(criteriaBuilder.like(root.get("contentDetalFoot").get("marca"), "%"+queryRecordParameter.getBrand()+"%")));
+                    predicates.add(criteriaBuilder.and(criteriaBuilder.like(root.get("contentDetalFoot").get("marca"), "%"+queryRecordParameter.getBrand().toUpperCase()+"%")));
                 }
                 
                 if(queryRecordParameter.getRegisterNumber()!=null && !queryRecordParameter.getRegisterNumber().isEmpty()) {

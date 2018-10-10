@@ -39,7 +39,7 @@ public class CosmeticRegisterPresentation extends BaseEntity {
 	@JsonAlias(value = "embalagemSecundaria")	
     String embalagemSecundaria;
 	
-	@Column(name = "tonality", length = 40, nullable = true)
+	@Column(name = "tonality", length = 40)
 	@JsonAlias(value = "tonalidade")	
     String tonalidade;
 
@@ -54,12 +54,6 @@ public class CosmeticRegisterPresentation extends BaseEntity {
 	@Column(name = "register", length = 20, nullable = true)
 	@JsonAlias(value = "registro")
     String registro;
-    
-
-    @JoinColumn(name = "detail_id")
-    @MapKey(name = "Id")
-    @MapKeyClass(Long.class)
-    private ContentCosmeticRegisterDetail contentDetailCosmeticRegister;
     
     @OneToOne(cascade=CascadeType.ALL)
     private CosmeticRegisterPresentationDetail cosmeticRegisterPresentationDetail;
@@ -77,19 +71,19 @@ public class CosmeticRegisterPresentation extends BaseEntity {
 		this.numero = numero;
 	}
 	public String getEmbalagemPrimaria() {
-		return embalagemPrimaria+" - Primária";
+		return (embalagemPrimaria==null)?"Primária": embalagemPrimaria+" - Primária";
 	}
 	public void setEmbalagemPrimaria(String embalagemPrimaria) {
 		this.embalagemPrimaria = embalagemPrimaria;
 	}
 	public String getEmbalagemSecundaria() {
-		return embalagemSecundaria+" - Secundária";
+		return (embalagemSecundaria==null)?"Secundária":embalagemSecundaria+" - Secundária";
 	}
 	public void setEmbalagemSecundaria(String embalagemSecundaria) {
 		this.embalagemSecundaria = embalagemSecundaria;
 	}
 	public String getTonalidade() {
-		return tonalidade.equals("")?"Não se aplica para essa categoria":tonalidade;
+		return (tonalidade==null||tonalidade.equals(""))?"Não se aplica para essa categoria":tonalidade;
 	}
 	public void setTonalidade(String tonalidade) {
 		this.tonalidade = tonalidade;
@@ -112,12 +106,7 @@ public class CosmeticRegisterPresentation extends BaseEntity {
 	public void setRegistro(String registro) {
 		this.registro = registro;
 	}
-	public ContentCosmeticRegisterDetail getContentDetailCosmeticRegister() {
-		return contentDetailCosmeticRegister;
-	}
-	public void setContentDetailCosmeticRegister(ContentCosmeticRegisterDetail contentDetailCosmeticRegister) {
-		this.contentDetailCosmeticRegister = contentDetailCosmeticRegister;
-	}
+
 	public CosmeticRegisterPresentationDetail getCosmeticRegisterPresentationDetail() {
 		return cosmeticRegisterPresentationDetail;
 	}

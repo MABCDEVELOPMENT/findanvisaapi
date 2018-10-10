@@ -33,5 +33,7 @@ public class PresentationDestination extends BaseEntity implements StringListGen
 		this.valor = valor;
 	}
 	
-	
+	public PresentationDestination() {
+		// TODO Auto-generated constructor stub
+	}
 }

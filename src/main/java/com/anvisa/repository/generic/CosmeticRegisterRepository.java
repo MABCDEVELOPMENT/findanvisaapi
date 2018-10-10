@@ -8,7 +8,7 @@ import org.springframework.data.repository.query.Param;
 import com.anvisa.model.persistence.rest.cosmetic.register.ContentCosmeticRegister;
 import com.anvisa.model.persistence.rest.foot.ContentFoot;
 
-public interface CosmeticRegisterRepository extends JpaRepository<ContentCosmeticRegister, Long>,JpaSpecificationExecutor<ContentFoot> {
+public interface CosmeticRegisterRepository extends JpaRepository<ContentCosmeticRegister, Long>,JpaSpecificationExecutor<ContentCosmeticRegister> {
 
 	@Query("select f from ContentCosmeticRegister f where f.processo =:processo and f.cnpj=:cnpj")
 	public ContentCosmeticRegister findByProcessCnpjVencimento(@Param("processo") String process, @Param("cnpj") String cnpj);

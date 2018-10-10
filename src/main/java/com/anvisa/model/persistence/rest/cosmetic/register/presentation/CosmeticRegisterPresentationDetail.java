@@ -42,8 +42,7 @@ public class CosmeticRegisterPresentationDetail extends BaseEntity {
 	@JsonAlias(value = "categoria")
     private String categoria;
 	
-	@OneToMany(fetch=FetchType.LAZY, cascade={CascadeType.PERSIST,  CascadeType.REMOVE})
-	@Fetch(org.hibernate.annotations.FetchMode.SUBSELECT)
+	@OneToMany(cascade=CascadeType.ALL)
     private List<PresentationCountryManufacturer> fabricantesNacionais;
     
 	@Column(name = "physical_form", length = 200)
@@ -58,16 +57,13 @@ public class CosmeticRegisterPresentationDetail extends BaseEntity {
 	@JsonAlias(value = "prazoValidade")
     private String prazoValidade;
 	
-	@OneToMany(fetch=FetchType.LAZY, cascade={CascadeType.PERSIST,  CascadeType.REMOVE})
-	@Fetch(org.hibernate.annotations.FetchMode.SUBSELECT)
+	@OneToMany(cascade=CascadeType.ALL)
     private List<PresentationConservation> conservacao;
 	
-	@OneToMany(fetch=FetchType.LAZY, cascade={CascadeType.PERSIST,  CascadeType.REMOVE})
-	@Fetch(org.hibernate.annotations.FetchMode.SUBSELECT)
+	@OneToMany(cascade=CascadeType.ALL)
     private List<PresentationDestination> destinacao;
 	
-	@OneToMany(fetch=FetchType.LAZY, cascade={CascadeType.PERSIST,  CascadeType.REMOVE})
-	@Fetch(org.hibernate.annotations.FetchMode.SUBSELECT)
+	@OneToMany(cascade=CascadeType.ALL)
     private List<PresentationRestriction> restricao;
 	
 

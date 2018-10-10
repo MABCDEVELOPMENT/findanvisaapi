@@ -72,7 +72,7 @@ public class FindAnvisaController {
 
 	@RequestMapping(value = "/product", method = RequestMethod.POST, produces = "application/json")
 	public RootObject findProduct(@RequestBody QueryRecordParameter queryRecordParameter) {
-		if (queryRecordParameter.getCategory()!=0) {
+		if (queryRecordParameter.getCategory()!=0 && queryRecordParameter.getCategory()!=1) {
 		    RootObject rootObject = UrlToJson.find(queryRecordParameter);
 		    return rootObject;
 		} else {

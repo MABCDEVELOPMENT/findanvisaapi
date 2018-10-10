@@ -9,8 +9,8 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 import com.anvisa.model.persistence.BaseEntity;
-import com.anvisa.model.persistence.rest.cosmetic.register.presentation.ContentCosmeticRegisterDetail;
 import com.fasterxml.jackson.annotation.JsonAlias;
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 @Entity
 @Table(name = "cosmetic_register")
@@ -59,6 +59,7 @@ public class ContentCosmeticRegister extends BaseEntity {
 	
 	@Column(name = "maturity", length = 8, nullable = true)
 	@JsonAlias(value = "vencimento")	
+	@JsonFormat(pattern="dd/MM/yyyy")
     LocalDate vencimento;
 
 	@Column(name = "status_maturity", length = 60, nullable = true)

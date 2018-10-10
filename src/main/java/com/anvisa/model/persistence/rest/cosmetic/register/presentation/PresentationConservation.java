@@ -33,6 +33,9 @@ public class PresentationConservation extends BaseEntity {
 		this.valor = valor;
 	}
 	
+	public PresentationConservation() {
+		// TODO Auto-generated constructor stub
+	}
 	
 
 }

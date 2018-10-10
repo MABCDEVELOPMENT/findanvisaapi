@@ -1,4 +1,4 @@
-package com.anvisa.model.persistence.rest.cosmetic.register.presentation;
+package com.anvisa.model.persistence.rest.cosmetic.register;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -13,10 +13,12 @@ import javax.persistence.Table;
 
 import org.hibernate.annotations.Fetch;
 
+import com.anvisa.core.util.UtilDate;
 import com.anvisa.model.persistence.BaseEntity;
-import com.anvisa.model.persistence.rest.cosmetic.register.ContentCosmeticRegister;
 import com.anvisa.model.persistence.rest.cosmetic.register.petition.CosmeticRegisterPetition;
+import com.anvisa.model.persistence.rest.cosmetic.register.presentation.CosmeticRegisterPresentation;
 import com.fasterxml.jackson.annotation.JsonAlias;
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 @Entity
 @Table(name = "cosmetic_register_detail")
@@ -53,10 +55,12 @@ public class ContentCosmeticRegisterDetail extends BaseEntity {
 	
 	@Column(name = "maturity_Registration", length = 20, nullable = true)
 	@JsonAlias(value = "vencimentoRegistro")
+	@JsonFormat(pattern="dd/MM/yyyy")
 	LocalDate vencimentoRegistro;
 	
 	@Column(name = "publication_Record", length = 20, nullable = true)
 	@JsonAlias(value = "publicacaoRgistro")	
+	@JsonFormat(pattern="dd/MM/yyyy")
 	LocalDate publicacaoRgistro;
 	
 	@OneToMany(fetch=FetchType.LAZY, cascade={CascadeType.PERSIST,  CascadeType.REMOVE})
@@ -67,8 +71,6 @@ public class ContentCosmeticRegisterDetail extends BaseEntity {
 	@Fetch(org.hibernate.annotations.FetchMode.SUBSELECT)
 	List<CosmeticRegisterPetition> peticoes;
 	
-	@ManyToOne
-    private ContentCosmeticRegister contentCosmeticRegister;
 	
 	public ContentCosmeticRegisterDetail() {
 		// TODO Auto-generated constructor stub
@@ -134,12 +136,7 @@ public class ContentCosmeticRegisterDetail extends BaseEntity {
 	public void setPeticoes(List<CosmeticRegisterPetition> peticoes) {
 		this.peticoes = peticoes;
 	}
-	public ContentCosmeticRegister getContentCosmeticRegister() {
-		return contentCosmeticRegister;
-	}
-	public void setContentCosmeticRegister(ContentCosmeticRegister contentCosmeticRegister) {
-		this.contentCosmeticRegister = contentCosmeticRegister;
-	}
+	
 
 	@Override
 	public int hashCode() {
@@ -149,7 +146,7 @@ public class ContentCosmeticRegisterDetail extends BaseEntity {
 		result = prime * result + ((autorizacao == null) ? 0 : autorizacao.hashCode());
 		result = prime * result + ((categoria == null) ? 0 : categoria.hashCode());
 		result = prime * result + ((cnpj == null) ? 0 : cnpj.hashCode());
-		result = prime * result + ((contentCosmeticRegister == null) ? 0 : contentCosmeticRegister.hashCode());
+		//result = prime * result + ((contentCosmeticRegister == null) ? 0 : contentCosmeticRegister.hashCode());
 		result = prime * result + ((nomeProduto == null) ? 0 : nomeProduto.hashCode());
 		result = prime * result + ((peticoes == null) ? 0 : peticoes.hashCode());
 		result = prime * result + ((processo == null) ? 0 : processo.hashCode());

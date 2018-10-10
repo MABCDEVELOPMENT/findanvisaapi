@@ -11,6 +11,7 @@ import javax.persistence.Table;
 import com.anvisa.model.persistence.BaseEntity;
 import com.anvisa.model.persistence.rest.Content;
 import com.fasterxml.jackson.annotation.JsonAlias;
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 @Entity
 @Table(name = "foot")
@@ -59,6 +60,7 @@ public class ContentFoot extends BaseEntity {
 	
 	@Column(name = "dataVencimento", nullable = true)
 	@JsonAlias(value = "dataVencimento")	
+	@JsonFormat(pattern="dd/MM/yyyy")
 	LocalDate dataVencimento;
 	
 

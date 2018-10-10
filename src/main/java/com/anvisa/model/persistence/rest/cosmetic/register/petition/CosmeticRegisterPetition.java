@@ -2,16 +2,16 @@ package com.anvisa.model.persistence.rest.cosmetic.register.petition;
 
 import java.time.LocalDate;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.JoinColumn;
-import javax.persistence.MapKey;
-import javax.persistence.MapKeyClass;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import com.anvisa.model.persistence.BaseEntity;
-import com.anvisa.model.persistence.rest.cosmetic.register.presentation.ContentCosmeticRegisterDetail;
+import com.anvisa.model.persistence.rest.cosmetic.register.ContentCosmeticRegisterDetail;
 import com.fasterxml.jackson.annotation.JsonAlias;
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 @Entity
 @Table(name = "cosmetic_register_petition")
@@ -28,6 +28,7 @@ public class CosmeticRegisterPetition extends BaseEntity {
 	
 	@Column(name = "publication", nullable = true)
 	@JsonAlias(value = "publicacao")
+	@JsonFormat(pattern="dd/MM/yyyy")
     LocalDate publicacao;
 	
 	@Column(name = "transaction", length = 20, nullable = true)
@@ -42,10 +43,8 @@ public class CosmeticRegisterPetition extends BaseEntity {
 	@JsonAlias(value = "situacao")
     String situacao;
 	
-    @JoinColumn(name = "detail_id")
-    @MapKey(name = "Id")
-    @MapKeyClass(Long.class)
-    private ContentCosmeticRegisterDetail contentDetailCosmeticRegister;
+	@OneToOne(cascade=CascadeType.ALL)
+    private CosmeticRegisterPetitionDetail cosmeticRegisterPetitionDetail;
     
 	public String getExpediente() {
 		return expediente;
@@ -77,11 +76,12 @@ public class CosmeticRegisterPetition extends BaseEntity {
 	public void setSituacao(String situacao) {
 		this.situacao = situacao;
 	}
-	public ContentCosmeticRegisterDetail getContentDetailCosmeticRegister() {
-		return contentDetailCosmeticRegister;
+	public CosmeticRegisterPetitionDetail getCosmeticRegisterPetitionDetail() {
+		return cosmeticRegisterPetitionDetail;
 	}
-	public void setContentDetailCosmeticRegister(ContentCosmeticRegisterDetail contentDetailCosmeticRegister) {
-		this.contentDetailCosmeticRegister = contentDetailCosmeticRegister;
+	public void setCosmeticRegisterPetitionDetail(CosmeticRegisterPetitionDetail cosmeticRegisterPetitionDetail) {
+		this.cosmeticRegisterPetitionDetail = cosmeticRegisterPetitionDetail;
 	}
+
 	
 }

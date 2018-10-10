@@ -1,4 +1,4 @@
-package com.anvisa.model.persistence.rest.cosmetic.register.presentation;
+package com.anvisa.model.persistence.rest.cosmetic.register.petition;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -8,15 +8,15 @@ import com.anvisa.model.persistence.BaseEntity;
 import com.fasterxml.jackson.annotation.JsonAlias;
 
 @Entity
-@Table(name = "cosmetic_presentation_country_manufacturer")
-public class PresentationCountryManufacturer extends BaseEntity {
+@Table(name = "cosmetic_petition_country_manufacturer")
+public class PetitionCountryManufacturer extends BaseEntity {
 	
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
 	
-	@Column(name = "cnpj", length = 14)
+	@Column(name = "cnpj", length = 20)
 	@JsonAlias(value = "cnpj")
 	private String cnpj;
 	

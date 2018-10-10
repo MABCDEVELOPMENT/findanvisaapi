@@ -8,7 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.anvisa.model.persistence.rest.cosmetic.register.presentation.ContentCosmeticRegisterDetail;
+import com.anvisa.model.persistence.rest.cosmetic.register.ContentCosmeticRegisterDetail;
 import com.anvisa.model.persistence.rest.foot.ContentFoot;
 @Transactional
 public interface CosmeticRegisterDetailRepository extends JpaRepository<ContentCosmeticRegisterDetail, Long>,JpaSpecificationExecutor<ContentFoot> {

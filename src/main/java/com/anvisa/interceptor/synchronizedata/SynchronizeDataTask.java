@@ -39,19 +39,19 @@ public class SynchronizeDataTask {
 		
 		IntSynchronize[] intSynchronize = { new SynchronizeFoot(), new SynchronizeCosmeticRegister() };
 		
-//		List<RegisterCNPJ> registerCNPJs = registerCNPJRepository.findAll(0);
-//	
-//		
-//		
-//		for (RegisterCNPJ registerCNPJ : registerCNPJs) {
-//			
-//			ArrayList<BaseEntity> itens = intSynchronize[0].loadData(registerCNPJ.getCnpj());
-//
-//			intSynchronize[0].persist(itens);
-//			
-//		}
+ 		List<RegisterCNPJ> registerCNPJs = registerCNPJRepository.findAll(0);
+ 	
+ 		
 		
-		List<RegisterCNPJ> registerCNPJs = registerCNPJRepository.findAll(1);
+		for (RegisterCNPJ registerCNPJ : registerCNPJs) {
+			
+			ArrayList<BaseEntity> itens = intSynchronize[0].loadData(registerCNPJ.getCnpj());
+
+			intSynchronize[0].persist(itens);
+			
+		}
+		
+		registerCNPJs = registerCNPJRepository.findAll(1);
 	
 		for (RegisterCNPJ registerCNPJ : registerCNPJs) {
 			

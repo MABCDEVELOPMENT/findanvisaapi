@@ -33,6 +33,8 @@ public class PresentationRestriction extends BaseEntity {
 		this.valor = valor;
 	}
 	
-	
+	public PresentationRestriction() {
+		// TODO Auto-generated constructor stub
+	}
 
 }
