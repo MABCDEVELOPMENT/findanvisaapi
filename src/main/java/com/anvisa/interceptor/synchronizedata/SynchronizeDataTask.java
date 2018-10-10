@@ -32,7 +32,7 @@ public class SynchronizeDataTask {
 
 	private static final SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
 
-	@Scheduled(fixedRate = 500000000)
+	@Scheduled(cron = "0 1 1 ? * *")
 	public static void synchronizeData() {
 
 		log.info("SynchronizeData", dateFormat.format(new Date()));
@@ -42,24 +42,34 @@ public class SynchronizeDataTask {
  		List<RegisterCNPJ> registerCNPJs = registerCNPJRepository.findAll(0);
  	
  		
+ 		
+ 		
+ 		int cont = 0;
 		
-		for (RegisterCNPJ registerCNPJ : registerCNPJs) {
-			
+ 		for (RegisterCNPJ registerCNPJ : registerCNPJs) {
+ 			log.info("SynchronizeData => Start Foot "+registerCNPJ.getCnpj()+" "+registerCNPJ.getFullName(), dateFormat.format(new Date()));
 			ArrayList<BaseEntity> itens = intSynchronize[0].loadData(registerCNPJ.getCnpj());
 
 			intSynchronize[0].persist(itens);
+			cont++;
 			
 		}
+		
+		log.info("SynchronizeData => End Foot Total "+cont, dateFormat.format(new Date()));
+		
+		cont = 0;
 		
 		registerCNPJs = registerCNPJRepository.findAll(1);
 	
 		for (RegisterCNPJ registerCNPJ : registerCNPJs) {
-			
+			log.info("SynchronizeData => Start Cosmetic "+registerCNPJ.getCnpj()+" "+registerCNPJ.getFullName(), dateFormat.format(new Date()));
 			ArrayList<BaseEntity> itens = intSynchronize[1].loadData(registerCNPJ.getCnpj());
 
 			intSynchronize[1].persist(itens);
 			
 		}
+		
+		log.info("SynchronizeData => End Cosmetic Register Total "+cont, dateFormat.format(new Date()));
 	}
 	
 	

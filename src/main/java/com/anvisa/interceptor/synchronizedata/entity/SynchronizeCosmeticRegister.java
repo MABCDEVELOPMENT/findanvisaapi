@@ -63,7 +63,7 @@ public class SynchronizeCosmeticRegister extends SynchronizeData implements IntS
 
 	public SynchronizeCosmeticRegister() {
 
-		URL = "https://consultas.anvisa.gov.br/api/consulta/cosmeticos/registrados?count=10&page=1&filter[cnpj]=";
+		URL = "https://consultas.anvisa.gov.br/api/consulta/cosmeticos/registrados?count=10000&page=1&filter[cnpj]=";
 
 		URL_DETAIL = "https://consultas.anvisa.gov.br/api/consulta/cosmeticos/registrados/";
 
@@ -153,11 +153,15 @@ public class SynchronizeCosmeticRegister extends SynchronizeData implements IntS
 				
 				apresentacoes.add(apresentacaoCosmeticoRegistrado);
 
+		
 			}
 
-		}
+			return apresentacoes;
+			
+		} else {
 
-		return apresentacoes;
+		  return null;
+		}  
 
 	}
 
@@ -504,7 +508,7 @@ public class SynchronizeCosmeticRegister extends SynchronizeData implements IntS
 
 			}
 
-			log.info(baseEntity.toString());
+			//log.info(baseEntity.toString());
 
 		}
 

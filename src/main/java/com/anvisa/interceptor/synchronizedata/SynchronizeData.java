@@ -1,7 +1,12 @@
 package com.anvisa.interceptor.synchronizedata;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Iterator;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.anvisa.model.persistence.BaseEntity;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -17,6 +22,10 @@ public class SynchronizeData {
 	public String URL = "";
 	
 	public String URL_DETAIL = "";
+	
+	private static final Logger log = LoggerFactory.getLogger(SynchronizeDataTask.class);
+
+	private static final SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
 	
 	public ArrayList<BaseEntity> loadData(IntSynchronize intSynchronize,String cnpj) {
 		// TODO Auto-generated method stub
@@ -38,9 +47,10 @@ public class SynchronizeData {
 			ObjectMapper objectMapper = new ObjectMapper();
 
 			JsonNode rootNode = objectMapper.readTree(response.body().string());
-
+			
+			
 			Iterator<JsonNode> elementsContents = rootNode.path("content").iterator();
-
+			log.info("SynchronizeData Total Registros "+rootNode.get("totalElements"), dateFormat.format(new Date()));
 			while (elementsContents.hasNext()) {
 
 				JsonNode jsonNode = (JsonNode) elementsContents.next();
