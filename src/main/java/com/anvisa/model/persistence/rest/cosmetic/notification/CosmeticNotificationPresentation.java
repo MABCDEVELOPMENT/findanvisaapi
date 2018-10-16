@@ -24,7 +24,7 @@ public class CosmeticNotificationPresentation extends BaseEntity {
 	@JsonAlias(value = "tonalidade")
     String tonalidade;
 
-	@Column(name = "eans", length = 100)
+	@Column(name = "eans", length = 300)
 	@JsonAlias(value = "eans")
     String eans;
 
@@ -75,4 +75,50 @@ public class CosmeticNotificationPresentation extends BaseEntity {
 	@Column(name = "only_import")
 	@JsonAlias(value = "rotuloAprovado")
     boolean rotuloAprovado;
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = super.hashCode();
+		result = prime * result + (apenasExportacao ? 1231 : 1237);
+		result = prime * result + ((apresentacao == null) ? 0 : apresentacao.hashCode());
+		result = prime * result + ((eans == null) ? 0 : eans.hashCode());
+		result = prime * result + (rotuloAprovado ? 1231 : 1237);
+		result = prime * result + ((tonalidade == null) ? 0 : tonalidade.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null) {
+			return false;
+		}
+		if (!(obj instanceof ContentCosmeticNotification)) {
+			return false;
+		}
+		CosmeticNotificationPresentation other = (CosmeticNotificationPresentation) obj;
+		if (apenasExportacao != other.apenasExportacao)
+			return false;
+		if (apresentacao == null) {
+			if (other.apresentacao != null)
+				return false;
+		} else if (!apresentacao.equals(other.apresentacao))
+			return false;
+		if (eans == null) {
+			if (other.eans != null)
+				return false;
+		} else if (!eans.equals(other.eans))
+			return false;
+		if (rotuloAprovado != other.rotuloAprovado)
+			return false;
+		if (tonalidade == null) {
+			if (other.tonalidade != null)
+				return false;
+		} else if (!tonalidade.equals(other.tonalidade))
+			return false;
+		return true;
+	}
 }

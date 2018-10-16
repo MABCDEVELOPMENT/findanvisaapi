@@ -4,6 +4,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
+import java.util.concurrent.TimeUnit;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,12 +34,16 @@ public class SynchronizeData {
 
 		OkHttpClient client = new OkHttpClient();
 		
+		client.newBuilder().readTimeout(30, TimeUnit.MINUTES);
+		
+		
 		Request url = null;
 
 
 		url = new Request.Builder()
 				.url(URL+cnpj)
 				.get().addHeader("authorization", "Guest").build();
+		       
 		
 		try {
 			
@@ -51,6 +56,7 @@ public class SynchronizeData {
 			
 			Iterator<JsonNode> elementsContents = rootNode.path("content").iterator();
 			log.info("SynchronizeData Total Registros "+rootNode.get("totalElements"), dateFormat.format(new Date()));
+			
 			while (elementsContents.hasNext()) {
 
 				JsonNode jsonNode = (JsonNode) elementsContents.next();
@@ -62,6 +68,7 @@ public class SynchronizeData {
 				
 			}
 			response.close();
+			client = null;
 			return rootObject;
 			
 	   } catch (Exception e) {

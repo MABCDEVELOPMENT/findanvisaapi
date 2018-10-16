@@ -26,7 +26,7 @@ public class ContentFoot extends BaseEntity {
 	@JsonAlias(value = "codigo")
 	int codigo;
 	
-	@Column(name = "product", nullable = false)
+	@Column(name = "product", length = 300, nullable = false)
 	@JsonAlias(value = "product")
 	String produto;
 

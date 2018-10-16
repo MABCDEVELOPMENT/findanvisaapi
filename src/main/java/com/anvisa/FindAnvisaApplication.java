@@ -12,6 +12,7 @@ import org.springframework.boot.web.servlet.support.SpringBootServletInitializer
 import org.springframework.context.annotation.Bean;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
+import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
@@ -22,7 +23,7 @@ import com.anvisa.interceptor.synchronizedata.SynchronizeDataTask;
 import com.fasterxml.jackson.databind.util.ISO8601DateFormat;
 
 @SpringBootApplication
-//@EnableScheduling
+@EnableScheduling
 @EnableAutoConfiguration
 @EnableWebMvc
 @EntityScan(basePackages = { "com.anvisa.model.persistence" })
@@ -74,7 +75,7 @@ public class FindAnvisaApplication extends SpringBootServletInitializer implemen
 		SpringApplication.run(FindAnvisaApplication.class, args);
 		
 		System.out.println(IMAGE_DIR);
-		//SynchronizeDataTask.synchronizeData();
+		SynchronizeDataTask.synchronizeData();
 		
 	}
 }

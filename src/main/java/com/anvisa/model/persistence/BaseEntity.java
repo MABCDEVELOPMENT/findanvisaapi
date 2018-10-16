@@ -44,6 +44,7 @@ public abstract class BaseEntity implements Serializable {
 	
 
 	@Column(name = "insert_date",  insertable = true, updatable = false)
+	@JsonFormat(pattern = "dd/MM/yyyy")
 	private LocalDateTime insertDate;
 
 	@ManyToOne
@@ -51,6 +52,7 @@ public abstract class BaseEntity implements Serializable {
 	private User updateUser;
 	
 	@Column(name = "update_date", insertable = false, updatable = true)
+	@JsonFormat(pattern = "dd/MM/yyyy")
 	private LocalDateTime updateDate;
 
 	@ManyToOne	
@@ -98,7 +100,7 @@ public abstract class BaseEntity implements Serializable {
 	}
 
 	public LocalDateTime getUpdateDate() {
-		return updateDate;
+		return updateDate==null?insertDate:updateDate;
 	}
 
 	public void setUpdateDate(LocalDateTime updateDate) {

@@ -2,6 +2,7 @@ package com.anvisa.interceptor.synchronizedata.entity;
 
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -12,13 +13,19 @@ import com.anvisa.interceptor.synchronizedata.SynchronizeData;
 import com.anvisa.model.persistence.BaseEntity;
 import com.anvisa.model.persistence.rest.Content;
 import com.anvisa.model.persistence.rest.cosmetic.notification.ContentCosmeticNotification;
+import com.anvisa.model.persistence.rest.cosmetic.notification.ContentCosmeticNotificationDetail;
+import com.anvisa.model.persistence.rest.cosmetic.notification.CosmeticNotificationPresentation;
+import com.anvisa.model.persistence.rest.cosmetic.register.presentation.CosmeticRegisterPresentation;
+import com.anvisa.model.persistence.rest.cosmetic.register.presentation.CosmeticRegisterPresentationDetail;
 import com.anvisa.model.persistence.rest.foot.ContentFoot;
 import com.anvisa.model.persistence.rest.foot.ContentFootDetail;
 import com.anvisa.repository.generic.CosmeticNotificationRepository;
 import com.anvisa.repository.generic.FootDetailRepository;
 import com.anvisa.repository.generic.FootRepository;
+import com.anvisa.rest.detalhe.comestico.notificado.ApresentacaoCosmeticoNotificado;
 import com.anvisa.rest.model.ContentProdutoNotificado;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 
 @Component
 public class SynchronizeCosmeticNotification extends SynchronizeData implements IntSynchronize {
@@ -36,7 +43,7 @@ public class SynchronizeCosmeticNotification extends SynchronizeData implements 
 
 	public SynchronizeCosmeticNotification() {
 
-		URL = "https://consultas.anvisa.gov.br/api/consulta/cosmeticos/notificados?count=4000&page=1";
+		URL = "https://consultas.anvisa.gov.br/api/consulta/cosmeticos/notificados?count=4000&page=1&filter[cnpj]=";
 
 		URL_DETAIL = "https://consultas.anvisa.gov.br/api/consulta/cosmeticos/notificados/";
 
@@ -76,27 +83,72 @@ public class SynchronizeCosmeticNotification extends SynchronizeData implements 
 	}
 
 	@Override
-	public ContentFootDetail parseDetailData(JsonNode jsonNode) {
+	public ContentCosmeticNotificationDetail parseDetailData(JsonNode jsonNode) {
 		// TODO Auto-generated method stub
-		ContentFootDetail contentFootDetail = new ContentFootDetail();
+		
+		ContentCosmeticNotificationDetail contentCosmeticNotificationDetail = new ContentCosmeticNotificationDetail();
+		
+		String assunto = JsonToObject.getValue(jsonNode, "assunto", "codigo") + " - "
+				+ JsonToObject.getValue(jsonNode, "assunto", "descricao");
+		contentCosmeticNotificationDetail.setAssunto(assunto);
 
-		contentFootDetail.setProcesso(JsonToObject.getValue(jsonNode, "processo", "numero"));
-		contentFootDetail.setClassesTerapeuticas(JsonToObject.getArrayValue(jsonNode, "classesTerapeuticas"));
-		contentFootDetail.setCnpj(JsonToObject.getValue(jsonNode, "cnpj"));
-		contentFootDetail.setMarca(JsonToObject.getArrayValue(jsonNode, "marcas"));
-		contentFootDetail.setNomeComercial(JsonToObject.getValue(jsonNode, "nomeComercial"));
-		contentFootDetail.setRazaoSocial(JsonToObject.getValue(jsonNode, "razaoSocial"));
-		contentFootDetail.setRegistro(JsonToObject.getValue(jsonNode, "numeroRegistro"));
-		contentFootDetail.setMesAnoVencimento(JsonToObject.getValue(jsonNode, "mesAnoVencimento"));
-		contentFootDetail.setPrincipioAtivo(JsonToObject.getValue(jsonNode, "principioAtivo"));
-		contentFootDetail.setEmbalagemPrimaria(JsonToObject.getValue(jsonNode, "embalagemPrimaria", "tipo"));
-		contentFootDetail.setViasAdministrativa(JsonToObject.getArrayValue(jsonNode, "viasAdministracao"));
-		String ifaUnico = JsonToObject.getValue(jsonNode, "ifaUnico");
-		contentFootDetail.setIfaUnico(ifaUnico.equals("true") ? "Sim" : "Não");
-		contentFootDetail.setConservacao(JsonToObject.getArrayValue(jsonNode, "conservacao"));
+		String empresa = JsonToObject.getValue(jsonNode, "empresa", "cnpj") + " - "
+				+ JsonToObject.getValue(jsonNode, "empresa", "razaoSocial");
+		contentCosmeticNotificationDetail.setEmpresa(empresa);
 
-		return contentFootDetail;
+		contentCosmeticNotificationDetail.setProduto(JsonToObject.getValue(jsonNode, "produto"));
+
+		contentCosmeticNotificationDetail.setProcesso(JsonToObject.getValue(jsonNode, "processo"));
+		contentCosmeticNotificationDetail.setArea(JsonToObject.getValue(jsonNode, "area"));
+		contentCosmeticNotificationDetail
+				.setSituacao(JsonToObject.getValue(jsonNode, "situacao", "situacao"));
+		contentCosmeticNotificationDetail
+				.setDataNotificacao(JsonToObject.getValueDate(jsonNode, "situacao", "data"));
+		
+		contentCosmeticNotificationDetail.setApresentacoes(this.parseApresentationData(jsonNode, "apresentacoes"));
+
+		
+		return contentCosmeticNotificationDetail;
 	}
+	
+	
+	
+	public List<CosmeticNotificationPresentation> parseApresentationData(JsonNode jsonNode, String attribute) {
+
+		ArrayNode element = (ArrayNode)jsonNode.findValue(attribute);
+		
+		List<CosmeticNotificationPresentation> apresentacoes = new ArrayList<CosmeticNotificationPresentation>();
+		
+		if (element!=null) {
+				
+		
+				
+				for (Iterator<JsonNode> it = element.iterator(); it.hasNext();) {
+					
+					JsonNode nodeIt = it.next();
+					
+					CosmeticNotificationPresentation cosmeticNotificationPresentation = new CosmeticNotificationPresentation();
+					
+					cosmeticNotificationPresentation.setApresentacao(JsonToObject.getValue(nodeIt,"apresentacao"));
+					cosmeticNotificationPresentation.setTonalidade(JsonToObject.getValue(nodeIt,"tonalidade"));
+					cosmeticNotificationPresentation.setEans("");
+					apresentacoes.add(cosmeticNotificationPresentation);
+					
+				}
+			
+			
+			
+		} 
+		
+		if(apresentacoes.isEmpty()) {
+			return null;
+		}
+		
+		return apresentacoes;
+
+	}
+	
+	
 
 	@Override
 	public ArrayList<BaseEntity> loadData(String cnpj) {
@@ -113,51 +165,34 @@ public class SynchronizeCosmeticNotification extends SynchronizeData implements 
 
 		for (Iterator<BaseEntity> iterator = itens.iterator(); iterator.hasNext();) {
 
-			ContentFoot BaseEntity = (ContentFoot) iterator.next();
+			ContentCosmeticNotification baseEntity = (ContentCosmeticNotification) iterator.next();
 
-			ContentFoot localFoot = cosmeticNotificationRepository.findByProcessCnpjCodigoRegistro(BaseEntity.getProcesso(),
-					BaseEntity.getCnpj(), BaseEntity.getCodigo(), BaseEntity.getRegistro(),
-					BaseEntity.getDataVencimento());
+			ContentCosmeticNotification localContentCosmeticNotification = cosmeticNotificationRepository.findByProcessCnpj(baseEntity.getProcesso(),
+					baseEntity.getCnpj(),baseEntity.getExpedienteProcesso());
 
-			boolean newFoot = (localFoot == null);
+			boolean newNotification = (localContentCosmeticNotification == null);
+			
+			ContentCosmeticNotificationDetail contentCosmeticNotificationDetail = (ContentCosmeticNotificationDetail) this.loadDetailData(baseEntity.getProcesso());
 
-			ContentFootDetail detail = (ContentFootDetail) this.loadDetailData(BaseEntity.getProcesso());
-
-			if (detail != null) {
-
-				if (!newFoot) {
-
-					if (localFoot.getContentFootDetail() != null && !detail.equals(localFoot.getContentFootDetail())) {
-						detail.setId(localFoot.getContentFootDetail().getId());
-						footDetailRepository.saveAndFlush(detail);
-						BaseEntity.setContentFootDetail(detail);
-					} else {
-					    detail.setId(localFoot.getContentFootDetail().getId());
-					}    
-				} else {
-
-					footDetailRepository.saveAndFlush(detail);
-
-					BaseEntity.setContentFootDetail(detail);
+			if (!newNotification) {
+				
+				if (localContentCosmeticNotification.getContentCosmeticNotificationDetail()!=null) {
+					if (!contentCosmeticNotificationDetail.equals(localContentCosmeticNotification.getContentCosmeticNotificationDetail())){
+						contentCosmeticNotificationDetail.setId(localContentCosmeticNotification.getContentCosmeticNotificationDetail().getId());
+						baseEntity.setContentCosmeticNotificationDetail(contentCosmeticNotificationDetail);
+					}
 				}
 
-			}
+				if (!localContentCosmeticNotification.equals(baseEntity)) {
 
-			if (localFoot != null) {
-
-				if (!localFoot.equals(BaseEntity)) {
-
-					BaseEntity.setId(localFoot.getId());
-					detail.setId(localFoot.getContentFootDetail().getId());
-					BaseEntity.setContentFootDetail(detail);
-					footRepository.saveAndFlush(BaseEntity);
-
+					baseEntity.setId(localContentCosmeticNotification.getId());
+					cosmeticNotificationRepository.saveAndFlush(baseEntity);
 				}
 
 			} else {
-
-				footRepository.saveAndFlush(BaseEntity);
-
+				baseEntity.setContentCosmeticNotificationDetail(contentCosmeticNotificationDetail);
+				cosmeticNotificationRepository.saveAndFlush(baseEntity);
+				
 			}
 
 		}

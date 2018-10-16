@@ -1,19 +1,12 @@
 package com.anvisa.controller;
 
-import java.awt.Image;
-import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.DefaultResourceLoader;
-import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.StreamUtils;
@@ -26,7 +19,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.anvisa.controller.find.FindData;
 import com.anvisa.core.json.UrlToJson;
-import com.anvisa.core.type.TypeArea;
 import com.anvisa.rest.QueryRecordDetail;
 import com.anvisa.rest.QueryRecordParameter;
 import com.anvisa.rest.QueryRecordProcessParameter;

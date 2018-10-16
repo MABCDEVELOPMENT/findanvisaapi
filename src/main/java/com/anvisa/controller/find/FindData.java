@@ -8,7 +8,9 @@ public class FindData {
 	static int CATEGORY_FOOT = 0;
 	
 	static int CATEGORY_COSMETIC = 1;
-	static int COSMETIC_OPTION_REGISTER = 0;
+	static int COSMETIC_OPTION_REGISTER       = 0;
+	static int COSMETIC_OPTION_NOTIFICATION   = 1;
+	static int COSMETIC_OPTION_REGULARIZED 	  = 2;
 	
 	
 	
@@ -20,6 +22,10 @@ public class FindData {
 			rootObject.getContent().addAll(FindDataFoot.find(queryRecordParameter));
 		} else if (queryRecordParameter.getCategory() == CATEGORY_COSMETIC && queryRecordParameter.getOption() == COSMETIC_OPTION_REGISTER) {
 			rootObject.getContent().addAll(FindDataCosmeticRegister.find(queryRecordParameter));
+		} else if (queryRecordParameter.getCategory() == CATEGORY_COSMETIC && queryRecordParameter.getOption() == COSMETIC_OPTION_NOTIFICATION) {
+			rootObject.getContent().addAll(FindDataCosmeticNotification.find(queryRecordParameter));
+		} else if (queryRecordParameter.getCategory() == CATEGORY_COSMETIC && queryRecordParameter.getOption() == COSMETIC_OPTION_REGULARIZED) {
+			rootObject.getContent().addAll(FindDataCosmeticRegularized.find(queryRecordParameter));		
 		}
 		
 		return rootObject;
