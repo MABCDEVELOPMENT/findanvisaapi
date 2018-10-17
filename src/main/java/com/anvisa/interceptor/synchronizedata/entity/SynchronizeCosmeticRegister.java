@@ -63,7 +63,7 @@ public class SynchronizeCosmeticRegister extends SynchronizeData implements IntS
 
 	public SynchronizeCosmeticRegister() {
 
-		URL = "https://consultas.anvisa.gov.br/api/consulta/cosmeticos/registrados?count=10000&page=1&filter[cnpj]=";
+		URL = "https://consultas.anvisa.gov.br/api/consulta/cosmeticos/registrados?count=1000&page=1&filter[cnpj]=";
 
 		URL_DETAIL = "https://consultas.anvisa.gov.br/api/consulta/cosmeticos/registrados/";
 
@@ -461,8 +461,10 @@ public class SynchronizeCosmeticRegister extends SynchronizeData implements IntS
 	@Override
 	public void persist(ArrayList<BaseEntity> itens) {
 
-		log.info("SynchronizeData", dateFormat.format(new Date()));
-
+		int size = itens.size();
+		List<ContentCosmeticRegister> bachList = new ArrayList<>(); 
+		int count = 0;
+		
 		for (Iterator<BaseEntity> iterator = itens.iterator(); iterator.hasNext();) {
 
 			ContentCosmeticRegister baseEntity = (ContentCosmeticRegister) iterator.next();
@@ -472,8 +474,7 @@ public class SynchronizeCosmeticRegister extends SynchronizeData implements IntS
 
 			boolean newFoot = (localCosmetic == null);
 
-			ContentCosmeticRegisterDetail detail = (ContentCosmeticRegisterDetail) this
-					.loadDetailData(baseEntity.getProcesso());
+			ContentCosmeticRegisterDetail detail = baseEntity.getContentCosmeticRegisterDetail();
 
 			if (detail != null) {
 
@@ -482,7 +483,9 @@ public class SynchronizeCosmeticRegister extends SynchronizeData implements IntS
 					if (localCosmetic.getContentCosmeticRegisterDetail() != null
 							&& !detail.equals(localCosmetic.getContentCosmeticRegisterDetail())) {
 						detail.setId(localCosmetic.getContentCosmeticRegisterDetail().getId());
-						cosmeticRegisterDetailRepository.saveAndFlush(detail);
+						cosmeticRegisterDetailRepository.save(detail);
+						//bachList.add(detail);
+						//entityCount++;
 					}
 
 				} else {
@@ -498,18 +501,27 @@ public class SynchronizeCosmeticRegister extends SynchronizeData implements IntS
 					baseEntity.setId(localCosmetic.getId());
 					detail.setId(localCosmetic.getContentCosmeticRegisterDetail().getId());
 					baseEntity.setContentCosmeticRegisterDetail(detail);
-					cosmeticRegisterRepository.saveAndFlush(baseEntity);
-
+					//cosmeticRegisterRepository.save(baseEntity);
+					bachList.add(baseEntity);
+					
 				}
 
 			} else {
 
-				cosmeticRegisterRepository.saveAndFlush(baseEntity);
+				//cosmeticRegisterRepository.save(baseEntity);
+				bachList.add(baseEntity);
 
 			}
 
+			if ((count + 1) % 10 == 0 || (count + 1) == size) {
+				cosmeticRegisterDetailRepository.flush();
+				cosmeticRegisterRepository.saveAll(bachList);
+				bachList.clear();
+			}
+			count++;
 			//log.info(baseEntity.toString());
-
+			System.out.println(count);
+			
 		}
 
 	}

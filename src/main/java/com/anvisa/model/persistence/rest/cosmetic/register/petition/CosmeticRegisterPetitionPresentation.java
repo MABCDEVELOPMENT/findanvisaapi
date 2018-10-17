@@ -24,7 +24,7 @@ public class CosmeticRegisterPetitionPresentation extends BaseEntity {
 	@JsonAlias(value = "tonalidade")
 	private String tonalidade;
 	
-	@Column(name = "physical_form", length = 200)
+	@Column(name = "physical_form", length = 400)
 	@JsonAlias(value = "formaFisica")
     private String formaFisica;
 	
@@ -45,11 +45,11 @@ public class CosmeticRegisterPetitionPresentation extends BaseEntity {
 	@JsonAlias(value = "registro")
 	private String registro;
 	
-	@Column(name = "primary_package", length = 200)
+	@Column(name = "primary_package", length = 400)
 	@JsonAlias(value = "embalagemPrimaria")
 	private String embalagemPrimaria;
 	
-	@Column(name = "secondary_packaging", length = 200)
+	@Column(name = "secondary_packaging", length = 400)
 	@JsonAlias(value = "embalagemSecundaria")
 	private String embalagemSecundaria;
 

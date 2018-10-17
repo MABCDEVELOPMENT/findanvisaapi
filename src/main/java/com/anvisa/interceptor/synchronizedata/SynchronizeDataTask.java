@@ -18,6 +18,8 @@ import com.anvisa.interceptor.synchronizedata.entity.SynchronizeCosmeticRegulari
 import com.anvisa.interceptor.synchronizedata.entity.SynchronizeFoot;
 import com.anvisa.model.persistence.BaseEntity;
 import com.anvisa.model.persistence.RegisterCNPJ;
+import com.anvisa.model.persistence.rest.cosmetic.register.ContentCosmeticRegister;
+import com.anvisa.model.persistence.rest.cosmetic.register.ContentCosmeticRegisterDetail;
 import com.anvisa.repository.generic.RegisterCNPJRepository;
 
 @Component
@@ -44,71 +46,92 @@ public class SynchronizeDataTask {
 		
  		List<RegisterCNPJ> registerCNPJs = registerCNPJRepository.findAll(0);
 
- 		ArrayList<BaseEntity> itensGeralFoot = new ArrayList<BaseEntity>();
- 	
  		
  		int cont = 0;
 		
- 		for (RegisterCNPJ registerCNPJ : registerCNPJs) {
+ 		/*for (RegisterCNPJ registerCNPJ : registerCNPJs) {
  			
  			log.info("SynchronizeData => Start Foot "+registerCNPJ.getCnpj()+" "+registerCNPJ.getFullName(), dateFormat.format(new Date()));
 			
  			ArrayList<BaseEntity> itens = intSynchronize[0].loadData(registerCNPJ.getCnpj());
+ 			
+ 			intSynchronize[0].persist(itens);
+ 			
+ 			log.info("SynchronizeData => Total "+itens.size(), dateFormat.format(new Date()));
+ 			
 
- 			itensGeralFoot.addAll(itens);
-			
 			
 		}
+*/ 		
+ 		log.info("SynchronizeData => End Foot Total ", dateFormat.format(new Date()));
  		
- 		intSynchronize[0].persist(itensGeralFoot);
+
  		
- 		log.info("SynchronizeData => End Foot Total "+itensGeralFoot.size(), dateFormat.format(new Date()));
+ 		
 		
 		cont = 0;
 		
 		registerCNPJs = registerCNPJRepository.findAll(1);
 		
-		ArrayList<BaseEntity> itensGeralCometicRegister = new ArrayList<BaseEntity>();
-	
-		for (RegisterCNPJ registerCNPJ : registerCNPJs) {
-			log.info("SynchronizeData => Start Cosmetic Register "+registerCNPJ.getCnpj()+" "+registerCNPJ.getFullName(), dateFormat.format(new Date()));
-			ArrayList<BaseEntity> itens = intSynchronize[1].loadData(registerCNPJ.getCnpj());
 
-			itensGeralCometicRegister.addAll(itens);
+		for (RegisterCNPJ registerCNPJ : registerCNPJs) {
+			
+			log.info("SynchronizeData => Start Cosmetic Register "+registerCNPJ.getCnpj()+" "+registerCNPJ.getFullName(), dateFormat.format(new Date()));
+			
+			ArrayList<BaseEntity> itens = intSynchronize[1].loadData(registerCNPJ.getCnpj());
+			
+			ArrayList<BaseEntity> itensNew = new ArrayList<>();
+			
+			for (Iterator<BaseEntity> iterator = itens.iterator(); iterator.hasNext();) {
+				ContentCosmeticRegister baseEntity = (ContentCosmeticRegister) iterator.next();
+				ContentCosmeticRegisterDetail contentCosmeticRegisterDetail = (ContentCosmeticRegisterDetail) intSynchronize[1].loadDetailData(baseEntity.getProcesso());
+				baseEntity.setContentCosmeticRegisterDetail(contentCosmeticRegisterDetail);
+				itensNew.add(baseEntity);
+			}
+
+			log.info("SynchronizeData => Total "+itens.size(), dateFormat.format(new Date()));
+			
+			intSynchronize[1].persist(itensNew);
 			
 		}
 		
-		intSynchronize[1].persist(itensGeralCometicRegister);
 		
-		log.info("SynchronizeData => End Cosmetic Notification Total "+itensGeralCometicRegister.size(), dateFormat.format(new Date()));
+/*		log.info("SynchronizeData => End Cosmetic Notification ", dateFormat.format(new Date()));
 		
 		
 		registerCNPJs = registerCNPJRepository.findAll(1);
 		
-		ArrayList<BaseEntity> itensGeralNotification = new ArrayList<BaseEntity>();
 		
 		for (RegisterCNPJ registerCNPJ : registerCNPJs) {
+			
 			log.info("SynchronizeData => Start Cosmetic Notification "+registerCNPJ.getCnpj()+" "+registerCNPJ.getFullName(), dateFormat.format(new Date()));
-			//ArrayList<BaseEntity> itens = intSynchronize[2].loadData(registerCNPJ.getCnpj());
-			itensGeralNotification.addAll(intSynchronize[2].loadData(registerCNPJ.getCnpj()));
+			
+			ArrayList<BaseEntity> itens = intSynchronize[2].loadData(registerCNPJ.getCnpj());
+			
+			log.info("SynchronizeData => Total "+itens.size(), dateFormat.format(new Date()));
+			
+			intSynchronize[2].persist(itens);
+			
 		}
 		
-		intSynchronize[2].persist(itensGeralNotification);
-		log.info("SynchronizeData => End Cosmetic Notification Total "+itensGeralNotification.size(), dateFormat.format(new Date()));
+		log.info("SynchronizeData => End Cosmetic Notification ", dateFormat.format(new Date()));
+		
+		
 		
 		registerCNPJs = registerCNPJRepository.findAll(1);
-		ArrayList<BaseEntity> itensGeralRegularized = new ArrayList<BaseEntity>();
 		
 		for (RegisterCNPJ registerCNPJ : registerCNPJs) {
 			log.info("SynchronizeData => Start Cosmetic Regularized "+registerCNPJ.getCnpj()+" "+registerCNPJ.getFullName(), dateFormat.format(new Date()));
-			//ArrayList<BaseEntity> itens = intSynchronize[2].loadData(registerCNPJ.getCnpj());
-			itensGeralRegularized.addAll(intSynchronize[3].loadData(registerCNPJ.getCnpj()));
+			ArrayList<BaseEntity> itens = intSynchronize[2].loadData(registerCNPJ.getCnpj());
+			
+			log.info("SynchronizeData => End Cosmetic Regularized Total "+itens.size(), dateFormat.format(new Date()));
+			intSynchronize[3].persist(itens);
 		}
 		
-		intSynchronize[3].persist(itensGeralRegularized);
+
 		
-		log.info("SynchronizeData => End Cosmetic Regularized Total "+itensGeralRegularized.size(), dateFormat.format(new Date()));
-		
+		log.info("SynchronizeData => End Cosmetic Regularized ", dateFormat.format(new Date()));
+*/		
 	}
 	
 	

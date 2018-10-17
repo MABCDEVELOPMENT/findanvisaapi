@@ -95,7 +95,7 @@ public class SynchronizeFoot extends SynchronizeData implements IntSynchronize {
 
 	@Override
 	public void persist(ArrayList<BaseEntity> itens) {
-
+		int cont = 0;
 		for (Iterator<BaseEntity> iterator = itens.iterator(); iterator.hasNext();) {
 
 			ContentFoot BaseEntity = (ContentFoot) iterator.next();
@@ -135,18 +135,21 @@ public class SynchronizeFoot extends SynchronizeData implements IntSynchronize {
 					BaseEntity.setId(localFoot.getId());
 					detail.setId(localFoot.getContentFootDetail().getId());
 					BaseEntity.setContentFootDetail(detail);
-					footRepository.saveAndFlush(BaseEntity);
+					footRepository.save(BaseEntity);
 
 				}
 
 			} else {
 
-				footRepository.saveAndFlush(BaseEntity);
+				footRepository.save(BaseEntity);
 
 			}
-
+			
+			System.out.println(cont++);
+			
 		}
-
+		
+		
 	}
 
 }

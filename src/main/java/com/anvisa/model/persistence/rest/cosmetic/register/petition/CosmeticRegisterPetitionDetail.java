@@ -22,7 +22,7 @@ public class CosmeticRegisterPetitionDetail extends BaseEntity {
 	 */
 	private static final long serialVersionUID = 1L;
 	
-	@Column(name = "social_reason", length = 200, nullable = false)
+	@Column(name = "social_reason", length = 400, nullable = false)
 	@JsonAlias(value = "razaoSocial")
 	private String razaoSocial;
 	

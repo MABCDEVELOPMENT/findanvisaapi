@@ -187,7 +187,8 @@ public class SynchronizeCosmeticRegularized extends SynchronizeData implements I
 	@Override
 	public void persist(ArrayList<BaseEntity> itens) {
 
-		log.info("SynchronizeData", dateFormat.format(new Date()));
+		int cont = 0;
+		
 		for (Iterator<BaseEntity> iterator = itens.iterator(); iterator.hasNext();) {
 
 			ContentCosmeticRegularized baseEntity = (ContentCosmeticRegularized) iterator.next();
@@ -218,10 +219,10 @@ public class SynchronizeCosmeticRegularized extends SynchronizeData implements I
 				cosmeticRegularizedRepository.saveAndFlush(baseEntity);
 				
 			}
-
+			System.out.println(cont++);
 		}
 		
-
+		
 	}
 
 }

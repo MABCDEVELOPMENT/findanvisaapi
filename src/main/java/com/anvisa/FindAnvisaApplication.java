@@ -26,7 +26,7 @@ import com.fasterxml.jackson.databind.util.ISO8601DateFormat;
 @EnableScheduling
 @EnableAutoConfiguration
 @EnableWebMvc
-@EntityScan(basePackages = { "com.anvisa.model.persistence" })
+@EntityScan(basePackages = {"com.anvisa.model.persistence"})
 @EnableJpaRepositories("com.anvisa.repository")
 public class FindAnvisaApplication extends SpringBootServletInitializer implements WebMvcConfigurer {
 	
@@ -72,10 +72,11 @@ public class FindAnvisaApplication extends SpringBootServletInitializer implemen
 			dir.mkdir();
 		}
 		IMAGE_DIR = dir.getCanonicalPath();
+
 		SpringApplication.run(FindAnvisaApplication.class, args);
-		
-		System.out.println(IMAGE_DIR);
 		SynchronizeDataTask.synchronizeData();
+		System.out.println(IMAGE_DIR);
+		
 		
 	}
 }

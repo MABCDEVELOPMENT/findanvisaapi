@@ -134,10 +134,10 @@ public class LoginController {
 	}
 	
 	@ApiOperation(value = "Get e-mail of user")
-	@RequestMapping(value = "/getuser/{email}", method = RequestMethod.GET)
-	public ResponseEntity<?> getUser(@PathVariable String email) {
+	@RequestMapping(value = "/getuser", method = RequestMethod.POST)
+	public ResponseEntity<?> getUser(@RequestBody Login login) {
 
-		User user = userRepository.findEmail(email);
+		User user = userRepository.findEmail(login.getEmail());
 
 		if (user == null) {
 

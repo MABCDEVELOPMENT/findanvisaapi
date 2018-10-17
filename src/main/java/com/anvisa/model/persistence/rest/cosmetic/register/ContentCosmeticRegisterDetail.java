@@ -63,12 +63,11 @@ public class ContentCosmeticRegisterDetail extends BaseEntity {
 	@JsonFormat(pattern="dd/MM/yyyy")
 	LocalDate publicacaoRgistro;
 	
-	@OneToMany(fetch=FetchType.LAZY, cascade={CascadeType.PERSIST,  CascadeType.REMOVE})
-	@Fetch(org.hibernate.annotations.FetchMode.SUBSELECT)
+	@OneToMany(fetch=FetchType.LAZY, cascade=CascadeType.ALL)
 	List<CosmeticRegisterPresentation> apresentacoes;
 	
-	@OneToMany(fetch=FetchType.LAZY, cascade={CascadeType.PERSIST,  CascadeType.REMOVE})
-	@Fetch(org.hibernate.annotations.FetchMode.SUBSELECT)
+	@OneToMany(fetch=FetchType.LAZY, cascade=CascadeType.ALL)
+	//@Fetch(org.hibernate.annotations.FetchMode.SUBSELECT)
 	List<CosmeticRegisterPetition> peticoes;
 	
 	

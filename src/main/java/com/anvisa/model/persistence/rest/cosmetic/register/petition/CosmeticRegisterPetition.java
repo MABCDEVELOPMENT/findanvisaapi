@@ -35,7 +35,7 @@ public class CosmeticRegisterPetition extends BaseEntity {
 	@JsonAlias(value = "transacao")
     String transacao;
 	
-	@Column(name = "subject", length = 200 , nullable = true)
+	@Column(name = "subject", length = 400 , nullable = true)
 	@JsonAlias(value = "assunto")
     String assunto;
 	
