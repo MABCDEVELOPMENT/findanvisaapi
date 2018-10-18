@@ -162,7 +162,7 @@ public class SynchronizeCosmeticNotification extends SynchronizeData implements 
 
 	@Override
 	public void persist(ArrayList<BaseEntity> itens) {
-		int cont = 0;
+		//int cont = 0;
 		for (Iterator<BaseEntity> iterator = itens.iterator(); iterator.hasNext();) {
 
 			ContentCosmeticNotification baseEntity = (ContentCosmeticNotification) iterator.next();
@@ -194,7 +194,7 @@ public class SynchronizeCosmeticNotification extends SynchronizeData implements 
 				cosmeticNotificationRepository.saveAndFlush(baseEntity);
 				
 			}
-			System.out.println(cont++);	
+			//System.out.println(cont++);	
 		}
 
 	}

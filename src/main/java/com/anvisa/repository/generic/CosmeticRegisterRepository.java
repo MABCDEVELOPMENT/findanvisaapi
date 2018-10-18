@@ -9,7 +9,7 @@ import com.anvisa.model.persistence.rest.cosmetic.register.ContentCosmeticRegist
 
 public interface CosmeticRegisterRepository extends JpaRepository<ContentCosmeticRegister, Long>,JpaSpecificationExecutor<ContentCosmeticRegister> {
 
-	@Query("select f from ContentCosmeticRegister f where f.processo =:processo and f.cnpj=:cnpj")
-	public ContentCosmeticRegister findByProcessCnpjVencimento(@Param("processo") String process, @Param("cnpj") String cnpj);
+	@Query("select f from ContentCosmeticRegister f where f.processo =:processo and f.cnpj=:cnpj and f.expedienteProcesso=:expedienteProcesso")
+	public ContentCosmeticRegister findByProcessExpedienteProcessoCnpj(@Param("processo") String process,@Param("expedienteProcesso") String expedienteProcesso ,@Param("cnpj") String cnpj);
 
 }

@@ -20,6 +20,8 @@ import com.anvisa.model.persistence.BaseEntity;
 import com.anvisa.model.persistence.RegisterCNPJ;
 import com.anvisa.model.persistence.rest.cosmetic.register.ContentCosmeticRegister;
 import com.anvisa.model.persistence.rest.cosmetic.register.ContentCosmeticRegisterDetail;
+import com.anvisa.repository.generic.CosmeticRegisterDetailRepository;
+import com.anvisa.repository.generic.CosmeticRegisterRepository;
 import com.anvisa.repository.generic.RegisterCNPJRepository;
 
 @Component
@@ -27,9 +29,11 @@ public class SynchronizeDataTask {
 
 	@Autowired
 	private static RegisterCNPJRepository registerCNPJRepository;
-	
+
+
 	@Autowired
-	public void setService(RegisterCNPJRepository registerCNPJRepository) {
+	public void setService(RegisterCNPJRepository registerCNPJRepository,
+			               CosmeticRegisterRepository cosmeticRegisterRepository) {
 		this.registerCNPJRepository = registerCNPJRepository;
 	}
 
@@ -49,7 +53,7 @@ public class SynchronizeDataTask {
  		
  		int cont = 0;
 		
- 		/*for (RegisterCNPJ registerCNPJ : registerCNPJs) {
+		for (RegisterCNPJ registerCNPJ : registerCNPJs) {
  			
  			log.info("SynchronizeData => Start Foot "+registerCNPJ.getCnpj()+" "+registerCNPJ.getFullName(), dateFormat.format(new Date()));
 			
@@ -62,16 +66,14 @@ public class SynchronizeDataTask {
 
 			
 		}
-*/ 		
+	
  		log.info("SynchronizeData => End Foot Total ", dateFormat.format(new Date()));
  		
 
  		
- 		
 		
-		cont = 0;
-		
-		registerCNPJs = registerCNPJRepository.findAll(1);
+	
+		registerCNPJs  = registerCNPJRepository.findAll(1);
 		
 
 		for (RegisterCNPJ registerCNPJ : registerCNPJs) {
@@ -80,23 +82,16 @@ public class SynchronizeDataTask {
 			
 			ArrayList<BaseEntity> itens = intSynchronize[1].loadData(registerCNPJ.getCnpj());
 			
-			ArrayList<BaseEntity> itensNew = new ArrayList<>();
-			
-			for (Iterator<BaseEntity> iterator = itens.iterator(); iterator.hasNext();) {
-				ContentCosmeticRegister baseEntity = (ContentCosmeticRegister) iterator.next();
-				ContentCosmeticRegisterDetail contentCosmeticRegisterDetail = (ContentCosmeticRegisterDetail) intSynchronize[1].loadDetailData(baseEntity.getProcesso());
-				baseEntity.setContentCosmeticRegisterDetail(contentCosmeticRegisterDetail);
-				itensNew.add(baseEntity);
-			}
-
-			log.info("SynchronizeData => Total "+itens.size(), dateFormat.format(new Date()));
-			
-			intSynchronize[1].persist(itensNew);
+			intSynchronize[1].persist(itens);
 			
 		}
 		
 		
-/*		log.info("SynchronizeData => End Cosmetic Notification ", dateFormat.format(new Date()));
+		
+		
+		
+		
+		log.info("SynchronizeData => End Cosmetic Notification ", dateFormat.format(new Date()));
 		
 		
 		registerCNPJs = registerCNPJRepository.findAll(1);
@@ -131,7 +126,7 @@ public class SynchronizeDataTask {
 
 		
 		log.info("SynchronizeData => End Cosmetic Regularized ", dateFormat.format(new Date()));
-*/		
+	
 	}
 	
 	

@@ -14,5 +14,6 @@ public interface IntSynchronize {
 	BaseEntity parseData(JsonNode node);
 	BaseEntity parseDetailData(JsonNode node);
 	void persist(ArrayList<BaseEntity> itens);
+
 	
 }
