@@ -5,7 +5,6 @@ import javax.persistence.Entity;
 import javax.persistence.Table;
 
 import com.anvisa.model.persistence.BaseEntity;
-import com.anvisa.model.persistence.BaseEntity;
 import com.fasterxml.jackson.annotation.JsonAlias;
 
 @Entity
@@ -75,6 +74,8 @@ public class ContentFootDetail extends BaseEntity {
 	@Column(name = "conservation", length = 60, nullable = true)
 	@JsonAlias(value = "conservacao")	
 	String conservacao;
+	
+
 	
 	public ContentFootDetail() {
 		// TODO Auto-generated constructor stub

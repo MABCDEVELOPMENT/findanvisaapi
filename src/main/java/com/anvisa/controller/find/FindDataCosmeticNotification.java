@@ -46,6 +46,10 @@ public class FindDataCosmeticNotification {
                     predicates.add(criteriaBuilder.and(criteriaBuilder.equal(root.get("processo"), queryRecordParameter.getNumberProcess())));
                 }
                 
+                if(queryRecordParameter.getCnpj()!=null && !queryRecordParameter.getCnpj().isEmpty()) {
+                    predicates.add(criteriaBuilder.and(criteriaBuilder.equal(root.get("cnpj"), queryRecordParameter.getCnpj())));
+                }
+                
 /*                if(queryRecordParameter.getAuthorizationNumber()!=null && !queryRecordParameter.getAuthorizationNumber().isEmpty()) {
                     predicates.add(criteriaBuilder.and(criteriaBuilder.equal(root.get("contentCosmeticRegisterDetail").get("autorizacao"), queryRecordParameter.getAuthorizationNumber())));
                 }*/

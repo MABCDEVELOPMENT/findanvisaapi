@@ -41,6 +41,10 @@ public class FindDataCosmeticRegularized {
                 
 				List<Predicate> predicates = new ArrayList<>();
                 
+                if(queryRecordParameter.getCnpj()!=null && !queryRecordParameter.getCnpj().isEmpty()) {
+                    predicates.add(criteriaBuilder.and(criteriaBuilder.equal(root.get("contentCosmeticRegularizedDetail").get("empresaDetentora").get("cnpj"), queryRecordParameter.getCnpj())));
+                }
+                
                 if(queryRecordParameter.getNumberProcess()!=null && !queryRecordParameter.getNumberProcess().isEmpty()) {
                     predicates.add(criteriaBuilder.and(criteriaBuilder.equal(root.get("processo"), queryRecordParameter.getNumberProcess())));
                 }
@@ -54,7 +58,7 @@ public class FindDataCosmeticRegularized {
                 }*/
                 
                 if(queryRecordParameter.getRegisterNumber()!=null && !queryRecordParameter.getRegisterNumber().isEmpty()) {
-                    predicates.add(criteriaBuilder.and(criteriaBuilder.equal(root.get("contentDetalFoot").get("caracterizacaoVigente").get("registro"), queryRecordParameter.getRegisterNumber())));
+                    predicates.add(criteriaBuilder.and(criteriaBuilder.equal(root.get("contentCosmeticRegularizedDetail").get("caracterizacaoVigente").get("registro"), queryRecordParameter.getRegisterNumber())));
                 }
                 
                 return criteriaBuilder.and(predicates.toArray(new Predicate[predicates.size()]));

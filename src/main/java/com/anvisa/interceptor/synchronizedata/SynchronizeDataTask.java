@@ -48,7 +48,7 @@ public class SynchronizeDataTask {
 		
 		IntSynchronize[] intSynchronize = { new SynchronizeFoot(), new SynchronizeCosmeticRegister(), new SynchronizeCosmeticNotification(), new SynchronizeCosmeticRegularized() };
 		
- 		List<RegisterCNPJ> registerCNPJs = registerCNPJRepository.findAll(0);
+ 		/*List<RegisterCNPJ> registerCNPJs = registerCNPJRepository.findAll(0);
 
  		
  		int cont = 0;
@@ -73,7 +73,7 @@ public class SynchronizeDataTask {
  		
 		
 	
-		registerCNPJs  = registerCNPJRepository.findAll(1);
+		List<RegisterCNPJ> registerCNPJs  = registerCNPJRepository.findAll(1);
 		
 
 		for (RegisterCNPJ registerCNPJ : registerCNPJs) {
@@ -81,20 +81,20 @@ public class SynchronizeDataTask {
 			log.info("SynchronizeData => Start Cosmetic Register "+registerCNPJ.getCnpj()+" "+registerCNPJ.getFullName(), dateFormat.format(new Date()));
 			
 			ArrayList<BaseEntity> itens = intSynchronize[1].loadData(registerCNPJ.getCnpj());
+			if (itens!=null)
+				intSynchronize[1].persist(itens);
 			
-			intSynchronize[1].persist(itens);
-			
-		}
+		}*/
 		
 		
 		
 		
 		
 		
-		log.info("SynchronizeData => End Cosmetic Notification ", dateFormat.format(new Date()));
+	/*	log.info("SynchronizeData => End Cosmetic Notification ", dateFormat.format(new Date()));
 		
 		
-		registerCNPJs = registerCNPJRepository.findAll(1);
+		List<RegisterCNPJ> registerCNPJs = registerCNPJRepository.findAll(1);
 		
 		
 		for (RegisterCNPJ registerCNPJ : registerCNPJs) {
@@ -109,15 +109,15 @@ public class SynchronizeDataTask {
 			
 		}
 		
-		log.info("SynchronizeData => End Cosmetic Notification ", dateFormat.format(new Date()));
+		log.info("SynchronizeData => End Cosmetic Notification ", dateFormat.format(new Date()));*/
 		
 		
 		
-		registerCNPJs = registerCNPJRepository.findAll(1);
+		List<RegisterCNPJ> registerCNPJs = registerCNPJRepository.findAll(1);
 		
 		for (RegisterCNPJ registerCNPJ : registerCNPJs) {
 			log.info("SynchronizeData => Start Cosmetic Regularized "+registerCNPJ.getCnpj()+" "+registerCNPJ.getFullName(), dateFormat.format(new Date()));
-			ArrayList<BaseEntity> itens = intSynchronize[2].loadData(registerCNPJ.getCnpj());
+			ArrayList<BaseEntity> itens = intSynchronize[3].loadData(registerCNPJ.getCnpj());
 			
 			log.info("SynchronizeData => End Cosmetic Regularized Total "+itens.size(), dateFormat.format(new Date()));
 			intSynchronize[3].persist(itens);

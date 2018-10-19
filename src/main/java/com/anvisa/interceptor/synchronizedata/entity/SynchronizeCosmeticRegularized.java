@@ -1,6 +1,7 @@
 package com.anvisa.interceptor.synchronizedata.entity;
 
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
@@ -198,6 +199,30 @@ public class SynchronizeCosmeticRegularized extends SynchronizeData implements I
 			boolean newRegularized = (localContentCosmeticRegularized == null);
 			
 			ContentCosmeticRegularizedDetail contentCosmeticRegularizedDetail = (ContentCosmeticRegularizedDetail) this.loadDetailData(baseEntity.getProcesso());
+			
+			if (contentCosmeticRegularizedDetail != null && (contentCosmeticRegularizedDetail.getData()!=null || baseEntity.getVencimento()!=null)) {
+				
+				String strAno = baseEntity.getProcesso().substring(baseEntity.getProcesso().length() - 2);
+
+				int ano = Integer.parseInt(strAno);
+
+				if (ano >= 19 && ano <= 99) {
+					ano = ano + 1900;
+				} else {
+					ano = ano + 2000;
+				}
+				
+				LocalDate data = baseEntity.getVencimento()==null?contentCosmeticRegularizedDetail.getData():baseEntity.getVencimento();
+				
+				LocalDate dataAlteracao = LocalDate.of(ano, data.getMonthValue(),
+						data.getDayOfMonth());
+
+				baseEntity.setDataAlteracao(dataAlteracao);
+
+				baseEntity.setDataRegistro(contentCosmeticRegularizedDetail.getData());
+				
+			}
+
 
 			if (!newRegularized) {
 				

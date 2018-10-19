@@ -3,7 +3,9 @@ package com.anvisa.interceptor.synchronizedata.entity;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
@@ -14,6 +16,7 @@ import java.util.zip.GZIPInputStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
 import com.anvisa.core.json.JsonToObject;
@@ -47,7 +50,7 @@ import okhttp3.Response;
 public class SynchronizeCosmeticRegister extends SynchronizeData implements IntSynchronize {
 
 	String URL_COSMETIC_REGISTER_DETAIL_APRESENTACAO = "";
-	String URL_COSMETIC_REGISTER_DETAIL_PETICAO      = "";
+	String URL_COSMETIC_REGISTER_DETAIL_PETICAO = "";
 
 	@Autowired
 	private static CosmeticRegisterRepository cosmeticRegisterRepository;
@@ -71,9 +74,9 @@ public class SynchronizeCosmeticRegister extends SynchronizeData implements IntS
 		URL_DETAIL = "https://consultas.anvisa.gov.br/api/consulta/cosmeticos/registrados/";
 
 		URL_COSMETIC_REGISTER_DETAIL_APRESENTACAO = "https://consultas.anvisa.gov.br/api/consulta/cosmeticos/registrados/[processo]/apresentacao/[apresentacao]";
-		
+
 		URL_COSMETIC_REGISTER_DETAIL_PETICAO = "https://consultas.anvisa.gov.br/api/consulta/cosmeticos/registrados/[processo]/peticao/[peticao]";
-		
+
 	}
 
 	@Override
@@ -104,6 +107,8 @@ public class SynchronizeCosmeticRegister extends SynchronizeData implements IntS
 
 		contentCosmeticRegister.setVencimento(JsonToObject.getValueDate(jsonNode, "vencimento", "vencimento"));
 
+		contentCosmeticRegister.setDataRegistro(JsonToObject.getValueDate(jsonNode, "publicacao"));
+
 		return contentCosmeticRegister;
 	}
 
@@ -121,13 +126,16 @@ public class SynchronizeCosmeticRegister extends SynchronizeData implements IntS
 		contentCosmeticRegisterDetail
 				.setVencimentoRegistro(JsonToObject.getValueDate(jsonNode, "vencimento", "vencimento"));
 		contentCosmeticRegisterDetail.setPublicacaoRgistro(JsonToObject.getValueDate(jsonNode, "publicacao"));
-		contentCosmeticRegisterDetail.setApresentacoes(parseApresentationData(jsonNode, "apresentacoes",contentCosmeticRegisterDetail.getProcesso()));
-		contentCosmeticRegisterDetail.setPeticoes(parsePetitionData(jsonNode, "peticoes", contentCosmeticRegisterDetail.getProcesso()));
+		contentCosmeticRegisterDetail.setApresentacoes(
+				parseApresentationData(jsonNode, "apresentacoes", contentCosmeticRegisterDetail.getProcesso()));
+		contentCosmeticRegisterDetail
+				.setPeticoes(parsePetitionData(jsonNode, "peticoes", contentCosmeticRegisterDetail.getProcesso()));
 
 		return contentCosmeticRegisterDetail;
 	}
 
-	public ArrayList<CosmeticRegisterPresentation> parseApresentationData(JsonNode jsonNode, String attribute, String processo) {
+	public ArrayList<CosmeticRegisterPresentation> parseApresentationData(JsonNode jsonNode, String attribute,
+			String processo) {
 
 		ArrayNode element = (ArrayNode) jsonNode.findValue(attribute);
 
@@ -150,35 +158,36 @@ public class SynchronizeCosmeticRegister extends SynchronizeData implements IntS
 				apresentacaoCosmeticoRegistrado.setTonalidade(JsonToObject.getValue(nodeIt, "tonalidade"));
 				apresentacaoCosmeticoRegistrado.setRegistro(JsonToObject.getValue(nodeIt, "registro", "registro"));
 				apresentacaoCosmeticoRegistrado.setSituacao(JsonToObject.getValue(nodeIt, "registro", "situacao"));
-				
-				CosmeticRegisterPresentationDetail cosmeticRegisterPresentationDetail = (CosmeticRegisterPresentationDetail) this.loadPresentationDetail(processo, apresentacaoCosmeticoRegistrado.getCodigo());
-				apresentacaoCosmeticoRegistrado.setCosmeticRegisterPresentationDetail(cosmeticRegisterPresentationDetail);
-				
+
+				CosmeticRegisterPresentationDetail cosmeticRegisterPresentationDetail = (CosmeticRegisterPresentationDetail) this
+						.loadPresentationDetail(processo, apresentacaoCosmeticoRegistrado.getCodigo());
+				apresentacaoCosmeticoRegistrado
+						.setCosmeticRegisterPresentationDetail(cosmeticRegisterPresentationDetail);
+
 				apresentacoes.add(apresentacaoCosmeticoRegistrado);
 
-		
 			}
 
 			return apresentacoes;
-			
+
 		} else {
 
-		  return null;
-		}  
+			return null;
+		}
 
 	}
 
 	public CosmeticRegisterPresentationDetail parseDetailAprentation(JsonNode jsonNode, String attribute) {
 		// TODO Auto-generated method stub
-		
+
 		JsonNode element = jsonNode.findValue(attribute);
-		
+
 		CosmeticRegisterPresentationDetail cosmeticRegisterPresentationDetail = null;
-		
+
 		if (element != null) {
-			
+
 			cosmeticRegisterPresentationDetail = new CosmeticRegisterPresentationDetail();
-			
+
 			cosmeticRegisterPresentationDetail.setNomeProduto(JsonToObject.getValue(element, "nomeProduto"));
 			cosmeticRegisterPresentationDetail.setProcesso(JsonToObject.getValue(element, "processo"));
 			cosmeticRegisterPresentationDetail
@@ -250,11 +259,10 @@ public class SynchronizeCosmeticRegister extends SynchronizeData implements IntS
 
 			cosmeticRegisterPresentationDetail.setRestricao(presentationRestricoes);
 
-
 		}
-		
+
 		return cosmeticRegisterPresentationDetail;
-		
+
 	}
 
 	public ArrayList<CosmeticRegisterPetition> parsePetitionData(JsonNode jsonNode, String attribute, String processo) {
@@ -282,11 +290,12 @@ public class SynchronizeCosmeticRegister extends SynchronizeData implements IntS
 				String situacao = JsonToObject.getValue(nodeIt, "situacao", "situacao") + " "
 						+ JsonToObject.getValueDateToString(nodeIt, "situacao", "data");
 				cosmeticRegisterPetition.setSituacao(situacao);
-				
-				CosmeticRegisterPetitionDetail cosmeticRegisterPresentationDetail = this.loadPetitionDetail(processo, cosmeticRegisterPetition.getExpediente());
+
+				CosmeticRegisterPetitionDetail cosmeticRegisterPresentationDetail = this.loadPetitionDetail(processo,
+						cosmeticRegisterPetition.getExpediente());
 
 				cosmeticRegisterPetition.setCosmeticRegisterPetitionDetail(cosmeticRegisterPresentationDetail);
-				
+
 				peticoes.add(cosmeticRegisterPetition);
 
 			}
@@ -296,29 +305,27 @@ public class SynchronizeCosmeticRegister extends SynchronizeData implements IntS
 		return peticoes;
 
 	}
-	
-	
+
 	public CosmeticRegisterPetitionDetail parsePetitionDetailData(JsonNode node, String attribute) {
-		
-		
+
 		JsonNode element = node.findValue(attribute);
-		
+
 		CosmeticRegisterPetitionDetail cosmeticRegisterPetitionDetail = null;
 
 		if (element != null) {
-			
+
 			cosmeticRegisterPetitionDetail = new CosmeticRegisterPetitionDetail();
-			
-			cosmeticRegisterPetitionDetail.setRazaoSocial(JsonToObject.getValue(element,"empresa","razaoSocial"));
-			cosmeticRegisterPetitionDetail.setCnpj(JsonToObject.getValue(element,"empresa","cnpj"));
-			cosmeticRegisterPetitionDetail.setAutorizacao(JsonToObject.getValue(element,"empresa","autorizacao"));
-			
+
+			cosmeticRegisterPetitionDetail.setRazaoSocial(JsonToObject.getValue(element, "empresa", "razaoSocial"));
+			cosmeticRegisterPetitionDetail.setCnpj(JsonToObject.getValue(element, "empresa", "cnpj"));
+			cosmeticRegisterPetitionDetail.setAutorizacao(JsonToObject.getValue(element, "empresa", "autorizacao"));
+
 			cosmeticRegisterPetitionDetail.setNomeProduto(JsonToObject.getValue(element, "nomeProduto"));
 			cosmeticRegisterPetitionDetail.setCategoria(JsonToObject.getValue(element, "categoria"));
-			
+
 			cosmeticRegisterPetitionDetail.setRegistro(JsonToObject.getValue(node, "registro"));
 			cosmeticRegisterPetitionDetail.setPeticao(JsonToObject.getValue(node, "expediente"));
-			cosmeticRegisterPetitionDetail.setVencimento(JsonToObject.getValueDate(node,"vencimento" ,"vencimento"));
+			cosmeticRegisterPetitionDetail.setVencimento(JsonToObject.getValueDate(node, "vencimento", "vencimento"));
 
 			ArrayList<PetitionCountryManufacturer> fabricantes = new ArrayList<PetitionCountryManufacturer>();
 
@@ -344,7 +351,6 @@ public class SynchronizeCosmeticRegister extends SynchronizeData implements IntS
 
 			cosmeticRegisterPetitionDetail.setFabricantesNacionais(fabricantes);
 
-			
 			ArrayList<CosmeticRegisterPetitionPresentation> registradoPeticaoApresentacao = new ArrayList<CosmeticRegisterPetitionPresentation>();
 
 			ArrayNode elementApresentacao = (ArrayNode) node.get("apresentacoes");
@@ -381,77 +387,56 @@ public class SynchronizeCosmeticRegister extends SynchronizeData implements IntS
 		ArrayList<BaseEntity> rootObject = new ArrayList<BaseEntity>();
 
 		OkHttpClient client = new OkHttpClient();
-		
+
 		client.newBuilder().readTimeout(30, TimeUnit.MINUTES);
-		
-		
+
 		Request url = null;
 
-
-		url = new Request.Builder()
-				.url(URL+cnpj)
-				.get()
-				.addHeader("Accept-Encoding", "gzip")
+		url = new Request.Builder().url(URL + cnpj).get().addHeader("Accept-Encoding", "gzip")
 				.addHeader("authorization", "Guest").build();
-		       
-		
-		try {
-			
-			Response response = client.newCall(url).execute();
-			
-			ObjectMapper objectMapper = new ObjectMapper();
-			
-			GZIPInputStream gzipStream = new GZIPInputStream(response.body().byteStream());
 
-			Reader decoder = new InputStreamReader(gzipStream, "US-ASCII");
-			
-			BufferedReader reader = new BufferedReader(decoder);
-			
-			String json = "";
-			
-			while (true) {
-			
-				String line = reader.readLine();
-				
-				json += line;
-				
-				if (line == null) {
-					break;
-				}
-				
-			}
-			
-			JsonNode rootNode = objectMapper.readTree(json);
-			
+		try {
+
+			Response response = client.newCall(url).execute();
+
+			ObjectMapper objectMapper = new ObjectMapper();
+
+			JsonNode rootNode = objectMapper.readTree(this.getGZIPString(response.body().byteStream()));
+
 			Iterator<JsonNode> elementsContents = rootNode.path("content").iterator();
-			log.info("SynchronizeData Total Registros "+rootNode.get("totalElements"), dateFormat.format(new Date()));
-			
-			while (elementsContents.hasNext()) {
+
+			log.info("SynchronizeData Total Registros " + rootNode.get("totalElements"), dateFormat.format(new Date()));
+
+			int i = 0;
+			while (elementsContents.hasNext() && i <= 10) {
 
 				JsonNode jsonNode = (JsonNode) elementsContents.next();
-				
+
 				BaseEntity baseEntity = this.parseData(jsonNode);
-				
+
 				String processo = ((ContentCosmeticRegister) baseEntity).getProcesso();
 				BaseEntity detail = this.loadDetailData(processo);
-				
-				ContentCosmeticRegisterDetail contentCosmeticRegisterDetail = (ContentCosmeticRegisterDetail) detail;
-				((ContentCosmeticRegister)baseEntity).setContentCosmeticRegisterDetail(contentCosmeticRegisterDetail);
-				rootObject.add(baseEntity);	
+				if (detail != null) {
+					ContentCosmeticRegisterDetail contentCosmeticRegisterDetail = (ContentCosmeticRegisterDetail) detail;
+					((ContentCosmeticRegister) baseEntity)
+							.setContentCosmeticRegisterDetail(contentCosmeticRegisterDetail);
+				}
+				rootObject.add(baseEntity);
 
-				
+				System.out.println(i++);
+
 			}
 			response.close();
 			client = null;
 			return rootObject;
-			
-	   } catch (Exception e) {
-		// TODO: handle exception
-		   e.printStackTrace();
-	   }
-		
+
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+		}
+
 		return null;
-		//return super.loadData(this, cnpj);
+		// return super.loadData(this, cnpj);
 	}
 
 	@Override
@@ -461,36 +446,38 @@ public class SynchronizeCosmeticRegister extends SynchronizeData implements IntS
 
 		Request url = null;
 
-
-		url = new Request.Builder()
-				.url(URL_DETAIL+concat)
-				.get()
-				.addHeader("authorization", "Guest")
+		url = new Request.Builder().url(URL_DETAIL + concat).get().addHeader("authorization", "Guest")
 				.addHeader("Accept-Encoding", "gzip").build();
-		
+
 		try {
 
 			Response response = client.newCall(url).execute();
 
 			ObjectMapper objectMapper = new ObjectMapper();
 
+			if (response.code() == 500) {
+				response.close();
+				client = null;
+				return null;
+			}
+
 			JsonNode rootNode = objectMapper.readTree(this.getGZIPString(response.body().byteStream()));
-			
-			if (rootNode!=null) {
+
+			if (rootNode != null) {
 
 				rootObject = this.parseDetailData(rootNode);
 			}
 			response.close();
 			client = null;
 			return rootObject;
-			
-	   } catch (Exception e) {
-		// TODO: handle exception
-		   e.printStackTrace();
-	   }
-		
+
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+		}
+
 		return null;
-		//return super.loadDetailData(this, concat);
+		// return super.loadDetailData(this, concat);
 	}
 
 	public BaseEntity loadPresentationDetail(String processo, String apresentacao) {
@@ -500,11 +487,9 @@ public class SynchronizeCosmeticRegister extends SynchronizeData implements IntS
 
 		Request url = null;
 
-		String strUrl = URL_COSMETIC_REGISTER_DETAIL_APRESENTACAO
-				.replace("[processo]", processo)
+		String strUrl = URL_COSMETIC_REGISTER_DETAIL_APRESENTACAO.replace("[processo]", processo)
 				.replace("[apresentacao]", apresentacao);
-		url = new Request.Builder().url(strUrl).get()
-				.addHeader("Accept-Encoding", "gzip")
+		url = new Request.Builder().url(strUrl).get().addHeader("Accept-Encoding", "gzip")
 				.addHeader("authorization", "Guest").build();
 
 		try {
@@ -512,12 +497,18 @@ public class SynchronizeCosmeticRegister extends SynchronizeData implements IntS
 			Response response = client.newCall(url).execute();
 
 			ObjectMapper objectMapper = new ObjectMapper();
+			
+			if (response.code() == 500) {
+				response.close();
+				client = null;
+				return null;
+			}
 
 			JsonNode rootNode = objectMapper.readTree(this.getGZIPString(response.body().byteStream()));
 
 			if (rootNode != null) {
 
-				rootObject = this.parseDetailAprentation(rootNode,"produto");
+				rootObject = this.parseDetailAprentation(rootNode, "produto");
 			}
 			response.close();
 			return rootObject;
@@ -529,8 +520,7 @@ public class SynchronizeCosmeticRegister extends SynchronizeData implements IntS
 
 		return null;
 	}
-	
-	
+
 	public CosmeticRegisterPetitionDetail loadPetitionDetail(String processo, String peticao) {
 
 		CosmeticRegisterPetitionDetail rootObject = null;
@@ -538,11 +528,9 @@ public class SynchronizeCosmeticRegister extends SynchronizeData implements IntS
 
 		Request url = null;
 
-		String strUrl = URL_COSMETIC_REGISTER_DETAIL_PETICAO
-				.replace("[processo]", processo)
-				.replace("[peticao]", peticao);
-		url = new Request.Builder().url(strUrl).get()
-				.addHeader("Accept-Encoding", "gzip")
+		String strUrl = URL_COSMETIC_REGISTER_DETAIL_PETICAO.replace("[processo]", processo).replace("[peticao]",
+				peticao);
+		url = new Request.Builder().url(strUrl).get().addHeader("Accept-Encoding", "gzip")
 				.addHeader("authorization", "Guest").build();
 
 		try {
@@ -550,12 +538,18 @@ public class SynchronizeCosmeticRegister extends SynchronizeData implements IntS
 			Response response = client.newCall(url).execute();
 
 			ObjectMapper objectMapper = new ObjectMapper();
+			
+			if (response.code() == 500) {
+				response.close();
+				client = null;
+				return null;
+			}
 
 			JsonNode rootNode = objectMapper.readTree(this.getGZIPString(response.body().byteStream()));
 
 			if (rootNode != null) {
 
-				rootObject = this.parsePetitionDetailData(rootNode,"produto");
+				rootObject = this.parsePetitionDetailData(rootNode, "produto");
 			}
 			response.close();
 			return rootObject;
@@ -576,23 +570,22 @@ public class SynchronizeCosmeticRegister extends SynchronizeData implements IntS
 	public void persist(ArrayList<BaseEntity> itens) {
 
 		int size = itens.size();
-		List<ContentCosmeticRegister> bachList = new ArrayList<>(); 
+		List<ContentCosmeticRegister> bachList = new ArrayList<>();
 		int count = 0;
-		
+
 		for (Iterator<BaseEntity> iterator = itens.iterator(); iterator.hasNext();) {
 
 			ContentCosmeticRegister baseEntity = (ContentCosmeticRegister) iterator.next();
-			
-			System.out.println(baseEntity.getProcesso()+" - "+baseEntity.getCnpj());
-			
-			ContentCosmeticRegister localCosmetic = cosmeticRegisterRepository
-					.findByProcessExpedienteProcessoCnpj(baseEntity.getProcesso(), baseEntity.getExpedienteProcesso(), baseEntity.getCnpj());
 
+			System.out.println(baseEntity.getProcesso() + " - " + baseEntity.getCnpj());
+
+			ContentCosmeticRegister localCosmetic = cosmeticRegisterRepository.findByProcessExpedienteProcessoCnpj(
+					baseEntity.getProcesso(), baseEntity.getExpedienteProcesso(), baseEntity.getCnpj());
 
 			boolean newFoot = (localCosmetic == null);
-			ContentCosmeticRegisterDetail detail =  baseEntity.getContentCosmeticRegisterDetail();
-			//(ContentCosmeticRegisterDetail) this
-			//.loadDetailData(contentCosmeticRegister.getProcesso());//
+			ContentCosmeticRegisterDetail detail = baseEntity.getContentCosmeticRegisterDetail();
+			// (ContentCosmeticRegisterDetail) this
+			// .loadDetailData(contentCosmeticRegister.getProcesso());//
 			if (detail != null) {
 
 				if (!newFoot) {
@@ -609,25 +602,57 @@ public class SynchronizeCosmeticRegister extends SynchronizeData implements IntS
 					baseEntity.setContentCosmeticRegisterDetail(detail);
 				}
 
-			}
-		
-			
+				ArrayList<CosmeticRegisterPetition> peticoes = (ArrayList<CosmeticRegisterPetition>) baseEntity
+						.getContentCosmeticRegisterDetail().getPeticoes();
 
+				int qtdRegistro = 0;
+
+				for (Iterator<CosmeticRegisterPetition> iterator2 = peticoes.iterator(); iterator2.hasNext();) {
+
+					CosmeticRegisterPetition cosmeticRegisterPetition = (CosmeticRegisterPetition) iterator2.next();
+					baseEntity.setDataAlteracao(cosmeticRegisterPetition.getPublicacao());
+					if (baseEntity.getDataAlteracao() == null) {
+						baseEntity.setDataAlteracao(baseEntity.getDataRegistro());
+					}
+					qtdRegistro++;
+				}
+
+				baseEntity.setQtdRegistro(qtdRegistro);
+
+				if (baseEntity.getDataAlteracao() == null) {
+
+					String strAno = baseEntity.getProcesso().substring(baseEntity.getProcesso().length() - 2);
+
+					int ano = Integer.parseInt(strAno);
+
+					if (ano > 19 && ano <= 99) {
+						ano = ano + 1900;
+					} else {
+						ano = ano + 2000;
+					}
+
+					LocalDate dataAlteracao = LocalDate.of(ano, baseEntity.getDataRegistro().getMonthValue(),
+							baseEntity.getDataRegistro().getDayOfMonth());
+
+					baseEntity.setDataAlteracao(dataAlteracao);
+
+				}
+			}
 			if (localCosmetic != null) {
 
 				if (!localCosmetic.equals(baseEntity)) {
 
 					baseEntity.setId(localCosmetic.getId());
-					//detail.setId(localCosmetic.getContentCosmeticRegisterDetail().getId());
-					//baseEntity.setContentCosmeticRegisterDetail(detail);
-					//cosmeticRegisterRepository.save(baseEntity);
+					// detail.setId(localCosmetic.getContentCosmeticRegisterDetail().getId());
+					// baseEntity.setContentCosmeticRegisterDetail(detail);
+					// cosmeticRegisterRepository.save(baseEntity);
 					bachList.add(baseEntity);
-					
+
 				}
 
 			} else {
 
-				//cosmeticRegisterRepository.save(baseEntity);
+				// cosmeticRegisterRepository.save(baseEntity);
 				bachList.add(baseEntity);
 
 			}
@@ -635,18 +660,17 @@ public class SynchronizeCosmeticRegister extends SynchronizeData implements IntS
 			if ((count + 1) % 10 == 0 || (count + 1) == size) {
 
 				cosmeticRegisterRepository.saveAll(bachList);
-				
+
 				bachList.clear();
-				
+
 			}
-			
+
 			count++;
-			//log.info(baseEntity.toString());
+			// log.info(baseEntity.toString());
 			System.out.println(count);
-			
+
 		}
 
 	}
-
 
 }

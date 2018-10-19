@@ -1,5 +1,8 @@
 package com.anvisa.interceptor.synchronizedata.entity;
 
+import java.time.LocalDate;
+import java.time.Month;
+import java.time.temporal.TemporalField;
 import java.util.ArrayList;
 import java.util.Iterator;
 
@@ -56,6 +59,22 @@ public class SynchronizeFoot extends SynchronizeData implements IntSynchronize {
 		content.setProduto(JsonToObject.getProduto(jsonNode));
 
 		ContentFoot contentProduto = new ContentFoot(content);
+		
+		contentProduto.setDataRegistro(JsonToObject.getValueDate(jsonNode,"dataRegistro"));
+		contentProduto.setDataVencimento(JsonToObject.getValueDate(jsonNode,"dataVencimentoRegistro"));
+		
+		String strAno = contentProduto.getProcesso().substring(contentProduto.getProcesso().length()-2);
+		
+		int ano = Integer.parseInt(strAno);
+		
+		if (ano>=19 && ano<=99) {
+			ano = ano + 1900;
+		} else {
+			ano = ano + 2000;
+		}
+		
+		LocalDate dataAlteracao =  LocalDate.of(ano,contentProduto.getDataVencimento().getMonthValue(),contentProduto.getDataVencimento().getDayOfMonth()); 
+		contentProduto.setDataAlteracao(dataAlteracao);
 
 		return contentProduto;
 	}

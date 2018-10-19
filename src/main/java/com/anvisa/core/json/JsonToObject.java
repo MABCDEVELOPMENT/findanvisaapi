@@ -384,10 +384,8 @@ public class JsonToObject {
 			try {
 				LocalDate date = LocalDate.parse(element.get(attribute).asText().substring(0, 10));
 
-				DateTimeFormatter formatter_2 = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-				String format_2 = (date).format(formatter_2);
-				LocalDate dateReturn = LocalDate.parse(format_2);
-				return dateReturn;
+				
+				return date;
 			} catch (Exception e) {
 				// TODO: handle exception
 			}

@@ -1,5 +1,6 @@
 package com.anvisa.interceptor.synchronizedata.entity;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -75,7 +76,7 @@ public class SynchronizeCosmeticNotification extends SynchronizeData implements 
 
 		contentCosmeticNotification.setSituacao(JsonToObject.getValue(jsonNode, "situacao", "situacao"));
 
-		contentCosmeticNotification.setVencimento(JsonToObject.getValueDate(jsonNode, "vencimento"));
+		contentCosmeticNotification.setVencimento(JsonToObject.getValueDate(jsonNode,"vencimento", "vencimento"));
 
 		return  contentCosmeticNotification;
 		
@@ -162,7 +163,7 @@ public class SynchronizeCosmeticNotification extends SynchronizeData implements 
 
 	@Override
 	public void persist(ArrayList<BaseEntity> itens) {
-		//int cont = 0;
+		int cont = 0;
 		for (Iterator<BaseEntity> iterator = itens.iterator(); iterator.hasNext();) {
 
 			ContentCosmeticNotification baseEntity = (ContentCosmeticNotification) iterator.next();
@@ -173,7 +174,32 @@ public class SynchronizeCosmeticNotification extends SynchronizeData implements 
 			boolean newNotification = (localContentCosmeticNotification == null);
 			
 			ContentCosmeticNotificationDetail contentCosmeticNotificationDetail = (ContentCosmeticNotificationDetail) this.loadDetailData(baseEntity.getProcesso());
+			
+			if (contentCosmeticNotificationDetail != null) {
+			
+				String strAno = baseEntity.getProcesso().substring(baseEntity.getProcesso().length() - 2);
 
+				int ano = Integer.parseInt(strAno);
+
+				if (ano >= 19 && ano <= 99) {
+					ano = ano + 1900;
+				} else {
+					ano = ano + 2000;
+				}
+				
+				LocalDate data = baseEntity.getVencimento()==null?contentCosmeticNotificationDetail.getDataNotificacao():baseEntity.getVencimento();
+				
+				LocalDate dataAlteracao = LocalDate.of(ano, data.getMonthValue(),
+						data.getDayOfMonth());
+
+				baseEntity.setDataAlteracao(dataAlteracao);
+
+				baseEntity.setDataRegistro(contentCosmeticNotificationDetail.getDataNotificacao());
+				
+			}
+			
+			
+			
 			if (!newNotification) {
 				
 				if (localContentCosmeticNotification.getContentCosmeticNotificationDetail()!=null) {
@@ -194,7 +220,8 @@ public class SynchronizeCosmeticNotification extends SynchronizeData implements 
 				cosmeticNotificationRepository.saveAndFlush(baseEntity);
 				
 			}
-			//System.out.println(cont++);	
+			
+			System.out.println(cont++);	
 		}
 
 	}

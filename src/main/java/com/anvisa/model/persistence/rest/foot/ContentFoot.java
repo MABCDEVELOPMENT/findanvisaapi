@@ -63,6 +63,19 @@ public class ContentFoot extends BaseEntity {
 	@JsonFormat(pattern="dd/MM/yyyy")
 	LocalDate dataVencimento;
 	
+	@Column(name = "dateUpdateRegister")
+	@JsonAlias(value = "dataAlteracao")	
+	@JsonFormat(pattern="dd/MM/yyyy")	
+	LocalDate dataAlteracao;
+	
+	@Column(name = "dateRegister")
+	@JsonAlias(value = "dataRegistro")
+	@JsonFormat(pattern="dd/MM/yyyy")
+	LocalDate dataRegistro;
+	
+	@Column(name = "qtdRecord")
+	@JsonAlias(value = "qtdRegistro")	
+	int qtdRegistro;
 
 	@JsonAlias(value = "contentFootDetail")
 	@ManyToOne
@@ -175,6 +188,29 @@ public class ContentFoot extends BaseEntity {
 		return super.getId();
 	}
 
+	public LocalDate getDataAlteracao() {
+		return dataAlteracao;
+	}
+
+	public void setDataAlteracao(LocalDate dataAlteracao) {
+		this.dataAlteracao = dataAlteracao;
+	}
+
+	public LocalDate getDataRegistro() {
+		return dataRegistro;
+	}
+
+	public void setDataRegistro(LocalDate dataRegistro) {
+		this.dataRegistro = dataRegistro;
+	}
+
+	public int getQtdRegistro() {
+		return qtdRegistro;
+	}
+
+	public void setQtdRegistro(int qtdRegistro) {
+		this.qtdRegistro = qtdRegistro;
+	}
 	public ContentFootDetail getContentFootDetail() {
 		return contentFootDetail;
 	}
@@ -287,6 +323,18 @@ public class ContentFoot extends BaseEntity {
 		} else if (!vencimento.equals(other.vencimento)) {
 			return false;
 		}
+		if (dataAlteracao == null) {
+			if (other.dataAlteracao != null)
+				return false;
+		} else if (!dataAlteracao.equals(other.dataAlteracao))
+			return false;
+		if (dataRegistro == null) {
+			if (other.dataRegistro != null)
+				return false;
+		} else if (!dataRegistro.equals(other.dataRegistro))
+			return false;
+		if (qtdRegistro!=other.qtdRegistro)
+			return false;
 		return true;
 	}
 
