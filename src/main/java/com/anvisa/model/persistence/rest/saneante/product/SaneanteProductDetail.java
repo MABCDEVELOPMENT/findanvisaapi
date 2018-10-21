@@ -49,11 +49,11 @@ public class SaneanteProductDetail  extends BaseEntity {
 	@JsonAlias(value = "registro")
 	String registro;
 	
-	@Column(name = "process", length = 20, nullable = false)
+	@Column(name = "process", length = 20)
 	@JsonAlias(value = "processo")
 	String processo;
 	
-	@Column(name = "month_Year_maturity", length = 6, nullable = false)
+	@Column(name = "month_Year_maturity", length = 6)
 	@JsonAlias(value = "mesAnoVencimento")
 	String mesAnoVencimento;
 

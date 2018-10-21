@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Locale;
 
+import com.anvisa.model.persistence.rest.saneante.notification.SaneanteNotificationEan;
 import com.anvisa.model.persistence.rest.saneante.product.SaneanteStringListGeneric;
 import com.anvisa.rest.detalhe.saneante.notificado.Ean;
 import com.anvisa.rest.model.Assunto;
@@ -306,6 +307,27 @@ public class JsonToObject {
 		return "";
 	}
 
+	public static ArrayList<SaneanteNotificationEan> getArraySaneanteNotificationEanValue(JsonNode node, String attribute) {
+
+		ArrayNode element = (ArrayNode) node.findValue(attribute);
+
+		ArrayList<SaneanteNotificationEan> sb = new ArrayList<SaneanteNotificationEan>();
+
+		if (element != null) {
+
+			for (Iterator<JsonNode> it = element.iterator(); it.hasNext();) {
+				JsonNode nodeIt = it.next();
+				SaneanteNotificationEan ean = new SaneanteNotificationEan();
+				ean.setCodigo(getValue(nodeIt, "codigo"));
+				ean.setDescricao(getValue(nodeIt, "descricao"));
+				sb.add(ean);
+			}
+
+		}
+
+		return sb;
+	}
+	
 	public static ArrayList<Ean> getArrayEanValue(JsonNode node, String attribute) {
 
 		ArrayNode element = (ArrayNode) node.findValue(attribute);

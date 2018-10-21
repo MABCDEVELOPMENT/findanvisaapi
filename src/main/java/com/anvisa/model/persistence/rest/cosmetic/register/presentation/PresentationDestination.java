@@ -5,6 +5,7 @@ import javax.persistence.Entity;
 import javax.persistence.Table;
 
 import com.anvisa.model.persistence.BaseEntity;
+import com.anvisa.model.persistence.rest.IStringListGeneric;
 import com.fasterxml.jackson.annotation.JsonAlias;
 
 @Entity
