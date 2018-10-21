@@ -7,19 +7,18 @@ import java.util.List;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
+import javax.persistence.Entity;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 import com.anvisa.core.json.JsonToObject;
 import com.anvisa.model.persistence.BaseEntity;
-import com.anvisa.rest.detalhe.comestico.registrado.PeticaoCosmeticoRegistrado;
-import com.anvisa.rest.detalhe.saneante.notificado.ApresentacaoSaneanteNotificado;
-import com.anvisa.rest.detalhe.saneante.notificado.Ean;
 import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 
+@Entity
 @Table(name = "saneante_notification_detail")
 public class SaneanteNotificationDetail extends BaseEntity {
 	
@@ -63,10 +62,10 @@ public class SaneanteNotificationDetail extends BaseEntity {
 	List<SaneanteNotificationPresentation> apresentacoes;
 	
 	@OneToMany(cascade=CascadeType.ALL)
-	List<SaneanteNotificadoPeticao> peticoes;
+	List<SaneanteNotificadoPetition> peticoes;
 	
 	@OneToMany(cascade=CascadeType.ALL)
-	ArrayList<SaneanteNotificationLabel> rotulos;
+	List<SaneanteNotificationLabel> rotulos;
 
 	public String getAssunto() {
 		return assunto;
@@ -132,15 +131,15 @@ public class SaneanteNotificationDetail extends BaseEntity {
 		this.apresentacoes = apresentacoes;
 	}
 
-	public List<SaneanteNotificadoPeticao> getPeticoes() {
+	public List<SaneanteNotificadoPetition> getPeticoes() {
 		return peticoes;
 	}
 
-	public void setPeticoes(ArrayList<SaneanteNotificadoPeticao> peticoes) {
+	public void setPeticoes(ArrayList<SaneanteNotificadoPetition> peticoes) {
 		this.peticoes = peticoes;
 	}
 	
-	public ArrayList<SaneanteNotificationLabel> getRotulos() {
+	public List<SaneanteNotificationLabel> getRotulos() {
 		return rotulos;
 	}
 
@@ -181,7 +180,7 @@ public class SaneanteNotificationDetail extends BaseEntity {
 
 		ArrayNode element = (ArrayNode) node.findValue(attribute);
 
-		ArrayList<SaneanteNotificadoPeticao> peticoes = new ArrayList<SaneanteNotificadoPeticao>();
+		ArrayList<SaneanteNotificadoPetition> peticoes = new ArrayList<SaneanteNotificadoPetition>();
 
 		if (element != null) {
 
@@ -189,10 +188,10 @@ public class SaneanteNotificationDetail extends BaseEntity {
 
 				JsonNode nodeIt = it.next();
 
-				SaneanteNotificadoPeticao peticaoCosmeticoRegistrado = new SaneanteNotificadoPeticao();
+				SaneanteNotificadoPetition peticaoCosmeticoRegistrado = new SaneanteNotificadoPetition();
 
 				peticaoCosmeticoRegistrado.setExpediente(JsonToObject.getValue(nodeIt, "expediente"));
-				peticaoCosmeticoRegistrado.setPublicacao(JsonToObject.getValueDateToString(nodeIt, "publicacao"));
+				peticaoCosmeticoRegistrado.setPublicacao(JsonToObject.getValueDate(nodeIt, "publicacao"));
 				peticaoCosmeticoRegistrado.setTransacao(JsonToObject.getValue(nodeIt, "transacao"));
 
 				String assunto = JsonToObject.getValue(nodeIt, "assunto", "codigo") + " "

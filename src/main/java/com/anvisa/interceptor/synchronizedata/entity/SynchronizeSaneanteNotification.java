@@ -11,8 +11,10 @@ import com.anvisa.core.json.JsonToObject;
 import com.anvisa.interceptor.synchronizedata.IntSynchronize;
 import com.anvisa.interceptor.synchronizedata.SynchronizeData;
 import com.anvisa.model.persistence.BaseEntity;
+import com.anvisa.model.persistence.rest.saneante.notification.SaneanteNotificadoPetition;
 import com.anvisa.model.persistence.rest.saneante.notification.SaneanteNotification;
 import com.anvisa.model.persistence.rest.saneante.notification.SaneanteNotificationDetail;
+import com.anvisa.model.persistence.rest.saneante.notification.SaneanteNotificationLabel;
 import com.anvisa.model.persistence.rest.saneante.notification.SaneanteNotificationPresentation;
 import com.anvisa.repository.generic.SaneanteNotificationRepository;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -34,7 +36,7 @@ public class SynchronizeSaneanteNotification extends SynchronizeData implements 
 
 	public SynchronizeSaneanteNotification() {
 
-		URL = "https://consultas.anvisa.gov.br/api/consulta/saneantes/notificados?count=1000&page=1&filter[cnpj]=";
+		URL = "https://consultas.anvisa.gov.br/api/consulta/saneantes/notificados?count=10&page=1&filter[cnpj]=";
 		URL_DETAIL = "https://consultas.anvisa.gov.br/api/consulta/saneantes/notificados/";
 
 	}
@@ -97,8 +99,19 @@ public class SynchronizeSaneanteNotification extends SynchronizeData implements 
 		saneanteNotificationDetail
 				.setDataNotificacao(JsonToObject.getValueDate(jsonNode, "situacao", "data"));
 		
+		ArrayList<String> strRotulos = JsonToObject.getArrayStringValue(jsonNode, "rotulos");
+		ArrayList<SaneanteNotificationLabel> labels = new ArrayList<SaneanteNotificationLabel>();
+		
+		for (String strRotulo : strRotulos) {
+			labels.add(new SaneanteNotificationLabel(strRotulo));
+		}
+		
+		saneanteNotificationDetail.setRotulos(labels);
+		
+		
 		saneanteNotificationDetail.setApresentacoes(this.parseApresentationData(jsonNode, "apresentacoes"));
 
+		saneanteNotificationDetail.setPeticoes(this.parsePetitionnData(jsonNode, "peticoes"));
 		
 		return saneanteNotificationDetail;
 	}
@@ -122,7 +135,12 @@ public class SynchronizeSaneanteNotification extends SynchronizeData implements 
 					cosmeticNotificationPresentation.setApresentacao(JsonToObject.getValue(nodeIt,"apresentacao"));
 					cosmeticNotificationPresentation.setTonalidade(JsonToObject.getValue(nodeIt,"tonalidade"));
 					cosmeticNotificationPresentation.setEans(JsonToObject.getArraySaneanteNotificationEanValue(nodeIt, "eans"));
+					
+					
+					
 					apresentacoes.add(cosmeticNotificationPresentation);
+					
+					
 					
 				}
 			
@@ -135,6 +153,41 @@ public class SynchronizeSaneanteNotification extends SynchronizeData implements 
 
 	}
 	
+	public ArrayList<SaneanteNotificadoPetition> parsePetitionnData(JsonNode jsonNode, String attribute) {
+
+		ArrayNode element = (ArrayNode)jsonNode.findValue(attribute);
+		
+		ArrayList<SaneanteNotificadoPetition> peticoes = new ArrayList<SaneanteNotificadoPetition>();
+		
+		if (element!=null) {
+				
+		
+				
+				for (Iterator<JsonNode> it = element.iterator(); it.hasNext();) {
+					
+					JsonNode nodeIt = it.next();
+					
+					SaneanteNotificadoPetition saneanteNotificadoPetition = new SaneanteNotificadoPetition();
+					
+					saneanteNotificadoPetition.setExpediente(JsonToObject.getValue(nodeIt, "expediente"));
+					saneanteNotificadoPetition.setPublicacao(JsonToObject.getValueDate(nodeIt, "data"));
+					saneanteNotificadoPetition.setTransacao(JsonToObject.getValue(nodeIt, "transacao"));
+					saneanteNotificadoPetition.setAssunto(JsonToObject.getAssunto(nodeIt));
+					saneanteNotificadoPetition.setSituacao(JsonToObject.getValue(nodeIt,"situacao" ,"situacao"));
+					
+					peticoes.add(saneanteNotificadoPetition);
+					
+					
+				}
+			
+			
+			
+		} 
+		
+
+		return peticoes;
+
+	}
 	@Override
 	public ArrayList<BaseEntity> loadData(String cnpj) {
 		return super.loadData(this, cnpj);
@@ -159,25 +212,39 @@ public class SynchronizeSaneanteNotification extends SynchronizeData implements 
 			
 			SaneanteNotificationDetail saneanteNotificationDetail = (SaneanteNotificationDetail) this.loadDetailData(baseEntity.getProcesso());
 			
-			if (saneanteNotificationDetail != null) {
 			
-				String strAno = baseEntity.getProcesso().substring(baseEntity.getProcesso().length() - 2);
+			
+			if (saneanteNotificationDetail != null) {
 
-				int ano = Integer.parseInt(strAno);
+				ArrayList<SaneanteNotificadoPetition> peticoes = (ArrayList<SaneanteNotificadoPetition>) saneanteNotificationDetail
+						.getPeticoes();
 
-				if (ano >= 19 && ano <= 99) {
-					ano = ano + 1900;
-				} else {
-					ano = ano + 2000;
+				for (SaneanteNotificadoPetition saneanteNotificadoPetition : peticoes) {
+					baseEntity.setDataAlteracao(saneanteNotificadoPetition.getPublicacao());
+				}
+
+				baseEntity.setQtdRegistro(peticoes.size());
+
+				if (baseEntity.getDataAlteracao() == null) {
+					String strAno = baseEntity.getProcesso().substring(baseEntity.getProcesso().length() - 2);
+
+					int ano = Integer.parseInt(strAno);
+
+					if (ano >= 19 && ano <= 99) {
+						ano = ano + 1900;
+					} else {
+						ano = ano + 2000;
+					}
+
+					LocalDate data = baseEntity.getVencimento() == null
+							? saneanteNotificationDetail.getDataNotificacao()
+							: baseEntity.getVencimento();
+
+					LocalDate dataAlteracao = LocalDate.of(ano, data.getMonthValue(), data.getDayOfMonth());
+
+					baseEntity.setDataAlteracao(dataAlteracao);
 				}
 				
-				LocalDate data = baseEntity.getVencimento()==null?saneanteNotificationDetail.getDataNotificacao():baseEntity.getVencimento();
-				
-				LocalDate dataAlteracao = LocalDate.of(ano, data.getMonthValue(),
-						data.getDayOfMonth());
-
-				baseEntity.setDataAlteracao(dataAlteracao);
-
 				baseEntity.setDataRegistro(saneanteNotificationDetail.getDataNotificacao());
 				
 			}

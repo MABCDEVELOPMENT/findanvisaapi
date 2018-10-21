@@ -53,7 +53,7 @@ public class FindDataSaneanteNotification {
                 }
                 
 /*                if(queryRecordParameter.getAuthorizationNumber()!=null && !queryRecordParameter.getAuthorizationNumber().isEmpty()) {
-                    predicates.add(criteriaBuilder.and(criteriaBuilder.equal(root.get("contentCosmeticRegisterDetail").get("autorizacao"), queryRecordParameter.getAuthorizationNumber())));
+                    predicates.add(criteriaBuilder.and(criteriaBuilder.equal(root.get("saneanteNotificationDetail").get("autorizacao"), queryRecordParameter.getAuthorizationNumber())));
                 }*/
                 
                 if(queryRecordParameter.getExpedientProcess()!=null && !queryRecordParameter.getExpedientProcess().isEmpty()) {

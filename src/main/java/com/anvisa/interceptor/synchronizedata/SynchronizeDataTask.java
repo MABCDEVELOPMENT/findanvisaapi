@@ -17,6 +17,7 @@ import com.anvisa.interceptor.synchronizedata.entity.SynchronizeCosmeticNotifica
 import com.anvisa.interceptor.synchronizedata.entity.SynchronizeCosmeticRegister;
 import com.anvisa.interceptor.synchronizedata.entity.SynchronizeCosmeticRegularized;
 import com.anvisa.interceptor.synchronizedata.entity.SynchronizeFoot;
+import com.anvisa.interceptor.synchronizedata.entity.SynchronizeSaneanteNotification;
 import com.anvisa.model.persistence.BaseEntity;
 import com.anvisa.model.persistence.RegisterCNPJ;
 import com.anvisa.model.persistence.rest.cosmetic.register.ContentCosmeticRegister;
@@ -47,7 +48,10 @@ public class SynchronizeDataTask {
 
 		log.info("SynchronizeData", dateFormat.format(new Date()));
 		
-		IntSynchronize[] intSynchronize = { new SynchronizeFoot(), new SynchronizeCosmeticRegister(), new SynchronizeCosmeticNotification(), new SynchronizeCosmeticRegularized(), new SynchonizeSaneanteProduct() };
+		IntSynchronize[] intSynchronize = { new SynchronizeFoot(), new SynchronizeCosmeticRegister(),
+				new SynchronizeCosmeticNotification(), new SynchronizeCosmeticRegularized(),
+				new SynchonizeSaneanteProduct(),
+				new SynchronizeSaneanteNotification()};
 		
  		/*List<RegisterCNPJ> registerCNPJs = registerCNPJRepository.findAll(0);
 
@@ -127,7 +131,7 @@ public class SynchronizeDataTask {
 		
 
 		
-		log.info("SynchronizeData => End Cosmetic Regularized ", dateFormat.format(new Date()));*/
+		log.info("SynchronizeData => End Cosmetic Regularized ", dateFormat.format(new Date()));
 		
 		List<RegisterCNPJ> registerCNPJs = registerCNPJRepository.findAll(2);
 		
@@ -140,6 +144,23 @@ public class SynchronizeDataTask {
 			log.info("SynchronizeData => End Saneante Product Total "+itens.size(), dateFormat.format(new Date()));
 			if(itens!=null)
 			intSynchronize[4].persist(itens);
+		}
+		
+
+		
+		log.info("SynchronizeData => End Saneante Product ", dateFormat.format(new Date()));*/
+		
+		List<RegisterCNPJ> registerCNPJs = registerCNPJRepository.findAll(2);
+		
+		for (RegisterCNPJ registerCNPJ : registerCNPJs) {
+			log.info("SynchronizeData => Start Saneante Notification "+registerCNPJ.getCnpj()+" "+registerCNPJ.getFullName(), dateFormat.format(new Date()));
+			ArrayList<BaseEntity> itens = intSynchronize[5].loadData(registerCNPJ.getCnpj());
+			
+			 
+			
+			log.info("SynchronizeData => End Saneante Notification Total "+itens.size(), dateFormat.format(new Date()));
+			if(itens!=null)
+			intSynchronize[5].persist(itens);
 		}
 		
 

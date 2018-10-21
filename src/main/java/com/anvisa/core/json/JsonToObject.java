@@ -328,6 +328,7 @@ public class JsonToObject {
 		return sb;
 	}
 	
+	
 	public static ArrayList<Ean> getArrayEanValue(JsonNode node, String attribute) {
 
 		ArrayNode element = (ArrayNode) node.findValue(attribute);

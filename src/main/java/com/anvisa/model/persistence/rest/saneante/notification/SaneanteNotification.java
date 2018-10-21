@@ -5,6 +5,7 @@ import java.time.LocalDate;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
@@ -84,7 +85,9 @@ public class SaneanteNotification extends BaseEntity {
 	@JsonAlias(value = "qtdRegistro")	
 	int qtdRegistro;
 
+	@JsonAlias(value = "saneanteNotificationDetail")
 	@OneToOne(cascade = CascadeType.ALL, optional = true)
+	@JoinColumn(name="SaneanteNotificationDetailFK")
 	SaneanteNotificationDetail saneanteNotificationDetail;
 
 	public String getAssunto() {
