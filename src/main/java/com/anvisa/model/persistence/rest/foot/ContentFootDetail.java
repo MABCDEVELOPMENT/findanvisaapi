@@ -11,7 +11,6 @@ import com.fasterxml.jackson.annotation.JsonAlias;
 @Table(name = "foot_detail")
 public class ContentFootDetail extends BaseEntity {
 	
-
 	/**
 	 * 
 	 */

@@ -27,6 +27,10 @@ public class ContentCosmeticRegularizedDetail extends BaseEntity {
 	 */
 	private static final long serialVersionUID = 1L;
 	
+	@Column(name = "cnpj", length = 20)
+	@JsonAlias(value = "cnpj")
+	String cnpj;
+	
 	@Column(name = "process", length = 20)
 	@JsonAlias(value = "processo")
 	String processo;
@@ -63,6 +67,14 @@ public class ContentCosmeticRegularizedDetail extends BaseEntity {
 	
 	@OneToMany(cascade=CascadeType.ALL,fetch = FetchType.LAZY)
 	List<CosmeticRegularizedDatailPresentation> apresentacoes;
+
+	public String getCnpj() {
+		return cnpj;
+	}
+
+	public void setCnpj(String cnpj) {
+		this.cnpj = cnpj;
+	}
 
 	public String getProcesso() {
 		return processo;

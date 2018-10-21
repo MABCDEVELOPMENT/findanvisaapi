@@ -155,7 +155,7 @@ public class LoginController {
 		User user = userRepository.findEmail(email);
 
 		if (user == null) {
-			return new ResponseEntity<CustomErrorType>(new CustomErrorType("User invalid!"), HttpStatus.CONFLICT);
+			return new ResponseEntity<CustomErrorType>(new CustomErrorType("User invalido!"), HttpStatus.CONFLICT);
 		} else {
 
 			ScheduledEmail scheduledEmail = new ScheduledEmail();

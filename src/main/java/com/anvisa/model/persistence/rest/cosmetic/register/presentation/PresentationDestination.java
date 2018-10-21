@@ -9,7 +9,7 @@ import com.fasterxml.jackson.annotation.JsonAlias;
 
 @Entity
 @Table(name = "cosmetic_presentation_destination")
-public class PresentationDestination extends BaseEntity implements StringListGeneric {
+public class PresentationDestination extends BaseEntity implements IStringListGeneric {
 
 	/**
 	 * 

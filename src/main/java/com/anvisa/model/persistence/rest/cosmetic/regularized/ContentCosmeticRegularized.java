@@ -22,11 +22,13 @@ public class ContentCosmeticRegularized extends BaseEntity {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
+	
+	
 
 	@Column(name = "process", length = 20, nullable = false)
 	@JsonAlias(value = "processo")
     String processo;
-
+	
 	@Column(name = "product", length = 300, nullable = false)
 	@JsonAlias(value = "product")
     String produto;

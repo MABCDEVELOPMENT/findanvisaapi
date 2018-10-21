@@ -96,10 +96,11 @@ public class SynchronizeCosmeticRegularized extends SynchronizeData implements I
 				.setDestinacoes(JsonToObject.getArrayValue(jsonNode, "destinacoes"));
 
 		
-		
-		contentCosmeticRegularizedDetail.setLocaisNacionais(lodalLocalNacional(jsonNode, "locaisNacionais"));
-		
-		
+		CosmeticRegularizedDetailLocalNational cosmeticRegularizedDetailLocalNational = lodalLocalNacional(jsonNode, "locaisNacionais");
+		contentCosmeticRegularizedDetail.setLocaisNacionais(cosmeticRegularizedDetailLocalNational);
+		if (cosmeticRegularizedDetailLocalNational!=null && cosmeticRegularizedDetailLocalNational.getCnpj()!=null) {
+		   contentCosmeticRegularizedDetail.setCnpj(cosmeticRegularizedDetailLocalNational.getCnpj());
+		}
 		ArrayNode element = (ArrayNode)jsonNode.findValue("apresentacoes");
 		
 		ArrayList<CosmeticRegularizedDatailPresentation> apresentacoes = new ArrayList<CosmeticRegularizedDatailPresentation>();

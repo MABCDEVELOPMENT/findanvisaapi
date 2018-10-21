@@ -4,12 +4,10 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Locale;
 
-import com.anvisa.model.persistence.rest.cosmetic.register.presentation.StringListGeneric;
+import com.anvisa.model.persistence.rest.saneante.product.SaneanteStringListGeneric;
 import com.anvisa.rest.detalhe.saneante.notificado.Ean;
 import com.anvisa.rest.model.Assunto;
 import com.anvisa.rest.model.Categoria;
@@ -349,6 +347,26 @@ public class JsonToObject {
 
 	}
 
+	public static  <T> ArrayList<T> getArraySaneanteStringListGeneric(JsonNode node, String attribute,Class<T> theClass) {
+
+		ArrayNode element = (ArrayNode) node.findValue(attribute);
+
+		ArrayList<T> arrayString = new ArrayList<T>();
+
+		if (element != null) {
+
+			for (Iterator<JsonNode> it = element.iterator(); it.hasNext();) {
+				String str = (String) it.next().asText();
+				SaneanteStringListGeneric saneanteStringListGeneric = new SaneanteStringListGeneric(); 
+				saneanteStringListGeneric.setValor(str);
+				arrayString.add((T)saneanteStringListGeneric);
+			}
+
+		}
+
+		return arrayString;
+
+	}
 	public static String getValue(JsonNode node, String content, String attribute) {
 		JsonNode element = node.findValue(content);
 		if (element != null) {
