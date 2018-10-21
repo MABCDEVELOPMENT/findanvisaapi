@@ -60,27 +60,7 @@ public class SynchronizeData {
 			
 			ObjectMapper objectMapper = new ObjectMapper();
 			
-			GZIPInputStream gzipStream = new GZIPInputStream(response.body().byteStream());
-
-			Reader decoder = new InputStreamReader(gzipStream, "US-ASCII");
-			
-			BufferedReader reader = new BufferedReader(decoder);
-			
-			String json = "";
-			
-			while (true) {
-			
-				String line = reader.readLine();
-				
-				json += line;
-				
-				if (line == null) {
-					break;
-				}
-				
-			}
-			
-			JsonNode rootNode = objectMapper.readTree(json);
+			JsonNode rootNode = objectMapper.readTree(this.getGZIPString(response.body().byteStream()));
 			
 			Iterator<JsonNode> elementsContents = rootNode.path("content").iterator();
 			log.info("SynchronizeData Total Registros "+rootNode.get("totalElements"), dateFormat.format(new Date()));

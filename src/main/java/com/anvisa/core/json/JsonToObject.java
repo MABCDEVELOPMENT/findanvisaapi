@@ -347,19 +347,23 @@ public class JsonToObject {
 
 	}
 
-	public static  <T> ArrayList<T> getArraySaneanteStringListGeneric(JsonNode node, String attribute,Class<T> theClass) {
+	public static  ArrayList<SaneanteStringListGeneric> getArraySaneanteStringListGeneric(JsonNode node, String attribute) {
 
 		ArrayNode element = (ArrayNode) node.findValue(attribute);
 
-		ArrayList<T> arrayString = new ArrayList<T>();
+		ArrayList<SaneanteStringListGeneric> arrayString = new ArrayList<SaneanteStringListGeneric>();
 
 		if (element != null) {
 
 			for (Iterator<JsonNode> it = element.iterator(); it.hasNext();) {
+
 				String str = (String) it.next().asText();
-				SaneanteStringListGeneric saneanteStringListGeneric = new SaneanteStringListGeneric(); 
+				
+				SaneanteStringListGeneric saneanteStringListGeneric = new SaneanteStringListGeneric();
 				saneanteStringListGeneric.setValor(str);
-				arrayString.add((T)saneanteStringListGeneric);
+				
+				arrayString.add(saneanteStringListGeneric);
+				
 			}
 
 		}
@@ -367,6 +371,7 @@ public class JsonToObject {
 		return arrayString;
 
 	}
+	
 	public static String getValue(JsonNode node, String content, String attribute) {
 		JsonNode element = node.findValue(content);
 		if (element != null) {

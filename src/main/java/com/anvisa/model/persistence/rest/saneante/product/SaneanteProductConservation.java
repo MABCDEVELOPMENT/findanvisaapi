@@ -19,10 +19,12 @@ public class SaneanteProductConservation extends SaneanteStringListGeneric {
 	@JsonAlias(value = "valor")
 	public String valor;
 
+	@Override
 	public String getValor() {
 		return valor;
 	}
 
+	@Override
 	public void setValor(String valor) {
 		this.valor = valor;
 	}

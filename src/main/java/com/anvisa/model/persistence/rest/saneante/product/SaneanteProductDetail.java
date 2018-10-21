@@ -11,10 +11,13 @@ import javax.persistence.Table;
 
 import com.anvisa.model.persistence.BaseEntity;
 import com.anvisa.model.persistence.rest.foot.ContentFootDetail;
+import com.anvisa.rest.detalhe.saneante.product.SaneanteProductApresentacao;
 import com.fasterxml.jackson.annotation.JsonAlias;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 
 @Entity
-@Table(name = "foot_detail")
+@Table(name = "saneante_product_detail")
 public class SaneanteProductDetail  extends BaseEntity {
 	
 	/**
@@ -58,7 +61,7 @@ public class SaneanteProductDetail  extends BaseEntity {
 	List<SaneanteProductLabel> rotulos;
 
 	@OneToMany(cascade=CascadeType.ALL)
-	List<SaneanteProductApresentacao> apresentacoes;
+	List<SaneanteProductPresentation> apresentacoes;
 
 	public String getRazaoSocial() {
 		return razaoSocial;
@@ -132,11 +135,11 @@ public class SaneanteProductDetail  extends BaseEntity {
 		this.rotulos = rotulos;
 	}
 
-	public List<SaneanteProductApresentacao> getApresentacoes() {
+	public List<SaneanteProductPresentation> getApresentacoes() {
 		return apresentacoes;
 	}
 
-	public void setApresentacoes(ArrayList<SaneanteProductApresentacao> apresentacoes) {
+	public void setApresentacoes(ArrayList<SaneanteProductPresentation> apresentacoes) {
 		this.apresentacoes = apresentacoes;
 	}
 
@@ -222,6 +225,23 @@ public class SaneanteProductDetail  extends BaseEntity {
 		return true;
 	}
 	
-	
+	public void loadApresentaçoes(JsonNode node, String attribute) {
+
+		this.apresentacoes = new ArrayList<SaneanteProductPresentation>();
+
+		ArrayNode element = (ArrayNode) node.findValue(attribute);
+
+		if (element != null) {
+
+			for (JsonNode jsonNode : element) {
+
+				SaneanteProductPresentation apresentacao = new SaneanteProductPresentation();
+				apresentacao.loadApresentacao(jsonNode);
+				this.apresentacoes.add(apresentacao);
+
+			}
+		}
+
+	}
 
 }

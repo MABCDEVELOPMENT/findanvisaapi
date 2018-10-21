@@ -6,18 +6,28 @@ import java.util.List;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
+import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
+import javax.persistence.Table;
 
 import com.anvisa.core.json.JsonToObject;
+import com.anvisa.model.persistence.BaseEntity;
 import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 
-public class SaneanteProductApresentacao {
+@Entity
+@Table(name = "saneante_product_presentation")
+public class SaneanteProductPresentation extends BaseEntity {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 
 	@Column(name = "code", length = 20)
 	@JsonAlias(value = "codigo")
@@ -62,14 +72,14 @@ public class SaneanteProductApresentacao {
 	@JsonAlias(value = "complemento")
 	private String complemento;
 	
-	@JsonAlias(value = "SaneanteProductPrimaryPackage")
-	@OneToOne
-	@JoinColumn(name="saneanteProductPrimaryPackageFK")
-	SaneanteProductPrimaryPackage embalagemPrimaria;
+
+	@OneToOne(cascade = CascadeType.ALL, optional = true)
+	@JsonAlias(value = "embalagemPrimaria")
+	private SaneanteProductPrimaryPackage embalagemPrimaria;
 	
 	@Column(name = "second_package", length = 100, nullable = true)
 	@JsonAlias(value = "embalagemSecundaria")	
-    String embalagemSecundaria;
+    private String embalagemSecundaria;
 
 	@OneToMany(cascade=CascadeType.ALL)
 	private List<SaneanteProductWrapper> envoltorios;
@@ -145,14 +155,33 @@ public class SaneanteProductApresentacao {
 
 		this.setCodigo(JsonToObject.getValue(node, "codigo"));
 		this.setApresentacao(JsonToObject.getValue(node, "apresentacao"));
-		this.setFormasFarmaceuticas(JsonToObject.getArraySaneanteStringListGeneric(node, "formasFarmaceuticas",SaneanteProductPharmaceuticalForm.class));
+		
+		List<SaneanteStringListGeneric> stringListGenericformas = JsonToObject.getArraySaneanteStringListGeneric(node, "formasFarmaceuticas");
+		
+		ArrayList<SaneanteProductPharmaceuticalForm> formas = new ArrayList<SaneanteProductPharmaceuticalForm>();
+		
+		for (SaneanteStringListGeneric saneanteStringListGeneric : stringListGenericformas) {
+			formas.add(new SaneanteProductPharmaceuticalForm(saneanteStringListGeneric.getValor()));
+		}
+		
+		this.setFormasFarmaceuticas(formas);
+		
 		this.setNumero(JsonToObject.getValue(node, "numero"));
 		this.setTonalidade(JsonToObject.getValue(node, "tonalidade"));
 		this.setDataPublicacao(JsonToObject.getValueDate(node, "dataPublicacao"));
 		this.setValidade(JsonToObject.getValue(node, "validade"));
 		this.setTipoValidade(JsonToObject.getValue(node, "tipoValidade"));
 		this.setRegistro(JsonToObject.getValue(node, "registro"));
-		this.setPrincipiosAtivos(JsonToObject.getArraySaneanteStringListGeneric(node, "principiosAtivos",SaneanteProductActivePrinciple.class));
+		
+		List<SaneanteStringListGeneric> stringListGenericPrincitiosAtivos = JsonToObject.getArraySaneanteStringListGeneric(node, "principiosAtivos");
+		
+		ArrayList<SaneanteProductActivePrinciple> princitiosAtivos = new ArrayList<SaneanteProductActivePrinciple>();
+		
+		for (SaneanteStringListGeneric saneanteStringListGeneric : stringListGenericPrincitiosAtivos) {
+			princitiosAtivos.add(new SaneanteProductActivePrinciple(saneanteStringListGeneric.getValor()));
+		}
+		
+		this.setPrincipiosAtivos(princitiosAtivos);
 		this.setComplemento(JsonToObject.getValue(node, "complemento"));
 
 		SaneanteProductPrimaryPackage embalagemPrimaria = new SaneanteProductPrimaryPackage();
@@ -160,20 +189,106 @@ public class SaneanteProductApresentacao {
 		this.setEmbalagemPrimaria(embalagemPrimaria);
 
 		this.setEmbalagemSecundaria(JsonToObject.getValue(node, "embalagemSecundaria"));
-		this.setEnvoltorios(JsonToObject.getArraySaneanteStringListGeneric(node, "envoltorios",SaneanteProductWrapper.class));
-		this.setAcessorios(JsonToObject.getArraySaneanteStringListGeneric(node, "acessorios",SaneanteProductAccessory.class));
+		
+		List<SaneanteStringListGeneric> stringListGenericEnvoltorios = JsonToObject.getArraySaneanteStringListGeneric(node, "envoltorios");
+		
+		ArrayList<SaneanteProductWrapper> envoltorios = new ArrayList<SaneanteProductWrapper>();
+		
+		for (SaneanteStringListGeneric saneanteStringListGeneric : stringListGenericEnvoltorios) {
+			envoltorios.add(new SaneanteProductWrapper(saneanteStringListGeneric.getValor()));
+		}
+		
+		this.setEnvoltorios(envoltorios);
+		
+		List<SaneanteStringListGeneric> stringListGenericAcessorios = JsonToObject.getArraySaneanteStringListGeneric(node, "acessorios");
+		
+		ArrayList<SaneanteProductAccessory> acessorios = new ArrayList<SaneanteProductAccessory>();
+		
+		for (SaneanteStringListGeneric saneanteStringListGeneric : stringListGenericAcessorios) {
+			acessorios.add(new SaneanteProductAccessory(saneanteStringListGeneric.getValor()));
+		}
+		
+		this.setAcessorios(acessorios);
+		
+		
 		this.setAcondicionamento(JsonToObject.getValue(node, "acondicionamento"));
-		this.setMarcas(JsonToObject.getArraySaneanteStringListGeneric(node, "marcas",SaneanteProductBrand.class));
+		
+		List<SaneanteStringListGeneric> stringListGenericMarcas = JsonToObject.getArraySaneanteStringListGeneric(node, "marcas");
+		
+		ArrayList<SaneanteProductBrand> marcas = new ArrayList<SaneanteProductBrand>();
+		
+		for (SaneanteStringListGeneric saneanteStringListGeneric : stringListGenericMarcas) {
+			marcas.add(new SaneanteProductBrand(saneanteStringListGeneric.getValor()));
+		}
+		
+		this.setMarcas(marcas);
+		
 		this.loadFabricantes(node, "fabricantesNacionais");
-		this.setFabricantesInternacionais(JsonToObject.getArraySaneanteStringListGeneric(node, "fabricantesInternacionais",SaneanteProductManufacturerInternational.class));
-		this.setViasAdministracao(JsonToObject.getArraySaneanteStringListGeneric(node, "viasAdministracao",SaneanteProductViaAdministration.class));
+		
+		
+		List<SaneanteStringListGeneric> stringListGenericFabricantesInternacionais = JsonToObject.getArraySaneanteStringListGeneric(node, "fabricantesInternacionais");
+		
+		ArrayList<SaneanteProductManufacturerInternational> fabricantesInternacionais = new ArrayList<SaneanteProductManufacturerInternational>();
+		
+		for (SaneanteStringListGeneric saneanteStringListGeneric : stringListGenericFabricantesInternacionais) {
+			fabricantesInternacionais.add(new SaneanteProductManufacturerInternational(saneanteStringListGeneric.getValor()));
+		}
+		
+		this.setFabricantesInternacionais(fabricantesInternacionais);
+
+		List<SaneanteStringListGeneric> stringListGenericViasAdministracao = JsonToObject.getArraySaneanteStringListGeneric(node, "viasAdministracao");
+		
+		ArrayList<SaneanteProductViaAdministration> viasAdministracaos = new ArrayList<SaneanteProductViaAdministration>();
+		
+		for (SaneanteStringListGeneric saneanteStringListGeneric : stringListGenericViasAdministracao) {
+			viasAdministracaos.add(new SaneanteProductViaAdministration(saneanteStringListGeneric.getValor()));
+		}
+		
+		this.setViasAdministracao(viasAdministracaos);
+		
 		String ifaUnico = JsonToObject.getValue(node, "ifaUnico");
 		this.setIfaUnico(Boolean.parseBoolean(ifaUnico));
 
-		this.setConservacao(JsonToObject.getArraySaneanteStringListGeneric(node, "conservacao",SaneanteProductConservation.class));
-		this.setRestricaoPrescricao(JsonToObject.getArraySaneanteStringListGeneric(node, "restricaoPrescricao",SeneanteProductRestrictionPrescription.class));
-		this.setRestricaoUso(JsonToObject.getArraySaneanteStringListGeneric(node, "restricaoUso",SeneanteProductUseRestriction.class));
-		this.setDestinacao(JsonToObject.getArraySaneanteStringListGeneric(node, "destinacao",SeneanteProductDestination.class));
+		List<SaneanteStringListGeneric> stringListGenericConservacoes = JsonToObject.getArraySaneanteStringListGeneric(node, "conservacao");
+		
+		ArrayList<SaneanteProductConservation> conservacoes = new ArrayList<SaneanteProductConservation>();
+		
+		for (SaneanteStringListGeneric saneanteStringListGeneric : stringListGenericConservacoes) {
+			conservacoes.add(new SaneanteProductConservation(saneanteStringListGeneric.getValor()));
+		}
+		
+		this.setConservacao(conservacoes);
+		
+		List<SaneanteStringListGeneric> stringListGenericrestricaoPrescricoes = JsonToObject.getArraySaneanteStringListGeneric(node, "restricaoPrescricao");
+		
+		ArrayList<SeneanteProductRestrictionPrescription> restricaoPrescricoes = new ArrayList<SeneanteProductRestrictionPrescription>();
+		
+		for (SaneanteStringListGeneric saneanteStringListGeneric : stringListGenericrestricaoPrescricoes) {
+			restricaoPrescricoes.add(new SeneanteProductRestrictionPrescription(saneanteStringListGeneric.getValor()));
+		}
+		
+		this.setRestricaoPrescricao(restricaoPrescricoes);
+
+		List<SaneanteStringListGeneric> stringListGenericRestricoesUso = JsonToObject.getArraySaneanteStringListGeneric(node, "restricaoUso");
+		
+		ArrayList<SeneanteProductUseRestriction> restricoesUso = new ArrayList<SeneanteProductUseRestriction>();
+		
+		for (SaneanteStringListGeneric saneanteStringListGeneric : stringListGenericRestricoesUso) {
+			restricoesUso.add(new SeneanteProductUseRestriction(saneanteStringListGeneric.getValor()));
+		}
+		
+		this.setRestricaoUso(restricoesUso);
+		
+		List<SaneanteStringListGeneric> stringListGenericDestinacao = JsonToObject.getArraySaneanteStringListGeneric(node, "destinacao");
+		
+		ArrayList<SeneanteProductDestination> destinacao = new ArrayList<SeneanteProductDestination>();
+		
+		for (SaneanteStringListGeneric saneanteStringListGeneric : stringListGenericDestinacao) {
+			destinacao.add(new SeneanteProductDestination(saneanteStringListGeneric.getValor()));
+		}
+		
+		this.setDestinacao(destinacao);
+		
 		this.setRestricaoHospitais(JsonToObject.getValue(node, "restricaoHospitais"));
 		this.setTarja(JsonToObject.getValue(node, "tarja"));
 		this.setMedicamentoReferencia(JsonToObject.getValue(node, "medicamentoReferencia"));

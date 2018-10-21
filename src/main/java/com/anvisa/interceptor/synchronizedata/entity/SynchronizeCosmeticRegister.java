@@ -401,6 +401,12 @@ public class SynchronizeCosmeticRegister extends SynchronizeData implements IntS
 
 			ObjectMapper objectMapper = new ObjectMapper();
 
+			if (response.code() == 500) {
+				response.close();
+				client = null;
+				return null;
+			}
+			
 			JsonNode rootNode = objectMapper.readTree(this.getGZIPString(response.body().byteStream()));
 
 			Iterator<JsonNode> elementsContents = rootNode.path("content").iterator();

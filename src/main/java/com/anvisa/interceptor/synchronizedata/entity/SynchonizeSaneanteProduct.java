@@ -3,97 +3,118 @@ package com.anvisa.interceptor.synchronizedata.entity;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import com.anvisa.core.json.JsonToObject;
+import com.anvisa.interceptor.synchronizedata.IntSynchronize;
+import com.anvisa.interceptor.synchronizedata.SynchronizeData;
 import com.anvisa.model.persistence.BaseEntity;
-import com.anvisa.model.persistence.rest.Content;
-import com.anvisa.model.persistence.rest.foot.ContentFoot;
-import com.anvisa.model.persistence.rest.foot.ContentFootDetail;
-import com.anvisa.repository.generic.FootDetailRepository;
-import com.anvisa.repository.generic.FootRepository;
+import com.anvisa.model.persistence.rest.saneante.product.SaneanteProduct;
+import com.anvisa.model.persistence.rest.saneante.product.SaneanteProductDetail;
+import com.anvisa.model.persistence.rest.saneante.product.SaneanteProductLabel;
+import com.anvisa.model.persistence.rest.saneante.product.SaneanteStringListGeneric;
+import com.anvisa.repository.generic.SaneanteProductRepository;
 import com.fasterxml.jackson.databind.JsonNode;
 
-public class SynchonizeSaneanteProduct {
+@Component
+public class SynchonizeSaneanteProduct extends SynchronizeData implements IntSynchronize {
 	
 	@Autowired
-	private static FootRepository footRepository;
+	private static SaneanteProductRepository seneanteProductRepository;
+
 
 	@Autowired
-	private static FootDetailRepository footDetailRepository;
+	public void setService(SaneanteProductRepository seneanteProductRepository) {
 
-	@Autowired
-	public void setService(FootRepository footRepository, FootDetailRepository footDetailRepository) {
-
-		this.footRepository = footRepository;
-		this.footDetailRepository = footDetailRepository;
+		this.seneanteProductRepository = seneanteProductRepository;
 
 	}
 
-	public SynchronizeFoot() {
+	public SynchonizeSaneanteProduct() {
 
-		URL = "https://consultas.anvisa.gov.br/api/consulta/produtos/6?count=2000&page=1&filter[cnpj]=";
-
-		URL_DETAIL = "https://consultas.anvisa.gov.br/api/consulta/produtos/6/";
+		URL = "https://consultas.anvisa.gov.br/api/consulta/produtos/3?count=10&page=1&filter[cnpj]=";
+		
+		URL_DETAIL = "https://consultas.anvisa.gov.br/api/consulta/produtos/3/";
 
 	}
 
 	@Override
-	public ContentFoot parseData(JsonNode jsonNode) {
+	public SaneanteProduct parseData(JsonNode jsonNode) {
 		// TODO Auto-generated method stub
-		Content content = new Content();
+		SaneanteProduct saneanteProduct = new SaneanteProduct();
 
-		content.setOrdem(JsonToObject.getOrdem(jsonNode));
-
-		content.setEmpresa(JsonToObject.getEmpresa(jsonNode));
-
-		content.setProcesso(JsonToObject.getProcessoProduto(jsonNode));
-
-		content.setProduto(JsonToObject.getProduto(jsonNode));
-
-		ContentFoot contentProduto = new ContentFoot(content);
+		saneanteProduct.setCodigo(JsonToObject.getValue(jsonNode,"produto","codigo"));
+		saneanteProduct.setProduto(JsonToObject.getValue(jsonNode,"produto","nome"));
+		saneanteProduct.setRegistro(JsonToObject.getValue(jsonNode,"produto","numeroRegistro"));
+		saneanteProduct.setProcesso(JsonToObject.getValue(jsonNode,"processo","numero"));
+		saneanteProduct.setEmpresa(JsonToObject.getValue(jsonNode,"empresa","razaoSocial"));
+		saneanteProduct.setCnpj(JsonToObject.getValue(jsonNode,"empresa","cnpj"));
+		saneanteProduct.setSituacao(JsonToObject.getValue(jsonNode,"processo","situacao"));
+		saneanteProduct.setVencimento(JsonToObject.getValue(jsonNode,"produto","dataVencimento"));
+		saneanteProduct.setDataVencimento(JsonToObject.getValueDate(jsonNode,"produto","dataVencimentoRegistro"));
 		
-		contentProduto.setDataRegistro(JsonToObject.getValueDate(jsonNode,"dataRegistro"));
-		contentProduto.setDataVencimento(JsonToObject.getValueDate(jsonNode,"dataVencimentoRegistro"));
 		
-		String strAno = contentProduto.getProcesso().substring(contentProduto.getProcesso().length()-2);
+		saneanteProduct.setDataRegistro(JsonToObject.getValueDate(jsonNode,"produto","dataRegistro"));
 		
-		int ano = Integer.parseInt(strAno);
+		if (saneanteProduct.getDataVencimento() != null || saneanteProduct.getDataRegistro() != null) {
+
+			String strAno = saneanteProduct.getProcesso().substring(saneanteProduct.getProcesso().length() - 2);
+
+			int ano = Integer.parseInt(strAno);
+
+			if (ano >= 19 && ano <= 99) {
+				ano = ano + 1900;
+			} else {
+				ano = ano + 2000;
+			}
+			
+			LocalDate data =  saneanteProduct.getDataVencimento()==null?saneanteProduct.getDataRegistro():saneanteProduct.getDataVencimento();
+			if (data!=null) {
+				LocalDate dataAlteracao = LocalDate.of(ano, data.getMonthValue(),
+						data.getDayOfMonth());
+				saneanteProduct.setDataAlteracao(dataAlteracao);
+			}	
+		}
+		return saneanteProduct;
+	}
+
+	@Override
+	public SaneanteProductDetail parseDetailData(JsonNode jsonNode) {
+		// TODO Auto-generated method stub
+		SaneanteProductDetail saneanteProductDetail = new SaneanteProductDetail();
+
+		saneanteProductDetail.setProcesso(JsonToObject.getValue(jsonNode, "processo", "numero"));
+		saneanteProductDetail
+				.setClassesTerapeuticas(JsonToObject.getArrayValue(jsonNode, "classesTerapeuticas"));
+		saneanteProductDetail.setCnpj(JsonToObject.getValue(jsonNode, "cnpj"));
+		saneanteProductDetail.setNumeroAutorizacao(JsonToObject.getValue(jsonNode, "numeroAutorizacao"));
+		saneanteProductDetail.setNomeComercial(JsonToObject.getValue(jsonNode, "nomeComercial"));
+		saneanteProductDetail.setRazaoSocial(JsonToObject.getValue(jsonNode, "razaoSocial"));
+		saneanteProductDetail.setRegistro(JsonToObject.getValue(jsonNode, "numeroRegistro"));
+		saneanteProductDetail.setMesAnoVencimento(JsonToObject.getValue(jsonNode, "mesAnoVencimento"));
+		saneanteProductDetail.loadApresentaçoes(jsonNode,"apresentacoes");
 		
-		if (ano>=19 && ano<=99) {
-			ano = ano + 1900;
-		} else {
-			ano = ano + 2000;
+		List<SaneanteStringListGeneric> stringListGenericrotulos = JsonToObject.getArraySaneanteStringListGeneric(jsonNode, "rotulos");
+		
+		ArrayList<SaneanteProductLabel> rotulos = new ArrayList<SaneanteProductLabel>();
+		
+		for (SaneanteStringListGeneric saneanteStringListGeneric : stringListGenericrotulos) {
+			rotulos.add(new SaneanteProductLabel(saneanteStringListGeneric.getValor()));
 		}
 		
-		LocalDate dataAlteracao =  LocalDate.of(ano,contentProduto.getDataVencimento().getMonthValue(),contentProduto.getDataVencimento().getDayOfMonth()); 
-		contentProduto.setDataAlteracao(dataAlteracao);
+		saneanteProductDetail.setRotulos(rotulos);
+		
+		/*		ArrayList<String> rotulos = contentDetalheSaneanteProduct.getRotulos();
+		
+		for (String rotulo : rotulos) {
+			downloadLabel(contentDetalheSaneanteProduct.getProcesso(), rotulo);
+		}*/
+		
 
-		return contentProduto;
-	}
-
-	@Override
-	public ContentFootDetail parseDetailData(JsonNode jsonNode) {
-		// TODO Auto-generated method stub
-		ContentFootDetail contentFootDetail = new ContentFootDetail();
-
-		contentFootDetail.setProcesso(JsonToObject.getValue(jsonNode, "processo", "numero"));
-		contentFootDetail.setClassesTerapeuticas(JsonToObject.getArrayValue(jsonNode, "classesTerapeuticas"));
-		contentFootDetail.setCnpj(JsonToObject.getValue(jsonNode, "cnpj"));
-		contentFootDetail.setMarca(JsonToObject.getArrayValue(jsonNode, "marcas"));
-		contentFootDetail.setNomeComercial(JsonToObject.getValue(jsonNode, "nomeComercial"));
-		contentFootDetail.setRazaoSocial(JsonToObject.getValue(jsonNode, "razaoSocial"));
-		contentFootDetail.setRegistro(JsonToObject.getValue(jsonNode, "numeroRegistro"));
-		contentFootDetail.setMesAnoVencimento(JsonToObject.getValue(jsonNode, "mesAnoVencimento"));
-		contentFootDetail.setPrincipioAtivo(JsonToObject.getValue(jsonNode, "principioAtivo"));
-		contentFootDetail.setEmbalagemPrimaria(JsonToObject.getValue(jsonNode, "embalagemPrimaria", "tipo"));
-		contentFootDetail.setViasAdministrativa(JsonToObject.getArrayValue(jsonNode, "viasAdministracao"));
-		String ifaUnico = JsonToObject.getValue(jsonNode, "ifaUnico");
-		contentFootDetail.setIfaUnico(ifaUnico.equals("true") ? "Sim" : "Não");
-		contentFootDetail.setConservacao(JsonToObject.getArrayValue(jsonNode, "conservacao"));
-
-		return contentFootDetail;
+		return saneanteProductDetail;
 	}
 
 	@Override
@@ -108,61 +129,67 @@ public class SynchonizeSaneanteProduct {
 
 	@Override
 	public void persist(ArrayList<BaseEntity> itens) {
+		
 		int cont = 0;
+		
 		for (Iterator<BaseEntity> iterator = itens.iterator(); iterator.hasNext();) {
 
-			ContentFoot BaseEntity = (ContentFoot) iterator.next();
+			SaneanteProduct baseEntity = (SaneanteProduct) iterator.next();
 
-			ContentFoot localFoot = footRepository.findByProcessCnpjCodigoRegistro(BaseEntity.getProcesso(),
-					BaseEntity.getCnpj(), BaseEntity.getCodigo(), BaseEntity.getRegistro(),
-					BaseEntity.getDataVencimento());
+			SaneanteProduct localSaneanteProduct = seneanteProductRepository.findByProcessCnpjRegistroVencimento(baseEntity.getProcesso(),
+					baseEntity.getCnpj(), baseEntity.getCodigo(), baseEntity.getRegistro(),
+					baseEntity.getDataVencimento());
 
-			boolean newFoot = (localFoot == null);
 
-			ContentFootDetail detail = (ContentFootDetail) this.loadDetailData(BaseEntity.getProcesso());
+			boolean newRegularized = (localSaneanteProduct == null);
+			
+			SaneanteProductDetail saneanteProductDetail = (SaneanteProductDetail) this.loadDetailData(baseEntity.getProcesso());
+			
+/*			if (saneanteProductDetail != null && (saneanteProductDetail.get!=null || baseEntity.getVencimento()!=null)) {
+				
+				String strAno = baseEntity.getProcesso().substring(baseEntity.getProcesso().length() - 2);
 
-			if (detail != null) {
+				int ano = Integer.parseInt(strAno);
 
-				if (!newFoot) {
-
-					if (localFoot.getContentFootDetail() != null && !detail.equals(localFoot.getContentFootDetail())) {
-						detail.setId(localFoot.getContentFootDetail().getId());
-						footDetailRepository.saveAndFlush(detail);
-						BaseEntity.setContentFootDetail(detail);
-					} else {
-					    detail.setId(localFoot.getContentFootDetail().getId());
-					}    
+				if (ano >= 19 && ano <= 99) {
+					ano = ano + 1900;
 				} else {
+					ano = ano + 2000;
+				}
+				
+				LocalDate data = baseEntity.getVencimento()==null?contentCosmeticRegularizedDetail.getData():baseEntity.getVencimento();
+				
+				LocalDate dataAlteracao = LocalDate.of(ano, data.getMonthValue(),
+						data.getDayOfMonth());
 
-					footDetailRepository.saveAndFlush(detail);
+				baseEntity.setDataAlteracao(dataAlteracao);
 
-					BaseEntity.setContentFootDetail(detail);
+				baseEntity.setDataRegistro(contentCosmeticRegularizedDetail.getData());
+				
+			}*/
+
+
+			if (!newRegularized) {
+				
+				if (localSaneanteProduct.getSaneanteProductDetail()!=null) {
+					if (!saneanteProductDetail.equals(localSaneanteProduct.getSaneanteProductDetail())){
+						saneanteProductDetail.setId(localSaneanteProduct.getSaneanteProductDetail().getId());
+						baseEntity.setSaneanteProductDetail(saneanteProductDetail);
+					}
 				}
 
-			}
+				if (!localSaneanteProduct.equals(baseEntity)) {
 
-			if (localFoot != null) {
-
-				if (!localFoot.equals(BaseEntity)) {
-
-					BaseEntity.setId(localFoot.getId());
-					detail.setId(localFoot.getContentFootDetail().getId());
-					BaseEntity.setContentFootDetail(detail);
-					footRepository.save(BaseEntity);
-
+					baseEntity.setId(localSaneanteProduct.getId());
+					seneanteProductRepository.saveAndFlush(baseEntity);
 				}
 
 			} else {
-
-				footRepository.save(BaseEntity);
-
+				baseEntity.setSaneanteProductDetail(saneanteProductDetail);
+				seneanteProductRepository.saveAndFlush(baseEntity);
+				
 			}
-			
 			System.out.println(cont++);
-			
 		}
-		
-		
 	}
-
 }

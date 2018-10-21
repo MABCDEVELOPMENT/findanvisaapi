@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
+import com.anvisa.interceptor.synchronizedata.entity.SynchonizeSaneanteProduct;
 import com.anvisa.interceptor.synchronizedata.entity.SynchronizeCosmeticNotification;
 import com.anvisa.interceptor.synchronizedata.entity.SynchronizeCosmeticRegister;
 import com.anvisa.interceptor.synchronizedata.entity.SynchronizeCosmeticRegularized;
@@ -46,7 +47,7 @@ public class SynchronizeDataTask {
 
 		log.info("SynchronizeData", dateFormat.format(new Date()));
 		
-		IntSynchronize[] intSynchronize = { new SynchronizeFoot(), new SynchronizeCosmeticRegister(), new SynchronizeCosmeticNotification(), new SynchronizeCosmeticRegularized() };
+		IntSynchronize[] intSynchronize = { new SynchronizeFoot(), new SynchronizeCosmeticRegister(), new SynchronizeCosmeticNotification(), new SynchronizeCosmeticRegularized(), new SynchonizeSaneanteProduct() };
 		
  		/*List<RegisterCNPJ> registerCNPJs = registerCNPJRepository.findAll(0);
 
@@ -59,11 +60,12 @@ public class SynchronizeDataTask {
 			
  			ArrayList<BaseEntity> itens = intSynchronize[0].loadData(registerCNPJ.getCnpj());
  			
- 			intSynchronize[0].persist(itens);
+ 			
  			
  			log.info("SynchronizeData => Total "+itens.size(), dateFormat.format(new Date()));
  			
-
+ 			if(itens!=null)
+			intSynchronize[0].persist(itens);
 			
 		}
 	
@@ -113,7 +115,7 @@ public class SynchronizeDataTask {
 		
 		
 		
-		List<RegisterCNPJ> registerCNPJs = registerCNPJRepository.findAll(1);
+/*		List<RegisterCNPJ> registerCNPJs = registerCNPJRepository.findAll(1);
 		
 		for (RegisterCNPJ registerCNPJ : registerCNPJs) {
 			log.info("SynchronizeData => Start Cosmetic Regularized "+registerCNPJ.getCnpj()+" "+registerCNPJ.getFullName(), dateFormat.format(new Date()));
@@ -125,7 +127,24 @@ public class SynchronizeDataTask {
 		
 
 		
-		log.info("SynchronizeData => End Cosmetic Regularized ", dateFormat.format(new Date()));
+		log.info("SynchronizeData => End Cosmetic Regularized ", dateFormat.format(new Date()));*/
+		
+		List<RegisterCNPJ> registerCNPJs = registerCNPJRepository.findAll(2);
+		
+		for (RegisterCNPJ registerCNPJ : registerCNPJs) {
+			log.info("SynchronizeData => Start Saneante Product "+registerCNPJ.getCnpj()+" "+registerCNPJ.getFullName(), dateFormat.format(new Date()));
+			ArrayList<BaseEntity> itens = intSynchronize[4].loadData(registerCNPJ.getCnpj());
+			
+			 
+			
+			log.info("SynchronizeData => End Saneante Product Total "+itens.size(), dateFormat.format(new Date()));
+			if(itens!=null)
+			intSynchronize[4].persist(itens);
+		}
+		
+
+		
+		log.info("SynchronizeData => End Saneante Product ", dateFormat.format(new Date()));
 	
 	}
 	

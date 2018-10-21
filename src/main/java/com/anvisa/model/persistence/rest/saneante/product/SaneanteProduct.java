@@ -2,20 +2,20 @@ package com.anvisa.model.persistence.rest.saneante.product;
 
 import java.time.LocalDate;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import com.anvisa.model.persistence.BaseEntity;
-import com.anvisa.model.persistence.rest.foot.ContentFootDetail;
-import com.anvisa.rest.detalhe.saneante.product.SaneanteProductDetail;
 import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 @Entity
-@Table(name = "seneante_product")
+@Table(name = "saneante_product")
 public class SaneanteProduct extends BaseEntity {
 
 	/**
@@ -25,7 +25,7 @@ public class SaneanteProduct extends BaseEntity {
 	
 	@Column(name = "code", length = 20, nullable = false)
 	@JsonAlias(value = "codigo")
-	int codigo;
+	String codigo;
 	
 	@Column(name = "product", length = 300, nullable = false)
 	@JsonAlias(value = "product")
@@ -79,14 +79,14 @@ public class SaneanteProduct extends BaseEntity {
 	int qtdRegistro;
 	
 	@JsonAlias(value = "saneanteProductDetail")
-	@ManyToOne
+	@OneToOne(cascade = CascadeType.ALL, optional = true)
 	@JoinColumn(name="SaneanteProductDetailFK")
 	SaneanteProductDetail saneanteProductDetail;
 	
-	public int getCodigo() {
+	public String getCodigo() {
 		return codigo;
 	}
-	public void setCodigo(int codigo) {
+	public void setCodigo(String codigo) {
 		this.codigo = codigo;
 	}
 	public String getProduto() {
@@ -126,6 +126,9 @@ public class SaneanteProduct extends BaseEntity {
 		this.situacao = situacao;
 	}
 	public String getVencimento() {
+		if (this.vencimento.equals("null")) {
+			return "";
+		}
 		return vencimento;
 	}
 	public void setVencimento(String vencimento) {
@@ -144,6 +147,12 @@ public class SaneanteProduct extends BaseEntity {
 		this.dataVencimento = dataVencimento;
 	}
 	
+	public SaneanteProductDetail getSaneanteProductDetail() {
+		return saneanteProductDetail;
+	}
+	public void setSaneanteProductDetail(SaneanteProductDetail saneanteProductDetail) {
+		this.saneanteProductDetail = saneanteProductDetail;
+	}
 	public LocalDate getDataAlteracao() {
 		return dataAlteracao;
 	}
@@ -173,7 +182,7 @@ public class SaneanteProduct extends BaseEntity {
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + ((cnpj == null) ? 0 : cnpj.hashCode());
-		result = prime * result + codigo;
+		result = prime * result + ((codigo == null) ? 0 : codigo.hashCode());
 		result = prime * result + ((dataVencimento == null) ? 0 : dataVencimento.hashCode());
 		result = prime * result + ((empresa == null) ? 0 : empresa.hashCode());
 		result = prime * result + ((processo == null) ? 0 : processo.hashCode());
