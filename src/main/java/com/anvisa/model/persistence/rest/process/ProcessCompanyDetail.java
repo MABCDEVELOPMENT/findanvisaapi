@@ -20,7 +20,7 @@ public class ProcessCompanyDetail extends BaseEntity {
 	@JsonAlias(value = "cnpj")
 	String cnpj;
 	
-	@Column(name = "social_reason", length = 300)
+	@Column(name = "social_reason", length = 600)
 	@JsonAlias(value = "razaoSocial")
     String razaoSocial;
     
@@ -53,7 +53,7 @@ public class ProcessCompanyDetail extends BaseEntity {
 		if (obj == null) {
 			return false;
 		}
-		if (!(obj instanceof Process)) {
+		if (!(obj instanceof ProcessCompanyDetail)) {
 			return false;
 		}
 		

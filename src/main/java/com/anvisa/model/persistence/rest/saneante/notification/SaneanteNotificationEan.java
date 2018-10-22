@@ -21,7 +21,7 @@ public class SaneanteNotificationEan extends BaseEntity {
 	@JsonAlias(value = "codigo")
 	private String codigo;
 
-	@Column(name = "description", length = 300)
+	@Column(name = "description", length = 600)
 	@JsonAlias(value = "descricao")
 	private String descricao;
 

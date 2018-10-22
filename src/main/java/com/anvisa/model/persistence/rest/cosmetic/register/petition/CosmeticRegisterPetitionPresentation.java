@@ -16,7 +16,7 @@ public class CosmeticRegisterPetitionPresentation extends BaseEntity {
 	 */
 	private static final long serialVersionUID = 1L;
 	
-	@Column(name = "name", length = 300)
+	@Column(name = "name", length = 600)
 	@JsonAlias(value = "nome")
 	private String nome;
 	

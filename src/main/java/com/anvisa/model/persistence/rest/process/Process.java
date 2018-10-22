@@ -1,5 +1,7 @@
 package com.anvisa.model.persistence.rest.process;
 
+import java.time.LocalDate;
+
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -9,6 +11,7 @@ import javax.persistence.Table;
 
 import com.anvisa.model.persistence.BaseEntity;
 import com.fasterxml.jackson.annotation.JsonAlias;
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 @Entity
 @Table(name = "process")
@@ -18,7 +21,7 @@ public class Process extends BaseEntity {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	@Column(name = "order")
+	@Column(name = "ordem")
 	@JsonAlias(value = "ordem")
 	int ordem;
 	
@@ -26,7 +29,7 @@ public class Process extends BaseEntity {
 	@JsonAlias(value = "cnpj")
 	String cnpj;
 	
-	@Column(name = "social_reason", length = 300)
+	@Column(name = "social_reason", length = 600)
 	@JsonAlias(value = "razaoSocial")
 	String razaoSocial;
 	
@@ -34,7 +37,7 @@ public class Process extends BaseEntity {
 	@JsonAlias(value = "processo")
 	String processo;
 	
-	@Column(name = "subject", length = 300)
+	@Column(name = "subject", length = 600)
 	@JsonAlias(value = "assunto")
 	String assunto;
 	
@@ -42,6 +45,21 @@ public class Process extends BaseEntity {
 	@OneToOne(cascade = CascadeType.ALL, optional = true)
 	@JoinColumn(name="ProcessDetailFK")
 	ProcessDetail processDetail;
+	
+	@Column(name = "dateUpdateRegister")
+	@JsonAlias(value = "dataAlteracao")	
+	@JsonFormat(pattern="dd/MM/yyyy")	
+	LocalDate dataAlteracao;
+	
+	@Column(name = "dateRegister")
+	@JsonAlias(value = "dataRegistro")
+	@JsonFormat(pattern="dd/MM/yyyy")
+	LocalDate dataRegistro;
+	
+	@Column(name = "qtdRecord")
+	@JsonAlias(value = "qtdRegistro")	
+	int qtdRegistro;
+
 	
 	public int getOrdem() {
 		return ordem;
@@ -83,15 +101,50 @@ public class Process extends BaseEntity {
 		this.assunto = assunto;
 	}
 
+	public ProcessDetail getProcessDetail() {
+		return processDetail;
+	}
+
+	public void setProcessDetail(ProcessDetail processDetail) {
+		this.processDetail = processDetail;
+	}
+
+	public LocalDate getDataAlteracao() {
+		return dataAlteracao;
+	}
+
+	public void setDataAlteracao(LocalDate dataAlteracao) {
+		this.dataAlteracao = dataAlteracao;
+	}
+
+	public LocalDate getDataRegistro() {
+		return dataRegistro;
+	}
+
+	public void setDataRegistro(LocalDate dataRegistro) {
+		this.dataRegistro = dataRegistro;
+	}
+
+	public int getQtdRegistro() {
+		return qtdRegistro;
+	}
+
+	public void setQtdRegistro(int qtdRegistro) {
+		this.qtdRegistro = qtdRegistro;
+	}
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = super.hashCode();
 		result = prime * result + ((assunto == null) ? 0 : assunto.hashCode());
 		result = prime * result + ((cnpj == null) ? 0 : cnpj.hashCode());
+		result = prime * result + ((dataAlteracao == null) ? 0 : dataAlteracao.hashCode());
+		result = prime * result + ((dataRegistro == null) ? 0 : dataRegistro.hashCode());
 		result = prime * result + ordem;
 		result = prime * result + ((processDetail == null) ? 0 : processDetail.hashCode());
 		result = prime * result + ((processo == null) ? 0 : processo.hashCode());
+		result = prime * result + qtdRegistro;
 		result = prime * result + ((razaoSocial == null) ? 0 : razaoSocial.hashCode());
 		return result;
 	}
@@ -107,9 +160,7 @@ public class Process extends BaseEntity {
 		if (!(obj instanceof Process)) {
 			return false;
 		}
-		
 		Process other = (Process) obj;
-		
 		if (assunto == null) {
 			if (other.assunto != null)
 				return false;
@@ -119,6 +170,16 @@ public class Process extends BaseEntity {
 			if (other.cnpj != null)
 				return false;
 		} else if (!cnpj.equals(other.cnpj))
+			return false;
+		if (dataAlteracao == null) {
+			if (other.dataAlteracao != null)
+				return false;
+		} else if (!dataAlteracao.equals(other.dataAlteracao))
+			return false;
+		if (dataRegistro == null) {
+			if (other.dataRegistro != null)
+				return false;
+		} else if (!dataRegistro.equals(other.dataRegistro))
 			return false;
 		if (ordem != other.ordem)
 			return false;
@@ -132,6 +193,8 @@ public class Process extends BaseEntity {
 				return false;
 		} else if (!processo.equals(other.processo))
 			return false;
+		if (qtdRegistro != other.qtdRegistro)
+			return false;
 		if (razaoSocial == null) {
 			if (other.razaoSocial != null)
 				return false;
@@ -140,6 +203,7 @@ public class Process extends BaseEntity {
 		return true;
 	}
 
+	
 	
 	
 	

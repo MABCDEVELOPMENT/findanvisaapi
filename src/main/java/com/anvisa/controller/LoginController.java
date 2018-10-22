@@ -167,9 +167,10 @@ public class LoginController {
 			scheduledEmail.setSubject("Re-definição de senha.");
 			scheduledEmail.setBody("http://findinfo.kinghost.net/findanvisa/#/redefine?id=" + user.getId());
 
-			this.scheduledEmail.saveAndFlush(scheduledEmail);
+			//this.scheduledEmail.saveAndFlush(scheduledEmail);
 			
-			ScheduledTasks.scheduledEmail();
+			//ScheduledTasks.scheduledEmail();
+			ScheduledTasks.sendEmail(scheduledEmail);
 			
 			return new ResponseEntity<User>(user, HttpStatus.OK);
 		}

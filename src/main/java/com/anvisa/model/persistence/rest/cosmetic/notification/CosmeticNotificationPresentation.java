@@ -16,7 +16,7 @@ public class CosmeticNotificationPresentation extends BaseEntity {
 	 */
 	private static final long serialVersionUID = 1L;
 	
-	@Column(name = "presentation", length = 200, nullable = false)
+	@Column(name = "presentation", length = 400, nullable = false)
 	@JsonAlias(value = "apresentacao")
 	String apresentacao;
 	
@@ -24,7 +24,7 @@ public class CosmeticNotificationPresentation extends BaseEntity {
 	@JsonAlias(value = "tonalidade")
     String tonalidade;
 
-	@Column(name = "eans", length = 300)
+	@Column(name = "eans", length = 600)
 	@JsonAlias(value = "eans")
     String eans;
 

@@ -29,7 +29,7 @@ public class ContentCosmeticRegisterDetail extends BaseEntity {
 	 */
 	private static final long serialVersionUID = 1L;
 	
-	@Column(name = "social_reason", length = 200, nullable = false)
+	@Column(name = "social_reason", length = 600, nullable = false)
 	@JsonAlias(value = "razaoSocial")
 	String razaoSocial;
 	
@@ -41,7 +41,7 @@ public class ContentCosmeticRegisterDetail extends BaseEntity {
 	@JsonAlias(value = "autorizacao")
 	String autorizacao;
 	
-	@Column(name = "product_name", length = 300, nullable = false)
+	@Column(name = "product_name", length = 600, nullable = false)
 	@JsonAlias(value = "nomeProduto")
 	String nomeProduto;
 	

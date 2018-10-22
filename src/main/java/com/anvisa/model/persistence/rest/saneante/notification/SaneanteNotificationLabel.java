@@ -15,7 +15,7 @@ public class SaneanteNotificationLabel extends BaseEntity {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	@Column(name = "value", length = 300)
+	@Column(name = "value", length = 600)
 	@JsonAlias(value = "valor")
 	String valor;
 	

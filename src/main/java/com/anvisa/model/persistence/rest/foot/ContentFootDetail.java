@@ -16,7 +16,7 @@ public class ContentFootDetail extends BaseEntity {
 	 */
 	private static final long serialVersionUID = 1L;
 
-	@Column(name = "social_reason", length = 200, nullable = false)
+	@Column(name = "social_reason", length = 600, nullable = false)
 	@JsonAlias(value = "razaoSocial")
 	String razaoSocial;
 	
@@ -24,11 +24,11 @@ public class ContentFootDetail extends BaseEntity {
 	@JsonAlias(value = "cnpj")
 	String cnpj;
 	
-	@Column(name = "comercial_name", length = 200, nullable = false)
+	@Column(name = "comercial_name", length = 600, nullable = false)
 	@JsonAlias(value = "nomeComercial")
 	String nomeComercial;
 	
-	@Column(name = "therapeutic_classes", length = 200, nullable = false)
+	@Column(name = "therapeutic_classes", length = 600, nullable = false)
 	@JsonAlias(value = "classesTerapeuticas")
 	String classesTerapeuticas;
 	

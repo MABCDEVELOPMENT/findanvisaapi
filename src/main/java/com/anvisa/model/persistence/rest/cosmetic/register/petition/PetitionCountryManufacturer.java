@@ -20,7 +20,7 @@ public class PetitionCountryManufacturer extends BaseEntity {
 	@JsonAlias(value = "cnpj")
 	private String cnpj;
 	
-	@Column(name = "social_reason", length = 200, nullable = false)
+	@Column(name = "social_reason", length = 400, nullable = false)
 	@JsonAlias(value = "razaoSocial")
 	private String razaoSocial;
 

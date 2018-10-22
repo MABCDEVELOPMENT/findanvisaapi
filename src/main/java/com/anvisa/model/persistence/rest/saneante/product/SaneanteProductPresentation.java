@@ -33,7 +33,7 @@ public class SaneanteProductPresentation extends BaseEntity {
 	@JsonAlias(value = "codigo")
 	private String codigo;
 	
-	@Column(name = "presentation", length = 200, nullable = false)
+	@Column(name = "presentation", length = 600, nullable = false)
 	@JsonAlias(value = "apresentacao")
 	String apresentacao;
 	

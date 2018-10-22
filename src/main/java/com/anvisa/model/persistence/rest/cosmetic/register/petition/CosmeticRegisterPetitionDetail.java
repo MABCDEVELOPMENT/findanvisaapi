@@ -34,7 +34,7 @@ public class CosmeticRegisterPetitionDetail extends BaseEntity {
 	@JsonAlias(value = "cnpj")
 	String cnpj;
 	
-	@Column(name = "product_name", length = 300, nullable = false)
+	@Column(name = "product_name", length = 600, nullable = false)
 	@JsonAlias(value = "nomeProduto")
 	String nomeProduto;
 	

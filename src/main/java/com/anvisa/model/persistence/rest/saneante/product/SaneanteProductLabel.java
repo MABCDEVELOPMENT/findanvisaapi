@@ -17,7 +17,7 @@ public class SaneanteProductLabel extends BaseEntity implements IStringListGener
 	 */
 	private static final long serialVersionUID = 1L;
 	
-	@Column(name = "value", length = 200)
+	@Column(name = "value", length = 600)
 	@JsonAlias(value = "valor")
 	public String valor;
 

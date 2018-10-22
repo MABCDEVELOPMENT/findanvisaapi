@@ -72,7 +72,7 @@ public class GenericParameter extends BaseEntity {
 	@JsonAlias(value = "state")
 	private String state;
 
-	@Column(name = "emailClient", length = 200, nullable = true, unique = false)
+	@Column(name = "emailClient", length = 600, nullable = true, unique = false)
 	@JsonAlias(value = "emailClient")
 	private String emailClient;
 
@@ -80,15 +80,15 @@ public class GenericParameter extends BaseEntity {
 	@JsonAlias(value = "responsiblePerson")
 	private String responsiblePerson;
 
-	@Column(name = "emailReponsible", length = 200, nullable = true, unique = false)
+	@Column(name = "emailReponsible", length = 600, nullable = true, unique = false)
 	@JsonAlias(value = "emailReponsible")
 	private String emailReponsible;
 
-	@Column(name = "emailDefault", length = 200, nullable = true, unique = false)
+	@Column(name = "emailDefault", length = 600, nullable = true, unique = false)
 	@JsonAlias(value = "emailDefault")
 	private String emailDefault;
 	
-	@Column(name = "emailPermission", length = 200, nullable = true, unique = false)
+	@Column(name = "emailPermission", length = 600, nullable = true, unique = false)
 	@JsonAlias(value = "emailPermission")
 	private String emailPermission;
 

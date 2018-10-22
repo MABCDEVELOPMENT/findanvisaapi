@@ -29,7 +29,7 @@ public class ContentCosmeticRegularized extends BaseEntity {
 	@JsonAlias(value = "processo")
     String processo;
 	
-	@Column(name = "product", length = 300, nullable = false)
+	@Column(name = "product", length = 600, nullable = false)
 	@JsonAlias(value = "product")
     String produto;
 	
@@ -37,7 +37,7 @@ public class ContentCosmeticRegularized extends BaseEntity {
 	@JsonAlias(value = "tipo")
     String tipo; 
 
-	@Column(name = "situation", length = 300)
+	@Column(name = "situation", length = 600)
 	@JsonAlias(value = "situacao")
     String situacao;
 	

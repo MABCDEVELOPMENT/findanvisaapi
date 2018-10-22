@@ -27,15 +27,15 @@ public class ContentCosmeticNotificationDetail extends BaseEntity {
 	private static final long serialVersionUID = 1L;
 	
 	
-	@Column(name = "subject_matter", length = 300, nullable = false)
+	@Column(name = "subject_matter", length = 600, nullable = false)
 	@JsonAlias(value = "assunto")
 	String assunto;
 	
-	@Column(name = "product", length = 300, nullable = false)
+	@Column(name = "product", length = 600, nullable = false)
 	@JsonAlias(value = "produto")
 	String produto;
 	
-	@Column(name = "company", length = 200, nullable = true)
+	@Column(name = "company", length = 600, nullable = true)
 	@JsonAlias(value = "empresa")
 	String empresa;
 	
@@ -48,7 +48,7 @@ public class ContentCosmeticNotificationDetail extends BaseEntity {
 	@JsonAlias(value = "area")
 	String area;
 	
-	@Column(name = "situation", length = 300, nullable = false)
+	@Column(name = "situation", length = 600, nullable = false)
 	@JsonAlias(value = "situacao")
 	String situacao;
 

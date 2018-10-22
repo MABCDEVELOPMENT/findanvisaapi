@@ -55,4 +55,5 @@ public class ProcessSituation extends BaseEntity {
 	public void setRotulo(String rotulo) {
 		this.rotulo = rotulo;
 	}
+	
 }

@@ -23,7 +23,7 @@ public class SaneanteNotificationPresentation extends BaseEntity {
 	private static final long serialVersionUID = 1L;
 
 	
-	@Column(name = "presentation", length = 200, nullable = false)
+	@Column(name = "presentation", length = 600, nullable = false)
 	@JsonAlias(value = "apresentacao")
 	String apresentacao;
 	

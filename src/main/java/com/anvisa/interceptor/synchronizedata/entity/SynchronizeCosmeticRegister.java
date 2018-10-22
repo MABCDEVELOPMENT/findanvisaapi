@@ -69,7 +69,7 @@ public class SynchronizeCosmeticRegister extends SynchronizeData implements IntS
 
 	public SynchronizeCosmeticRegister() {
 
-		URL = "https://consultas.anvisa.gov.br/api/consulta/cosmeticos/registrados?count=1000&page=1&filter[cnpj]=";
+		URL = "https://consultas.anvisa.gov.br/api/consulta/cosmeticos/registrados?count=100&page=1&filter[cnpj]=";
 
 		URL_DETAIL = "https://consultas.anvisa.gov.br/api/consulta/cosmeticos/registrados/";
 
@@ -414,7 +414,7 @@ public class SynchronizeCosmeticRegister extends SynchronizeData implements IntS
 			log.info("SynchronizeData Total Registros " + rootNode.get("totalElements"), dateFormat.format(new Date()));
 
 			int i = 0;
-			while (elementsContents.hasNext() && i <= 10) {
+			while (elementsContents.hasNext() && i <= 30) {
 
 				JsonNode jsonNode = (JsonNode) elementsContents.next();
 

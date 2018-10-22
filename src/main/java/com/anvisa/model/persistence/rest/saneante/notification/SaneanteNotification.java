@@ -22,7 +22,7 @@ public class SaneanteNotification extends BaseEntity {
 	 */
 	private static final long serialVersionUID = 1L;
 
-	@Column(name = "subject_matter", length = 300, nullable = false)
+	@Column(name = "subject_matter", length = 600, nullable = false)
 	@JsonAlias(value = "assunto")
 	String assunto;
 	
@@ -42,7 +42,7 @@ public class SaneanteNotification extends BaseEntity {
 	@JsonAlias(value = "expedienteProcesso")
 	String expedienteProcesso;
 	
-	@Column(name = "product", length = 300, nullable = false)
+	@Column(name = "product", length = 600, nullable = false)
 	@JsonAlias(value = "produto")
 	String produto;
 	
@@ -50,11 +50,11 @@ public class SaneanteNotification extends BaseEntity {
 	@JsonAlias(value = "cnpj")
 	String cnpj;
 
-	@Column(name = "social_reason", length = 300, nullable = false)
+	@Column(name = "social_reason", length = 600, nullable = false)
 	@JsonAlias(value = "razaoSocial")
 	String razaoSocial;
 
-	@Column(name = "situation", length = 300, nullable = false)
+	@Column(name = "situation", length = 600, nullable = false)
 	@JsonAlias(value = "situacao")
 	String situacao;
 
@@ -67,7 +67,7 @@ public class SaneanteNotification extends BaseEntity {
 	@JsonAlias(value = "statusVencimento")
 	String statusVencimento;
 
-	@Column(name = "company", length = 200, nullable = true)
+	@Column(name = "company", length = 600, nullable = true)
 	@JsonAlias(value = "empresa")
 	String empresa;
 	

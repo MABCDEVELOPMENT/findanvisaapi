@@ -26,7 +26,7 @@ public class CosmeticRegisterPresentationDetail extends BaseEntity {
 	 */
 	private static final long serialVersionUID = 1L;
 	
-	@Column(name = "product_name", length = 300)
+	@Column(name = "product_name", length = 600)
 	@JsonAlias(value = "nomeProduto")
 	private String nomeProduto;  
 	
@@ -34,18 +34,18 @@ public class CosmeticRegisterPresentationDetail extends BaseEntity {
 	@JsonAlias(value = "processo")
     private String processo;
 	
-	@Column(name = "presentation", length = 200)
+	@Column(name = "presentation", length = 600)
 	@JsonAlias(value = "apresentacao")
     private String apresentacao;
 	
-	@Column(name = "category", length = 200)
+	@Column(name = "category", length = 600)
 	@JsonAlias(value = "categoria")
     private String categoria;
 	
 	@OneToMany(cascade=CascadeType.ALL)
     private List<PresentationCountryManufacturer> fabricantesNacionais;
     
-	@Column(name = "physical_form", length = 200)
+	@Column(name = "physical_form", length = 600)
 	@JsonAlias(value = "formaFisica")
     private String formaFisica;
 	

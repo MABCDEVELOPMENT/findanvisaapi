@@ -24,19 +24,19 @@ public class CosmeticRegularizedDatailPresentation  extends BaseEntity {
 	@JsonAlias(value = "tipoValidade")
     String tipoValidade;
 	
-	@Column(name = "restrictionUsed", length = 200)
+	@Column(name = "restrictionUsed", length = 600)
 	@JsonAlias(value = "restricaoUso")
     String restricaoUso;
 
-	@Column(name = "careConservation", length = 200)
+	@Column(name = "careConservation", length = 600)
 	@JsonAlias(value = "cuidadoConservacao")	
     String cuidadoConservacao;
 	
-	@Column(name = "primaryPackage", length = 200)
+	@Column(name = "primaryPackage", length = 600)
 	@JsonAlias(value = "embalagemPrimaria")	
     String embalagemPrimaria;
 	
-	@Column(name = "secondaryPackaging", length = 200)
+	@Column(name = "secondaryPackaging", length = 600)
 	@JsonAlias(value = "embalagemPrimaria")	
     String embalagemSecundaria;
 

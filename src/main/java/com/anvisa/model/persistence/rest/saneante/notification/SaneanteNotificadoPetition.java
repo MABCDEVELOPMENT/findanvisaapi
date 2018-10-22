@@ -32,11 +32,11 @@ public class SaneanteNotificadoPetition  extends BaseEntity {
 	@JsonAlias(value = "transacao")
     String transacao;
 	
-	@Column(name = "subject", length = 300)
+	@Column(name = "subject", length = 600)
 	@JsonAlias(value = "assunto")
     String assunto;
 	
-	@Column(name = "situation", length = 300)
+	@Column(name = "situation", length = 600)
 	@JsonAlias(value = "situacao")
     String situacao;
     

@@ -35,7 +35,7 @@ public class ContentCosmeticRegularizedDetail extends BaseEntity {
 	@JsonAlias(value = "processo")
 	String processo;
 	
-	@Column(name = "product", length = 300)
+	@Column(name = "product", length = 600)
 	@JsonAlias(value = "product")
 	String produto;
 	
@@ -43,7 +43,7 @@ public class ContentCosmeticRegularizedDetail extends BaseEntity {
 	@JsonAlias(value = "tipo")
 	String tipo;
 	
-	@Column(name = "situation", length = 300)
+	@Column(name = "situation", length = 600)
 	@JsonAlias(value = "situacao")
 	String situacao;
 	
@@ -58,7 +58,7 @@ public class ContentCosmeticRegularizedDetail extends BaseEntity {
 	@OneToOne(cascade = CascadeType.ALL, optional = true)
 	CosmeticRegularizedDetailHoldingCompany empresaDetentora;
 	
-	@Column(name = "destination", length = 300)
+	@Column(name = "destination", length = 600)
 	@JsonAlias(value = "destinacoes")
 	String destinacoes;
 	

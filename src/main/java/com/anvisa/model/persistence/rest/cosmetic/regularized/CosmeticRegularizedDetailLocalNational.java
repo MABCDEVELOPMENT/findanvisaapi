@@ -20,7 +20,7 @@ public class CosmeticRegularizedDetailLocalNational  extends BaseEntity {
 	@JsonAlias(value = "cnpj")
 	String cnpj;
 
-	@Column(name = "social_reason", length = 300)
+	@Column(name = "social_reason", length = 600)
 	@JsonAlias(value = "razaoSocial")
 	String razaoSocial;
 

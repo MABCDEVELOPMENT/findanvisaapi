@@ -73,36 +73,39 @@ public class SynchronizeDataTask {
 			
 		}
 	
- 		log.info("SynchronizeData => End Foot Total ", dateFormat.format(new Date()));
+ 		log.info("SynchronizeData => End Foot Total ", dateFormat.format(new Date()));*/
  		
 
  		
 		
 	
-		List<RegisterCNPJ> registerCNPJs  = registerCNPJRepository.findAll(1);
+		/*ist<RegisterCNPJ> registerCNPJs  = registerCNPJRepository.findAll(1);
 		
-
+		int total = 0;
 		for (RegisterCNPJ registerCNPJ : registerCNPJs) {
 			
 			log.info("SynchronizeData => Start Cosmetic Register "+registerCNPJ.getCnpj()+" "+registerCNPJ.getFullName(), dateFormat.format(new Date()));
 			
 			ArrayList<BaseEntity> itens = intSynchronize[1].loadData(registerCNPJ.getCnpj());
+			
+			log.info("SynchronizeData => Total "+itens.size(), dateFormat.format(new Date()));
+			
 			if (itens!=null)
 				intSynchronize[1].persist(itens);
-			
-		}*/
+			total = total + itens.size();
+		}
+		
+		log.info("SynchronizeData => End Register Total "+total, dateFormat.format(new Date()));*/
 		
 		
 		
 		
-		
-		
-	/*	log.info("SynchronizeData => End Cosmetic Notification ", dateFormat.format(new Date()));
+		log.info("SynchronizeData => End Cosmetic Notification ", dateFormat.format(new Date()));
 		
 		
 		List<RegisterCNPJ> registerCNPJs = registerCNPJRepository.findAll(1);
 		
-		
+		int total = 0;
 		for (RegisterCNPJ registerCNPJ : registerCNPJs) {
 			
 			log.info("SynchronizeData => Start Cosmetic Notification "+registerCNPJ.getCnpj()+" "+registerCNPJ.getFullName(), dateFormat.format(new Date()));
@@ -112,14 +115,14 @@ public class SynchronizeDataTask {
 			log.info("SynchronizeData => Total "+itens.size(), dateFormat.format(new Date()));
 			
 			intSynchronize[2].persist(itens);
-			
+			total++;
 		}
 		
-		log.info("SynchronizeData => End Cosmetic Notification ", dateFormat.format(new Date()));*/
+		log.info("SynchronizeData => End Cosmetic Notification "+total, dateFormat.format(new Date()));
 		
 		
 		
-/*		List<RegisterCNPJ> registerCNPJs = registerCNPJRepository.findAll(1);
+		registerCNPJs = registerCNPJRepository.findAll(1);
 		
 		for (RegisterCNPJ registerCNPJ : registerCNPJs) {
 			log.info("SynchronizeData => Start Cosmetic Regularized "+registerCNPJ.getCnpj()+" "+registerCNPJ.getFullName(), dateFormat.format(new Date()));
@@ -133,7 +136,7 @@ public class SynchronizeDataTask {
 		
 		log.info("SynchronizeData => End Cosmetic Regularized ", dateFormat.format(new Date()));
 		
-		List<RegisterCNPJ> registerCNPJs = registerCNPJRepository.findAll(2);
+		 registerCNPJs = registerCNPJRepository.findAll(2);
 		
 		for (RegisterCNPJ registerCNPJ : registerCNPJs) {
 			log.info("SynchronizeData => Start Saneante Product "+registerCNPJ.getCnpj()+" "+registerCNPJ.getFullName(), dateFormat.format(new Date()));
@@ -148,9 +151,9 @@ public class SynchronizeDataTask {
 		
 
 		
-		log.info("SynchronizeData => End Saneante Product ", dateFormat.format(new Date()));*/
+		log.info("SynchronizeData => End Saneante Product ", dateFormat.format(new Date()));
 		
-		List<RegisterCNPJ> registerCNPJs = registerCNPJRepository.findAll(2);
+		registerCNPJs = registerCNPJRepository.findAll(2);
 		
 		for (RegisterCNPJ registerCNPJ : registerCNPJs) {
 			log.info("SynchronizeData => Start Saneante Notification "+registerCNPJ.getCnpj()+" "+registerCNPJ.getFullName(), dateFormat.format(new Date()));

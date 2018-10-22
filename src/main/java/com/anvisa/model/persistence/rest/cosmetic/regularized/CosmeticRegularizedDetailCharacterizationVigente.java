@@ -24,19 +24,19 @@ public class CosmeticRegularizedDetailCharacterizationVigente extends BaseEntity
 	@JsonAlias(value = "processo")
     String processo;
 	
-	@Column(name = "grupo", length = 200)
+	@Column(name = "grupo", length = 600)
 	@JsonAlias(value = "grupo")
     String grupo;
 	
-	@Column(name = "product", length = 300)
+	@Column(name = "product", length = 600)
 	@JsonAlias(value = "produto")
     String produto;
 
-	@Column(name = "physicalForm", length = 200)
+	@Column(name = "physicalForm", length = 600)
 	@JsonAlias(value = "formaFisica")
     String formaFisica;
 	
-	@Column(name = "disposableGroup", length = 300)
+	@Column(name = "disposableGroup", length = 600)
 	@JsonAlias(value = "grupoDescartaveis")
     String grupoDescartaveis;
 
