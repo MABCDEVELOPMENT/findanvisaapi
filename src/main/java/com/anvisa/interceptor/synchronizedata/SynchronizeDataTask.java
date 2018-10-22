@@ -3,7 +3,6 @@ package com.anvisa.interceptor.synchronizedata;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -20,9 +19,6 @@ import com.anvisa.interceptor.synchronizedata.entity.SynchronizeFoot;
 import com.anvisa.interceptor.synchronizedata.entity.SynchronizeSaneanteNotification;
 import com.anvisa.model.persistence.BaseEntity;
 import com.anvisa.model.persistence.RegisterCNPJ;
-import com.anvisa.model.persistence.rest.cosmetic.register.ContentCosmeticRegister;
-import com.anvisa.model.persistence.rest.cosmetic.register.ContentCosmeticRegisterDetail;
-import com.anvisa.repository.generic.CosmeticRegisterDetailRepository;
 import com.anvisa.repository.generic.CosmeticRegisterRepository;
 import com.anvisa.repository.generic.RegisterCNPJRepository;
 
@@ -53,11 +49,11 @@ public class SynchronizeDataTask {
 				new SynchonizeSaneanteProduct(),
 				new SynchronizeSaneanteNotification()};
 		
- 		/*List<RegisterCNPJ> registerCNPJs = registerCNPJRepository.findAll(0);
+		List<RegisterCNPJ> registerCNPJs = registerCNPJRepository.findAll(0);
 
  		
  		int cont = 0;
-		
+	/*	
 		for (RegisterCNPJ registerCNPJ : registerCNPJs) {
  			
  			log.info("SynchronizeData => Start Foot "+registerCNPJ.getCnpj()+" "+registerCNPJ.getFullName(), dateFormat.format(new Date()));
@@ -73,13 +69,13 @@ public class SynchronizeDataTask {
 			
 		}
 	
- 		log.info("SynchronizeData => End Foot Total ", dateFormat.format(new Date()));*/
- 		
+ 		log.info("SynchronizeData => End Foot Total ", dateFormat.format(new Date()));
+*/ 		
 
  		
 		
 	
-		/*ist<RegisterCNPJ> registerCNPJs  = registerCNPJRepository.findAll(1);
+		/*registerCNPJs  = registerCNPJRepository.findAll(1);
 		
 		int total = 0;
 		for (RegisterCNPJ registerCNPJ : registerCNPJs) {
@@ -100,10 +96,10 @@ public class SynchronizeDataTask {
 		
 		
 		
-		log.info("SynchronizeData => End Cosmetic Notification ", dateFormat.format(new Date()));
+/*		log.info("SynchronizeData => End Cosmetic Notification ", dateFormat.format(new Date()));
 		
 		
-		List<RegisterCNPJ> registerCNPJs = registerCNPJRepository.findAll(1);
+		registerCNPJs = registerCNPJRepository.findAll(1);
 		
 		int total = 0;
 		for (RegisterCNPJ registerCNPJ : registerCNPJs) {
@@ -131,7 +127,7 @@ public class SynchronizeDataTask {
 			log.info("SynchronizeData => End Cosmetic Regularized Total "+itens.size(), dateFormat.format(new Date()));
 			intSynchronize[3].persist(itens);
 		}
-		
+		*/
 
 		
 		log.info("SynchronizeData => End Cosmetic Regularized ", dateFormat.format(new Date()));
