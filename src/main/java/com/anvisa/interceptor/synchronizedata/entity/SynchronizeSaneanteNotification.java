@@ -100,10 +100,13 @@ public class SynchronizeSaneanteNotification extends SynchronizeData implements 
 				.setDataNotificacao(JsonToObject.getValueDate(jsonNode, "situacao", "data"));
 		
 		ArrayList<String> strRotulos = JsonToObject.getArrayStringValue(jsonNode, "rotulos");
+		
 		ArrayList<SaneanteNotificationLabel> labels = new ArrayList<SaneanteNotificationLabel>();
 		
 		for (String strRotulo : strRotulos) {
-			labels.add(new SaneanteNotificationLabel(strRotulo));
+			SaneanteNotificationLabel saneanteNotificationLabel = new SaneanteNotificationLabel();
+			saneanteNotificationLabel.setValor(strRotulo);
+			labels.add(saneanteNotificationLabel);
 		}
 		
 		saneanteNotificationDetail.setRotulos(labels);
