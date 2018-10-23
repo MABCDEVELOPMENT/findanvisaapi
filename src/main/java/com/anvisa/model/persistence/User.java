@@ -145,4 +145,79 @@ public class User extends BaseEntity  {
 		this.receiveActivation = receiveActivation;
 	}
 
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = super.hashCode();
+		result = prime * result + ((cellPhone == null) ? 0 : cellPhone.hashCode());
+		result = prime * result + ((dateBrith == null) ? 0 : dateBrith.hashCode());
+		result = prime * result + ((email == null) ? 0 : email.hashCode());
+		result = prime * result + ((fullName == null) ? 0 : fullName.hashCode());
+		result = prime * result + ((password == null) ? 0 : password.hashCode());
+		result = prime * result + ((profile == null) ? 0 : profile.hashCode());
+		result = prime * result + (receiveActivation ? 1231 : 1237);
+		result = prime * result + ((registerCNPJs == null) ? 0 : registerCNPJs.hashCode());
+		result = prime * result + ((userName == null) ? 0 : userName.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null) {
+			return false;
+		}
+		if (!(obj instanceof User)) {
+			return false;
+		}
+		User other = (User) obj;
+		if (cellPhone == null) {
+			if (other.cellPhone != null)
+				return false;
+		} else if (!cellPhone.equals(other.cellPhone))
+			return false;
+		if (dateBrith == null) {
+			if (other.dateBrith != null)
+				return false;
+		} else if (!dateBrith.equals(other.dateBrith))
+			return false;
+		if (email == null) {
+			if (other.email != null)
+				return false;
+		} else if (!email.equals(other.email))
+			return false;
+		if (fullName == null) {
+			if (other.fullName != null)
+				return false;
+		} else if (!fullName.equals(other.fullName))
+			return false;
+		if (password == null) {
+			if (other.password != null)
+				return false;
+		} else if (!password.equals(other.password))
+			return false;
+		if (profile == null) {
+			if (other.profile != null)
+				return false;
+		} else if (!profile.equals(other.profile))
+			return false;
+		if (receiveActivation != other.receiveActivation)
+			return false;
+		if (registerCNPJs == null) {
+			if (other.registerCNPJs != null)
+				return false;
+		} else if (!registerCNPJs.equals(other.registerCNPJs))
+			return false;
+		if (userName == null) {
+			if (other.userName != null)
+				return false;
+		} else if (!userName.equals(other.userName))
+			return false;
+		return true;
+	}
+	
+	
+
 }

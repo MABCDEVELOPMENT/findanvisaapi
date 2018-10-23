@@ -110,6 +110,11 @@ public class Process extends BaseEntity {
 	}
 
 	public LocalDate getDataAlteracao() {
+		if(this.dataAlteracao!=null && this.dataRegistro!=null) {
+			if (this.dataAlteracao.isBefore(this.dataRegistro)) {
+				return this.dataRegistro;
+			}
+		}
 		return dataAlteracao;
 	}
 

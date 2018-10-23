@@ -154,7 +154,15 @@ public class SaneanteProduct extends BaseEntity {
 		this.saneanteProductDetail = saneanteProductDetail;
 	}
 	public LocalDate getDataAlteracao() {
+		
+		if(this.dataAlteracao!=null && this.dataRegistro!=null) {
+			if (this.dataAlteracao.isBefore(this.dataRegistro)) {
+				return this.dataRegistro;
+			}
+		}
+		
 		return dataAlteracao;
+		
 	}
 
 	public void setDataAlteracao(LocalDate dataAlteracao) {

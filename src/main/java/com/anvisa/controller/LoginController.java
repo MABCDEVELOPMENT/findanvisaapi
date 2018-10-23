@@ -1,7 +1,6 @@
 package com.anvisa.controller;
 
 import java.util.ArrayList;
-import java.util.GregorianCalendar;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,14 +17,17 @@ import org.springframework.web.bind.annotation.RestController;
 import com.anvisa.controller.exception.LoginException;
 import com.anvisa.controller.exception.bean.ErrorResponse;
 import com.anvisa.controller.util.CustomErrorType;
+import com.anvisa.core.util.EncryptUtils;
 import com.anvisa.interceptor.ScheduledTasks;
 import com.anvisa.model.persistence.RegisterCNPJ;
 import com.anvisa.model.persistence.ScheduledEmail;
 import com.anvisa.model.persistence.User;
 import com.anvisa.model.persistence.UserRegisterCNPJ;
+import com.anvisa.model.persistence.UserToken;
 import com.anvisa.repository.generic.RepositoryScheduledEmail;
 import com.anvisa.repository.generic.UserRegisterCNPJRepository;
 import com.anvisa.repository.generic.UserRepository;
+import com.anvisa.repository.generic.UserTokenRepository;
 import com.anvisa.rest.model.Login;
 
 import io.swagger.annotations.ApiOperation;
@@ -45,12 +47,20 @@ public class LoginController {
 	UserRegisterCNPJRepository userRegisterCNPJRepository;
 
 	@Autowired
-	RepositoryScheduledEmail scheduledEmail;
+	UserTokenRepository userTokenRepository;
+	
+	@Autowired
+	RepositoryScheduledEmail scheduledEmailRepository;
+	
 
 	@Autowired
 	public void setService(UserRepository userRepository,
-			UserRegisterCNPJRepository userRegisterCNPJRepository) {
+			UserTokenRepository userTokenRepository,
+			UserRegisterCNPJRepository userRegisterCNPJRepository,
+			RepositoryScheduledEmail scheduledEmailRepository) {
 		this.userRepository = userRepository;
+		this.userTokenRepository = userTokenRepository;
+		this.scheduledEmailRepository = scheduledEmailRepository;
 		this.userRegisterCNPJRepository = userRegisterCNPJRepository;
 	}
 
@@ -133,6 +143,20 @@ public class LoginController {
 
 	}
 	
+	@ApiOperation(value = "Get token")
+	@RequestMapping(value = "/token/{token}", method = RequestMethod.GET)
+	public ResponseEntity<?> getToken(@PathVariable String token) {
+
+		UserToken userToken = userTokenRepository.findToken(token);
+
+		if (userToken == null) {
+			return new ResponseEntity<CustomErrorType>(new CustomErrorType("Usuário inválido!"), HttpStatus.CONFLICT);
+		} else {
+			return new ResponseEntity<User>(userToken.getUserToken(), HttpStatus.OK);
+		}
+
+	}
+	
 	@ApiOperation(value = "Get e-mail of user")
 	@RequestMapping(value = "/getuser", method = RequestMethod.POST)
 	public ResponseEntity<?> getUser(@RequestBody Login login) {
@@ -153,30 +177,78 @@ public class LoginController {
 	public ResponseEntity<?> forGotPassword(@RequestBody String email) {
 
 		User user = userRepository.findEmail(email);
+	
+			if (user == null) {
+				return new ResponseEntity<CustomErrorType>(new CustomErrorType("User invalido!"), HttpStatus.CONFLICT);
+			} else {
+	
+				UserToken userToken = new UserToken();
+				userToken.setActive(true);
+				userToken.setUserToken(user);
+				
+				String key = "FINDINFO";
+				String token = "";
+						
 
-		if (user == null) {
+					
+					token = ""+System.currentTimeMillis();
+					
+										
+					String hashedPassword = EncryptUtils.encrypt(token, key) ;//passwordEncoder.encode(token);
+					
+					userToken.setToken(hashedPassword.substring(0,hashedPassword.length()-2));
+					
+					userTokenRepository.saveAndFlush(userToken);
+				
+				
+				
+				ScheduledEmail scheduledEmail = new ScheduledEmail();
+	
+				scheduledEmail.setEmail(user.getEmail());
+				scheduledEmail.setName(user.getFullName());
+				scheduledEmail.setInsertUser(user);
+				//scheduledEmail.setInsertDate(new)
+				scheduledEmail.setSubject("Re-definição de senha.");
+				scheduledEmail.setBody("http://findinfo.kinghost.net/findanvisa/#/redefine/"+userToken.getToken());
+	
+				//this.scheduledEmail.saveAndFlush(scheduledEmail);
+				
+				//ScheduledTasks.scheduledEmail();
+				
+				ScheduledTasks.sendEmail(scheduledEmail);
+				
+				return new ResponseEntity<User>(user, HttpStatus.OK);
+			}
+
+
+
+	}
+	
+	@ApiOperation(value = "Change user")
+	@RequestMapping(value = "/changeuser", method = RequestMethod.POST)
+	public ResponseEntity<?> changeUser(@RequestBody Login login) {
+
+		UserToken userToken = userTokenRepository.findToken(login.getToken());
+
+		if (userToken == null) {
 			return new ResponseEntity<CustomErrorType>(new CustomErrorType("User invalido!"), HttpStatus.CONFLICT);
 		} else {
-
-			ScheduledEmail scheduledEmail = new ScheduledEmail();
-
-			scheduledEmail.setEmail(user.getEmail());
-			scheduledEmail.setName(user.getFullName());
-			scheduledEmail.setInsertUser(user);
-			//scheduledEmail.setInsertDate(new);
-			scheduledEmail.setSubject("Re-definição de senha.");
-			scheduledEmail.setBody("http://findinfo.kinghost.net/findanvisa/#/redefine?id=" + user.getId());
-
-			//this.scheduledEmail.saveAndFlush(scheduledEmail);
 			
-			//ScheduledTasks.scheduledEmail();
-			ScheduledTasks.sendEmail(scheduledEmail);
+			User user = userToken.getUserToken();
+			
+			user.setPassword(login.getPassword());
+			
+			userRepository.saveAndFlush(user);
+			
+			userToken.setActive(false);
+			
+			userTokenRepository.saveAndFlush(userToken);
 			
 			return new ResponseEntity<User>(user, HttpStatus.OK);
 		}
-
+		    
 	}
-
+	
 	@ExceptionHandler(LoginException.class)
 	public ResponseEntity<ErrorResponse> exceptionHandler(Exception ex) {
 		ErrorResponse error = new ErrorResponse();
