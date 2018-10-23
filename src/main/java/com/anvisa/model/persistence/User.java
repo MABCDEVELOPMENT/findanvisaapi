@@ -21,8 +21,6 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 @Entity
 @Table(name = "user")
 public class User extends BaseEntity  {
-
-
 	/**
 	 * 
 	 */
