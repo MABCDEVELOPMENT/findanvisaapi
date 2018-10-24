@@ -114,7 +114,7 @@ public class SynchronizeDataTask {
 			total++;
 		}
 		
-		log.info("SynchronizeData => End Cosmetic Notification "+total, dateFormat.format(new Date()));
+		log.info("SynchronizeData => End Cosmetic Notification "+total, dateFormat.format(new Date()));*/
 		
 		
 		
@@ -127,44 +127,44 @@ public class SynchronizeDataTask {
 			log.info("SynchronizeData => End Cosmetic Regularized Total "+itens.size(), dateFormat.format(new Date()));
 			intSynchronize[3].persist(itens);
 		}
-		*/
-
-		
-		log.info("SynchronizeData => End Cosmetic Regularized ", dateFormat.format(new Date()));
-		
-		 registerCNPJs = registerCNPJRepository.findAll(2);
-		
-		for (RegisterCNPJ registerCNPJ : registerCNPJs) {
-			log.info("SynchronizeData => Start Saneante Product "+registerCNPJ.getCnpj()+" "+registerCNPJ.getFullName(), dateFormat.format(new Date()));
-			ArrayList<BaseEntity> itens = intSynchronize[4].loadData(registerCNPJ.getCnpj());
-			
-			 
-			
-			log.info("SynchronizeData => End Saneante Product Total "+itens.size(), dateFormat.format(new Date()));
-			if(itens!=null)
-			intSynchronize[4].persist(itens);
-		}
 		
 
 		
-		log.info("SynchronizeData => End Saneante Product ", dateFormat.format(new Date()));
-		
-		registerCNPJs = registerCNPJRepository.findAll(2);
-		
-		for (RegisterCNPJ registerCNPJ : registerCNPJs) {
-			log.info("SynchronizeData => Start Saneante Notification "+registerCNPJ.getCnpj()+" "+registerCNPJ.getFullName(), dateFormat.format(new Date()));
-			ArrayList<BaseEntity> itens = intSynchronize[5].loadData(registerCNPJ.getCnpj());
-			
-			 
-			
-			log.info("SynchronizeData => End Saneante Notification Total "+itens.size(), dateFormat.format(new Date()));
-			if(itens!=null)
-			intSynchronize[5].persist(itens);
-		}
-		
-
-		
-		log.info("SynchronizeData => End Saneante Product ", dateFormat.format(new Date()));
+//		log.info("SynchronizeData => End Cosmetic Regularized ", dateFormat.format(new Date()));
+//		
+//		 registerCNPJs = registerCNPJRepository.findAll(2);
+//		
+//		for (RegisterCNPJ registerCNPJ : registerCNPJs) {
+//			log.info("SynchronizeData => Start Saneante Product "+registerCNPJ.getCnpj()+" "+registerCNPJ.getFullName(), dateFormat.format(new Date()));
+//			ArrayList<BaseEntity> itens = intSynchronize[4].loadData(registerCNPJ.getCnpj());
+//			
+//			 
+//			
+//			log.info("SynchronizeData => End Saneante Product Total "+itens.size(), dateFormat.format(new Date()));
+//			if(itens!=null)
+//			intSynchronize[4].persist(itens);
+//		}
+//		
+//
+//		
+//		log.info("SynchronizeData => End Saneante Product ", dateFormat.format(new Date()));
+//		
+//		registerCNPJs = registerCNPJRepository.findAll(2);
+//		
+//		for (RegisterCNPJ registerCNPJ : registerCNPJs) {
+//			log.info("SynchronizeData => Start Saneante Notification "+registerCNPJ.getCnpj()+" "+registerCNPJ.getFullName(), dateFormat.format(new Date()));
+//			ArrayList<BaseEntity> itens = intSynchronize[5].loadData(registerCNPJ.getCnpj());
+//			
+//			 
+//			
+//			log.info("SynchronizeData => End Saneante Notification Total "+itens.size(), dateFormat.format(new Date()));
+//			if(itens!=null)
+//			intSynchronize[5].persist(itens);
+//		}
+//		
+//
+//		
+//		log.info("SynchronizeData => End Saneante Product ", dateFormat.format(new Date()));
 	
 	}
 	

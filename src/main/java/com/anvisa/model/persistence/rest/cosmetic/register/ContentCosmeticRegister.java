@@ -1,6 +1,7 @@
 package com.anvisa.model.persistence.rest.cosmetic.register;
 
 import java.time.LocalDate;
+import java.util.List;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -9,6 +10,8 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 import com.anvisa.model.persistence.BaseEntity;
+import com.anvisa.model.persistence.rest.cosmetic.register.petition.CosmeticRegisterPetition;
+import com.anvisa.model.persistence.rest.saneante.notification.SaneanteNotificadoPetition;
 import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
@@ -161,10 +164,22 @@ public class ContentCosmeticRegister extends BaseEntity {
 		this.empresa = empresa;
 	}
 	public LocalDate getDataAlteracao() {
-		if(this.dataAlteracao!=null && this.dataRegistro!=null) {
+		LocalDate localDate = null;
+		List<CosmeticRegisterPetition> petitions =  this.getContentCosmeticRegisterDetail().getPeticoes();
+		for (CosmeticRegisterPetition cosmeticRegisterPetition : petitions) {
+			if(cosmeticRegisterPetition.getPublicacao()!=null) {
+			   localDate = cosmeticRegisterPetition.getPublicacao();
+			}
+		}
+		
+		if(localDate==null && (this.dataAlteracao!=null && this.dataRegistro!=null)) {
 			if (this.dataAlteracao.isBefore(this.dataRegistro)) {
 				return this.dataRegistro;
 			}
+		} else {
+			if (localDate!=null) {
+			   dataAlteracao = localDate;
+			}   
 		}
 		return dataAlteracao;
 	}

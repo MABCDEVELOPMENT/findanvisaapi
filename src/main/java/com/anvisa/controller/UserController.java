@@ -74,18 +74,29 @@ public class UserController {
 	public ResponseEntity<?> saveUser(@RequestBody User user) {
 		
 		boolean isSchedule = (user.getId() == null);
+		
+		boolean isActivation = false;
+				
 		user.setFullName(user.getFullName().toUpperCase());
 		user.setUserName(user.getUserName().toUpperCase());
 		String emailUserSend;
 		
 		User userFind = userRepository.findEmail(user.getEmail());
 		
+		
+				
 		if ((userFind!=null) && (user.getId() == null)) {
 			return new ResponseEntity<CustomErrorType>(new CustomErrorType("Usuário já cadastrado."), HttpStatus.BAD_REQUEST);
+		} 
+		
+		if (isSchedule==false && userFind!=null && userFind.isActive()==false && user.isActive()==true) {
+			
+			isActivation = true;
 		}
 		
-		if (isSchedule && (user.getProfile() == null || user.getProfile().intValue() == 2)) {
-			emailUserSend = this.getUserSendAtivacion()+";fredalessandro@gmail.com";
+		if  (isSchedule && (user.getProfile() != null && user.getProfile().intValue() == 1)) {
+			isActivation = true;
+			emailUserSend = user.getUserName();
 		} else {
 			emailUserSend = user.getUserName();
 		}
@@ -95,7 +106,7 @@ public class UserController {
 		}
 		user = userRepository.saveAndFlush(user);
 
-		if (isSchedule) {
+		if (isSchedule && (user.getProfile() == null || user.getProfile().intValue() == 2)) {
 
 
 			StringBuffer sb = new StringBuffer();
@@ -133,6 +144,10 @@ public class UserController {
 			
 			ScheduledTasks.scheduledEmail();
 
+		} else if(isActivation) {
+			
+			LoginController.sendToken(user,"Definir senha.");
+			
 		}
 
 		return new ResponseEntity<User>(user, HttpStatus.OK);

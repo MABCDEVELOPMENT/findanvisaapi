@@ -19,6 +19,7 @@ import javax.persistence.TemporalType;
 import javax.persistence.Version;
 
 import org.hibernate.annotations.ColumnDefault;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -44,7 +45,8 @@ public abstract class BaseEntity implements Serializable {
 	
 
 	@Column(name = "insert_date",  insertable = true, updatable = false)
-	@JsonFormat(pattern = "dd/MM/yyyy")
+	@DateTimeFormat(iso = DateTimeFormat.ISO.TIME)
+	@JsonFormat(pattern = "dd/MM/yyyy HH:mm:ss")
 	private LocalDateTime insertDate;
 
 	@ManyToOne
@@ -52,7 +54,8 @@ public abstract class BaseEntity implements Serializable {
 	private User updateUser;
 	
 	@Column(name = "update_date", insertable = false, updatable = true)
-	@JsonFormat(pattern = "dd/MM/yyyy")
+	@DateTimeFormat(iso = DateTimeFormat.ISO.TIME)
+	@JsonFormat(pattern = "dd/MM/yyyy HH:mm:ss")
 	private LocalDateTime updateDate;
 
 	@ManyToOne	

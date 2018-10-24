@@ -47,7 +47,7 @@ public class LoginController {
 	UserRegisterCNPJRepository userRegisterCNPJRepository;
 
 	@Autowired
-	UserTokenRepository userTokenRepository;
+	static UserTokenRepository userTokenRepository;
 	
 	@Autowired
 	RepositoryScheduledEmail scheduledEmailRepository;
@@ -71,7 +71,7 @@ public class LoginController {
 
 		String pass = login.getPassword();
 
-		User user = userRepository.findEmail(login.getEmail());
+		User user = userRepository.findEmailIsActive(login.getEmail());
 
 		if (user == null) {
 
@@ -161,7 +161,7 @@ public class LoginController {
 	@RequestMapping(value = "/getuser", method = RequestMethod.POST)
 	public ResponseEntity<?> getUser(@RequestBody Login login) {
 
-		User user = userRepository.findEmail(login.getEmail());
+		User user = userRepository.findEmailIsActive(login.getEmail());
 
 		if (user == null) {
 
@@ -176,52 +176,60 @@ public class LoginController {
 	@RequestMapping(value = "/forgotpassword", method = RequestMethod.POST)
 	public ResponseEntity<?> forGotPassword(@RequestBody String email) {
 
-		User user = userRepository.findEmail(email);
+		User user = userRepository.findEmailIsActive(email);
 	
 			if (user == null) {
 				return new ResponseEntity<CustomErrorType>(new CustomErrorType("User invalido!"), HttpStatus.CONFLICT);
 			} else {
 	
-				UserToken userToken = new UserToken();
-				userToken.setActive(true);
-				userToken.setUserToken(user);
-				
-				String key = "FINDINFO";
-				String token = "";
-						
-
-					
-					token = ""+System.currentTimeMillis();
-					
-										
-					String hashedPassword = EncryptUtils.encrypt(token, key) ;//passwordEncoder.encode(token);
-					
-					userToken.setToken(hashedPassword.substring(0,hashedPassword.length()-2));
-					
-					userTokenRepository.saveAndFlush(userToken);
-				
-				
-				
-				ScheduledEmail scheduledEmail = new ScheduledEmail();
-	
-				scheduledEmail.setEmail(user.getEmail());
-				scheduledEmail.setName(user.getFullName());
-				scheduledEmail.setInsertUser(user);
-				//scheduledEmail.setInsertDate(new)
-				scheduledEmail.setSubject("Re-definição de senha.");
-				scheduledEmail.setBody("http://findinfo.kinghost.net/findanvisa/#/redefine/"+userToken.getToken());
-	
-				//this.scheduledEmail.saveAndFlush(scheduledEmail);
-				
-				//ScheduledTasks.scheduledEmail();
-				
-				ScheduledTasks.sendEmail(scheduledEmail);
+				sendToken(user,"Re-definição de senha.");
 				
 				return new ResponseEntity<User>(user, HttpStatus.OK);
 			}
 
 
 
+	}
+	
+	public static void sendToken(User user,String subject) {
+		
+		UserToken userToken = new UserToken();
+		userToken.setActive(true);
+		userToken.setUserToken(user);
+		
+		String key = "FINDINFO";
+		String token = "";
+				
+
+			
+			token = ""+System.currentTimeMillis();
+			
+								
+			String hashedPassword = EncryptUtils.encrypt(token, key) ;//passwordEncoder.encode(token);
+			
+			userToken.setToken(hashedPassword.substring(0,hashedPassword.length()-2));
+			
+			userTokenRepository.saveAndFlush(userToken);
+		
+		
+		
+		ScheduledEmail scheduledEmail = new ScheduledEmail();
+
+		scheduledEmail.setEmail(user.getEmail());
+		scheduledEmail.setName(user.getFullName());
+		scheduledEmail.setInsertUser(user);
+		//scheduledEmail.setInsertDate(new)
+		scheduledEmail.setSubject(subject);
+		//scheduledEmail.setBody("http://localhost:21094/#/redefine/"+userToken.getToken());
+		
+		scheduledEmail.setBody("http://findinfo.kinghost.net/findanvisa/#/redefine/"+userToken.getToken());
+
+		//this.scheduledEmail.saveAndFlush(scheduledEmail);
+		
+		//ScheduledTasks.scheduledEmail();
+		
+		ScheduledTasks.sendEmail(scheduledEmail);
+		
 	}
 	
 	@ApiOperation(value = "Change user")

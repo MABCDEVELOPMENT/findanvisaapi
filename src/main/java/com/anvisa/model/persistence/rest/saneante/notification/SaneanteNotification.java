@@ -1,6 +1,8 @@
 package com.anvisa.model.persistence.rest.saneante.notification;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -187,10 +189,22 @@ public class SaneanteNotification extends BaseEntity {
 	}
 
 	public LocalDate getDataAlteracao() {
-		if(this.dataAlteracao!=null && this.dataRegistro!=null) {
+		LocalDate localDate = null;
+		List<SaneanteNotificadoPetition> petitions =  this.getSaneanteNotificationDetail().getPeticoes();
+		for (SaneanteNotificadoPetition saneanteNotificadoPetition : petitions) {
+			if (saneanteNotificadoPetition.getPublicacao()!=null) {
+			   localDate = saneanteNotificadoPetition.getPublicacao();
+			}
+		}
+		
+		if(localDate==null && (this.dataAlteracao!=null && this.dataRegistro!=null)) {
 			if (this.dataAlteracao.isBefore(this.dataRegistro)) {
 				return this.dataRegistro;
 			}
+		} else {
+			if (localDate!=null) {
+			   dataAlteracao = localDate;
+			}   
 		}
 		return dataAlteracao;
 	}
