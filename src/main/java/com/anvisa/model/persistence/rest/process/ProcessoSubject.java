@@ -20,7 +20,7 @@ public class ProcessoSubject extends BaseEntity {
 	@JsonAlias(value = "codigo")
 	String codigo;
 	
-	@Column(name = "description")
+	@Column(name = "description", length = 600)
 	@JsonAlias(value = "descricao")
     String descricao;
      

@@ -1,6 +1,7 @@
 package com.anvisa.controller.find;
 
 import com.anvisa.rest.QueryRecordParameter;
+import com.anvisa.rest.QueryRecordProcessParameter;
 import com.anvisa.rest.RootObject;
 
 public class FindData {
@@ -38,6 +39,13 @@ public class FindData {
 		}
 
 		
+		return rootObject;
+	}
+	
+	public static RootObject findProcess(QueryRecordProcessParameter queryRecordParameter) {
+	
+		RootObject rootObject = new RootObject();
+		rootObject.getContent().addAll(FindDataProcess.find(queryRecordParameter));
 		return rootObject;
 	}
 

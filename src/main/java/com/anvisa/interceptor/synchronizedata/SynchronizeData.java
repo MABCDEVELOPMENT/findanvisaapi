@@ -65,7 +65,7 @@ public class SynchronizeData {
 			Iterator<JsonNode> elementsContents = rootNode.path("content").iterator();
 			log.info("SynchronizeData Total Registros "+rootNode.get("totalElements"), dateFormat.format(new Date()));
 			int i = 0;
-			while (elementsContents.hasNext() && i<=200) {
+			while (elementsContents.hasNext()) {
 
 				JsonNode jsonNode = (JsonNode) elementsContents.next();
 				
