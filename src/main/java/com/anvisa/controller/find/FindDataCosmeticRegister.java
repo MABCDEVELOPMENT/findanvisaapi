@@ -12,8 +12,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Component;
 
+import com.anvisa.interceptor.synchronizedata.entity.SynchronizeProcess;
+import com.anvisa.model.persistence.BaseEntity;
 import com.anvisa.model.persistence.rest.cosmetic.register.ContentCosmeticRegister;
+import com.anvisa.model.persistence.rest.foot.ContentFoot;
+import com.anvisa.model.persistence.rest.process.Process;
 import com.anvisa.repository.generic.CosmeticRegisterRepository;
+import com.anvisa.repository.generic.ProcessRepository;
 import com.anvisa.rest.QueryRecordParameter;
 
 @Component
@@ -21,13 +26,51 @@ public class FindDataCosmeticRegister {
 	
 	@Autowired
 	private static CosmeticRegisterRepository cosmeticRegisterRepository;
+	@Autowired
+	private static ProcessRepository processRepository;
 	
 	@Autowired
-	public void setService(CosmeticRegisterRepository cosmeticRegisterRepository) {
+	public void setService(CosmeticRegisterRepository cosmeticRegisterRepository,
+			ProcessRepository processRepository) {
 		this.cosmeticRegisterRepository = cosmeticRegisterRepository;
+		this.processRepository = processRepository;
+	}
+public static List<ContentCosmeticRegister> find(QueryRecordParameter queryRecordParameter){
+		
+		List<ContentCosmeticRegister> contentCosmeticRegistersReturn = new ArrayList<ContentCosmeticRegister>();
+	
+		List<ContentCosmeticRegister> contentCosmeticRegisters = filter(queryRecordParameter);
+		
+		SynchronizeProcess synchronizeProcess = new SynchronizeProcess();
+		
+		for (ContentCosmeticRegister contentCosmeticRegister : contentCosmeticRegisters) {
+			
+			Process process = processRepository.findByProcessCnpj(contentCosmeticRegister.getProcesso(), contentCosmeticRegister.getCnpj());
+			if (process==null) {
+				ArrayList<BaseEntity> processos =  synchronizeProcess.loadData(contentCosmeticRegister.getCnpj()+"&filter[processo]="+contentCosmeticRegister.getProcesso());
+				
+				if(processos.size()>0) {
+				   synchronizeProcess.persist(processos);
+				   Process newProcess = (Process) processos.get(0);
+				   contentCosmeticRegister.setProcess(newProcess);
+				   contentCosmeticRegister.lodaProcess(newProcess);
+				   break;
+				}
+				
+			} else {
+				   
+				contentCosmeticRegister.setProcess(process);
+				contentCosmeticRegister.lodaProcess(process);
+			}
+			contentCosmeticRegistersReturn.add(contentCosmeticRegister);
+		}
+		
+		return contentCosmeticRegistersReturn;
+		
 	}
 	
-	public static List<ContentCosmeticRegister> find(QueryRecordParameter queryRecordParameter){
+
+	public static List<ContentCosmeticRegister> filter(QueryRecordParameter queryRecordParameter){
         
 		return cosmeticRegisterRepository.findAll(new Specification<ContentCosmeticRegister>() {
             /**

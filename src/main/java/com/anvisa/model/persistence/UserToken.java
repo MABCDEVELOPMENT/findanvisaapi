@@ -1,10 +1,13 @@
 package com.anvisa.model.persistence;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+
+import org.hibernate.annotations.Cascade;
 
 import com.fasterxml.jackson.annotation.JsonAlias;
 
@@ -18,10 +21,9 @@ public class UserToken extends BaseEntity  {
 	private static final long serialVersionUID = 1L;
 	
 	@OneToOne
-	@JoinColumn(name="UserTokenFK")
 	private User userToken;
 	
-	@Column(name = "token", length = 200, nullable = false)
+	@Column(name = "token", length = 300, nullable = false)
 	@JsonAlias(value = "token")
 	private String token;
 	

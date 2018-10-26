@@ -12,11 +12,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Component;
 
+import com.anvisa.interceptor.synchronizedata.entity.SynchronizeProcess;
+import com.anvisa.model.persistence.BaseEntity;
 import com.anvisa.model.persistence.rest.foot.ContentFoot;
+import com.anvisa.model.persistence.rest.process.Process;
 import com.anvisa.repository.generic.FootRepository;
-import com.anvisa.repository.generic.RegisterCNPJRepository;
+import com.anvisa.repository.generic.ProcessRepository;
 import com.anvisa.rest.QueryRecordParameter;
-import com.anvisa.rest.RootObject;
 
 @Component
 public class FindDataFoot {
@@ -25,11 +27,50 @@ public class FindDataFoot {
 	private static FootRepository footRepository;
 	
 	@Autowired
-	public void setService(FootRepository footRepository) {
+	private static ProcessRepository processRepository;
+	
+	@Autowired
+	public void setService(FootRepository footRepository,
+						   ProcessRepository processRepository) {
 		this.footRepository = footRepository;
+		this.processRepository = processRepository;
 	}
 	
 	public static List<ContentFoot> find(QueryRecordParameter queryRecordParameter){
+		
+		List<ContentFoot> contentFootsReturn = new ArrayList<ContentFoot>();
+	
+		List<ContentFoot> contentFoots = filter(queryRecordParameter);
+		
+		SynchronizeProcess synchronizeProcess = new SynchronizeProcess();
+		
+		for (ContentFoot contentFoot : contentFoots) {
+			
+			Process process = processRepository.findByProcessCnpj(contentFoot.getProcesso(), contentFoot.getCnpj());
+			if (process==null) {
+				ArrayList<BaseEntity> processos =  synchronizeProcess.loadData(contentFoot.getCnpj()+"&filter[processo]="+contentFoot.getProcesso());
+				
+				if(processos.size()>0) {
+				   synchronizeProcess.persist(processos);
+				   Process newProcess = (Process) processos.get(0);
+				   contentFoot.setProcess(newProcess);
+				   contentFoot.lodaProcess(newProcess);
+				   break;
+				}
+				
+			} else {
+				   
+				contentFoot.setProcess(process);
+				contentFoot.lodaProcess(process);
+			}
+			contentFootsReturn.add(contentFoot);
+		}
+		
+		return contentFootsReturn;
+		
+	}
+	
+	private static List<ContentFoot> filter(QueryRecordParameter queryRecordParameter){
         
 		return footRepository.findAll(new Specification<ContentFoot>() {
             /**
@@ -67,6 +108,8 @@ public class FindDataFoot {
             }
         });
     }
+	
+	
 	
 
 }

@@ -1,17 +1,22 @@
 package com.anvisa.model.persistence.rest.foot;
 
 import java.time.LocalDate;
+import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import com.anvisa.model.persistence.BaseEntity;
 import com.anvisa.model.persistence.rest.Content;
 import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.anvisa.model.persistence.rest.process.Process;
+import com.anvisa.model.persistence.rest.process.ProcessDetail;
+import com.anvisa.model.persistence.rest.process.ProcessPetition;
 
 @Entity
 @Table(name = "foot")
@@ -81,6 +86,10 @@ public class ContentFoot extends BaseEntity {
 	@ManyToOne
 	@JoinColumn(name="contentFootDetailFK")
 	ContentFootDetail contentFootDetail;
+	
+	@Transient
+	Process process;
+	
 	
 	public ContentFoot() {
 		// TODO Auto-generated constructor stub
@@ -189,11 +198,6 @@ public class ContentFoot extends BaseEntity {
 	}
 
 	public LocalDate getDataAlteracao() {
-		if(this.dataAlteracao!=null && this.dataRegistro!=null) {
-			if (this.dataAlteracao.isBefore(this.dataRegistro)) {
-				return this.dataRegistro;
-			}
-		}
 		return dataAlteracao;
 	}
 
@@ -222,6 +226,14 @@ public class ContentFoot extends BaseEntity {
 
 	public void setContentFootDetail(ContentFootDetail contentFootDetail) {
 		this.contentFootDetail = contentFootDetail;
+	}
+
+	public Process getProcess() {
+		return process;
+	}
+
+	public void setProcess(Process process) {
+		this.process = process;
 	}
 
 	@Override
@@ -343,7 +355,37 @@ public class ContentFoot extends BaseEntity {
 		return true;
 	}
 
-
+	public void lodaProcess(Process process) {
+		
+		this.setDataAlteracao(null);
+		
+		ProcessDetail detail = process.getProcessDetail();
+		
+		List<ProcessPetition> peticoes = detail.getPeticoes();
+		
+		for (ProcessPetition processPetition : peticoes) {
+			
+			if (processPetition.getDataPublicacao()!=null) {
+				this.setDataAlteracao(processPetition.getDataPublicacao());
+			}
+			
+		}
+		
+		this.setQtdRegistro(peticoes.size());
+		try {
+			
+			if (this.getDataAlteracao()==null) {
+				
+				this.setDataAlteracao(detail.getProcesso().getPeticao().getDataPublicacao());
+				
+			}
+			
+		    this.setDataRegistro(detail.getProcesso().getPeticao().getDataEntrada());
+		} catch (Exception e) {
+			// TODO: handle exception
+			System.out.println(" FOOT CNPJ "+this.getCnpj()+" Processo "+this.getProcesso()+" ERRO DE DATAS");
+		}
+	}
 
 }
 

@@ -12,8 +12,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Component;
 
+import com.anvisa.interceptor.synchronizedata.entity.SynchronizeProcess;
+import com.anvisa.model.persistence.BaseEntity;
+import com.anvisa.model.persistence.rest.foot.ContentFoot;
 import com.anvisa.model.persistence.rest.process.Process;
 import com.anvisa.repository.generic.ProcessRepository;
+import com.anvisa.rest.QueryRecordParameter;
 import com.anvisa.rest.QueryRecordProcessParameter;
 
 @Component
@@ -28,6 +32,22 @@ public class FindDataProcess {
 	}
 	
 	public static List<Process> find(QueryRecordProcessParameter queryRecordParameter){
+		
+		List<Process> contentProcessReturn = new ArrayList<Process>();
+	
+		List<Process> contentProcessos = filter(queryRecordParameter);
+		
+		for (Process process : contentProcessos) {
+			process.lodaDateProcess();
+			contentProcessReturn.add(process);
+		}
+		
+		
+		return contentProcessReturn;
+		
+	}
+	
+	public static List<Process> filter(QueryRecordProcessParameter queryRecordParameter){
         
 		return processRepository.findAll(new Specification<Process>() {
             /**

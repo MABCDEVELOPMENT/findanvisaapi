@@ -1,6 +1,7 @@
 package com.anvisa.model.persistence.rest.process;
 
 import java.time.LocalDate;
+import java.util.List;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -209,7 +210,37 @@ public class Process extends BaseEntity {
 	}
 
 	
-	
+	public void lodaDateProcess() {
+		
+		this.setDataAlteracao(null);
+		
+		ProcessDetail detail = this.getProcessDetail();
+		
+		List<ProcessPetition> peticoes = detail.getPeticoes();
+		
+		for (ProcessPetition processPetition : peticoes) {
+			
+			if (processPetition.getDataPublicacao()!=null) {
+				this.setDataAlteracao(processPetition.getDataPublicacao());
+			}
+			
+		}
+		
+		this.setQtdRegistro(peticoes.size());
+		try {
+			
+			if (this.getDataAlteracao()==null) {
+				
+				this.setDataAlteracao(detail.getProcesso().getPeticao().getDataPublicacao());
+				
+			}
+			
+		    this.setDataRegistro(detail.getProcesso().getPeticao().getDataEntrada());
+		} catch (Exception e) {
+			// TODO: handle exception
+			System.out.println(" lodaDateProcess() Process CNPJ "+this.getCnpj()+" Processo "+this.getProcesso()+" ERRO DE DATAS");
+		}
+	}
 	
 	
 	

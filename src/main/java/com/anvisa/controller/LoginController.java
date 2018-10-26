@@ -220,9 +220,9 @@ public class LoginController {
 		scheduledEmail.setInsertUser(user);
 		//scheduledEmail.setInsertDate(new)
 		scheduledEmail.setSubject(subject);
-		//scheduledEmail.setBody("http://localhost:21094/#/redefine/"+userToken.getToken());
+		scheduledEmail.setBody("http://localhost:21094/#/redefine/"+userToken.getToken());
 		
-		scheduledEmail.setBody("http://findinfo.kinghost.net/findanvisa/#/redefine/"+userToken.getToken());
+		//scheduledEmail.setBody("http://findinfo.kinghost.net/findanvisa/#/redefine/"+userToken.getToken());
 
 		//this.scheduledEmail.saveAndFlush(scheduledEmail);
 		

@@ -2,26 +2,18 @@ package com.anvisa.model.persistence;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
-import java.util.Date;
 
-import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.MappedSuperclass;
 import javax.persistence.PrePersist;
 import javax.persistence.PreUpdate;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
-import javax.persistence.Version;
 
-import org.hibernate.annotations.ColumnDefault;
 import org.springframework.format.annotation.DateTimeFormat;
 
-import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 @MappedSuperclass
@@ -40,7 +32,6 @@ public abstract class BaseEntity implements Serializable {
 
 	
 	@ManyToOne
-	@JoinColumn(name="InsertUserFK")
 	private User insertUser;
 	
 
@@ -50,7 +41,6 @@ public abstract class BaseEntity implements Serializable {
 	private LocalDateTime insertDate;
 
 	@ManyToOne
-	@JoinColumn(name="UpdateUserFK")
 	private User updateUser;
 	
 	@Column(name = "update_date", insertable = false, updatable = true)
@@ -58,8 +48,7 @@ public abstract class BaseEntity implements Serializable {
 	@JsonFormat(pattern = "dd/MM/yyyy HH:mm:ss")
 	private LocalDateTime updateDate;
 
-	@ManyToOne	
-	@JoinColumn(name="OwnerUserFK")
+	@ManyToOne
 	private User ownerUser;
 
 	public Long getId() {

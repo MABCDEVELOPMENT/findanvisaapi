@@ -1,10 +1,13 @@
 package com.anvisa.controller;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.repository.CrudRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -20,10 +23,12 @@ import com.anvisa.model.persistence.RegisterCNPJ;
 import com.anvisa.model.persistence.ScheduledEmail;
 import com.anvisa.model.persistence.User;
 import com.anvisa.model.persistence.UserRegisterCNPJ;
+import com.anvisa.model.persistence.UserToken;
 import com.anvisa.repository.generic.RegisterCNPJRepository;
 import com.anvisa.repository.generic.RepositoryScheduledEmail;
 import com.anvisa.repository.generic.UserRegisterCNPJRepository;
 import com.anvisa.repository.generic.UserRepository;
+import com.anvisa.repository.generic.UserTokenRepository;
 
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
@@ -41,7 +46,10 @@ public class UserController {
 	UserRepository userRepository;
 
 	@Autowired
-	RepositoryScheduledEmail scheduledEmail;
+	RepositoryScheduledEmail repositoryScheduledEmail;
+	
+	@Autowired
+	UserTokenRepository userTokenRepository;
 
 	@Autowired
 	UserRegisterCNPJRepository userRegisterCNPJRepository;
@@ -50,11 +58,16 @@ public class UserController {
 	RegisterCNPJRepository registerCNPJRepository; 
 	
 	@Autowired
-	public void setService(UserRepository userRepository, UserRegisterCNPJRepository userRegisterCNPJRepository, RepositoryScheduledEmail scheduledEmail, RegisterCNPJRepository registerCNPJRepository) {
+	public void setService(UserRepository userRepository, 
+			UserRegisterCNPJRepository userRegisterCNPJRepository, 
+			RepositoryScheduledEmail repositoryScheduledEmail, 
+			RegisterCNPJRepository registerCNPJRepository,
+			UserTokenRepository userTokenRepository) {
 		this.userRepository = userRepository;
 		this.userRegisterCNPJRepository = userRegisterCNPJRepository;
-		this.scheduledEmail = scheduledEmail;
+		this.repositoryScheduledEmail = repositoryScheduledEmail;
 		this.registerCNPJRepository = registerCNPJRepository;
+		this.userTokenRepository = userTokenRepository;
 	}
 
 	@ApiOperation(value = "View a list of available user", response = Iterable.class)
@@ -137,7 +150,7 @@ public class UserController {
 				email.setEmail(usermail.getEmail());
 				email.setBody(sb.toString());
 				
-				this.scheduledEmail.saveAndFlush(email);
+				this.repositoryScheduledEmail.saveAndFlush(email);
 
 			}
 			
@@ -163,8 +176,23 @@ public class UserController {
 	@ApiOperation(value = "Delete a user")
 	@RequestMapping(value = "/delete/{id}", method = RequestMethod.DELETE)
 	public ResponseEntity<String> delete(@PathVariable Long id) {
+
+		User user = userRepository.findId(id);
+		
+		Collection<ScheduledEmail>  repositoryScheduledEmail =   this.repositoryScheduledEmail.findUses(user);
+		for (ScheduledEmail scheduledEmail : repositoryScheduledEmail) {
+			this.repositoryScheduledEmail.delete(scheduledEmail);
+		}
+		
+		Collection<UserToken>  userTokens =   this.userTokenRepository.findUses(user);
+		for (UserToken userToken : userTokens) {
+			this.userTokenRepository.delete(userToken);
+		}
+				
 		userRepository.deleteById(id);
+		
 		return new ResponseEntity<String>("User deleted successfully", HttpStatus.OK);
+		
 	}
 
 	@ApiOperation(value = "Delete a cnpj from user")

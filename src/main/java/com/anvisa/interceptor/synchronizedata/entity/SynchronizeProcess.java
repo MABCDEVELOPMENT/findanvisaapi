@@ -6,6 +6,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
 
+import org.hibernate.Session;
+import org.hibernate.Transaction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -84,8 +86,8 @@ public class SynchronizeProcess extends SynchronizeData implements IntSynchroniz
 	}
 	
 	@Override
-	public ArrayList<BaseEntity> loadData(String cnpj) {
-		return super.loadData(this, cnpj);
+	public ArrayList<BaseEntity> loadData(String concat) {
+		return super.loadData(this, concat);
 	}
 
 	@Override
@@ -96,6 +98,7 @@ public class SynchronizeProcess extends SynchronizeData implements IntSynchroniz
 	@Override
 	public void persist(ArrayList<BaseEntity> itens) {
 		int cont = 0;
+
 		for (Iterator<BaseEntity> iterator = itens.iterator(); iterator.hasNext();) {
 
 			Process baseEntity = (Process) iterator.next();
@@ -170,7 +173,7 @@ public class SynchronizeProcess extends SynchronizeData implements IntSynchroniz
 
 					baseEntity.setId(localProcess.getId());
 					try {
-						processRepository.saveAndFlush(baseEntity);	
+						processRepository.save(baseEntity);	
 						log.info("SynchronizeData => Update Process cnpj "+baseEntity.getCnpj()+"  process "+baseEntity.getProcesso(), dateFormat.format(new Date()));
 					} catch (Exception e) {
 						// TODO: handle exception
@@ -183,7 +186,7 @@ public class SynchronizeProcess extends SynchronizeData implements IntSynchroniz
 			} else {
 				baseEntity.setProcessDetail(processDetail);
 				try {
-					processRepository.saveAndFlush(baseEntity);	
+					processRepository.save(baseEntity);	
 					log.info("SynchronizeData => Insert Process cnpj "+baseEntity.getCnpj()+"  process "+baseEntity.getProcesso(), dateFormat.format(new Date()));
 				} catch (Exception e) {
 					log.info("SynchronizeData => Insert Process cnpj "+baseEntity.getCnpj()+"  process "+baseEntity.getProcesso(), dateFormat.format(new Date()));
