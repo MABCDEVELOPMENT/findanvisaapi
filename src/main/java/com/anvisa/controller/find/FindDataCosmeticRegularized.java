@@ -16,6 +16,7 @@ import com.anvisa.interceptor.synchronizedata.entity.SynchronizeProcess;
 import com.anvisa.model.persistence.BaseEntity;
 import com.anvisa.model.persistence.rest.cosmetic.regularized.ContentCosmeticRegularized;
 import com.anvisa.model.persistence.rest.process.Process;
+import com.anvisa.model.persistence.rest.process.ProcessDetail;
 import com.anvisa.repository.generic.CosmeticRegularizedRepository;
 import com.anvisa.repository.generic.ProcessRepository;
 import com.anvisa.rest.QueryRecordParameter;
@@ -47,18 +48,20 @@ public class FindDataCosmeticRegularized {
 		for (ContentCosmeticRegularized contentCosmeticRegularized : contentCosmeticRegularizeds) {
 
 			Process process = processRepository.findByProcessCnpj(contentCosmeticRegularized.getProcesso(),
-					contentCosmeticRegularized.getContentCosmeticRegularizedDetail().getCnpj());
+					queryRecordParameter.getCnpj());
 			if (process == null) {
-				ArrayList<BaseEntity> processos = synchronizeProcess.loadData(contentCosmeticRegularized.getContentCosmeticRegularizedDetail().getCnpj()
-						+ "&filter[processo]=" + contentCosmeticRegularized.getProcesso());
-
-				if (processos.size() > 0) {
-					synchronizeProcess.persist(processos);
-					Process newProcess = (Process) processos.get(0);
-					contentCosmeticRegularized.setProcess(newProcess);
-					contentCosmeticRegularized.lodaProcess(newProcess);
-					break;
-				}
+				continue;
+//				ArrayList<BaseEntity> processos = synchronizeProcess.loadData(contentCosmeticRegularized.getContentCosmeticRegularizedDetail().getCnpj()
+//						+ "&filter[processo]=" + contentCosmeticRegularized.getProcesso(),1);
+//
+//				if (processos.size() > 0) {
+//					Process newProcess = (Process) processos.get(0);
+//					ArrayList<BaseEntity> processo = new ArrayList<BaseEntity>();
+//					processo.add(processos.get(0));
+//				    //synchronizeProcess.persist(processo);
+//					contentCosmeticRegularized.lodaProcess(newProcess);
+//					break;
+//				}
 
 			} else {
 

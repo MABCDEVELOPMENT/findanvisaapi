@@ -16,6 +16,7 @@ import com.anvisa.interceptor.synchronizedata.entity.SynchronizeProcess;
 import com.anvisa.model.persistence.BaseEntity;
 import com.anvisa.model.persistence.rest.foot.ContentFoot;
 import com.anvisa.model.persistence.rest.process.Process;
+import com.anvisa.model.persistence.rest.process.ProcessDetail;
 import com.anvisa.repository.generic.FootRepository;
 import com.anvisa.repository.generic.ProcessRepository;
 import com.anvisa.rest.QueryRecordParameter;
@@ -48,13 +49,14 @@ public class FindDataFoot {
 			
 			Process process = processRepository.findByProcessCnpj(contentFoot.getProcesso(), contentFoot.getCnpj());
 			if (process==null) {
-				ArrayList<BaseEntity> processos =  synchronizeProcess.loadData(contentFoot.getCnpj()+"&filter[processo]="+contentFoot.getProcesso());
+				ArrayList<BaseEntity> processos =  synchronizeProcess.loadData(contentFoot.getCnpj()+"&filter[processo]="+contentFoot.getProcesso(),1);
 				
 				if(processos.size()>0) {
-				   synchronizeProcess.persist(processos);
-				   Process newProcess = (Process) processos.get(0);
-				   contentFoot.setProcess(newProcess);
-				   contentFoot.lodaProcess(newProcess);
+					Process newProcess = (Process) processos.get(0);
+					ArrayList<BaseEntity> processo = new ArrayList<BaseEntity>();
+					processo.add(processos.get(0));
+				    //synchronizeProcess.persist(processo);
+					contentFoot.lodaProcess(newProcess);
 				   break;
 				}
 				

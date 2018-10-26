@@ -14,13 +14,9 @@ import org.springframework.stereotype.Component;
 
 import com.anvisa.interceptor.synchronizedata.entity.SynchronizeProcess;
 import com.anvisa.model.persistence.BaseEntity;
-import com.anvisa.model.persistence.rest.cosmetic.notification.ContentCosmeticNotification;
-import com.anvisa.model.persistence.rest.cosmetic.register.ContentCosmeticRegister;
-import com.anvisa.model.persistence.rest.cosmetic.regularized.SaneanteNotification;
 import com.anvisa.model.persistence.rest.process.Process;
+import com.anvisa.model.persistence.rest.process.ProcessDetail;
 import com.anvisa.model.persistence.rest.saneante.notification.SaneanteNotification;
-import com.anvisa.repository.generic.CosmeticNotificationRepository;
-import com.anvisa.repository.generic.CosmeticRegisterRepository;
 import com.anvisa.repository.generic.ProcessRepository;
 import com.anvisa.repository.generic.SaneanteNotificationRepository;
 import com.anvisa.rest.QueryRecordParameter;
@@ -47,7 +43,7 @@ public class FindDataSaneanteNotification {
 
 		List<SaneanteNotification> saneanteNotificationsReturn = new ArrayList<SaneanteNotification>();
 
-		 if(queryRecordParameter.getCnpj()!=null && !queryRecordParameter.getCnpj().isEmpty()) {
+		 if(queryRecordParameter.getCnpj()==null || queryRecordParameter.getCnpj().isEmpty()) {
 			 
 			 return saneanteNotificationsReturn;
 		 }
@@ -56,33 +52,34 @@ public class FindDataSaneanteNotification {
 
 		SynchronizeProcess synchronizeProcess = new SynchronizeProcess();
 
-		for (SaneanteNotification SaneanteNotification : saneanteNotifications) {
+		for (SaneanteNotification saneanteNotification : saneanteNotifications) {
 
-			Process process = processRepository.findByProcessCnpj(SaneanteNotification.getProcesso(),
+			Process process = processRepository.findByProcessCnpj(saneanteNotification.getProcesso(),
 					queryRecordParameter.getCnpj());
 			if (process == null) {
-				ArrayList<BaseEntity> processos = synchronizeProcess.loadData(SaneanteNotification.getSaneanteNotificationDetail().getCnpj()
-						+ "&filter[processo]=" + SaneanteNotification.getProcesso());
-
+				ArrayList<BaseEntity> processos = synchronizeProcess.loadData(saneanteNotification.getCnpj()
+						+ "&filter[processo]=" + saneanteNotification.getProcesso(),1);
+				
 				if (processos.size() > 0) {
-					synchronizeProcess.persist(processos);
 					Process newProcess = (Process) processos.get(0);
-					SaneanteNotification.setProcess(newProcess);
-					SaneanteNotification.lodaProcess(newProcess);
+					ArrayList<BaseEntity> processo = new ArrayList<BaseEntity>();
+					processo.add(processos.get(0));
+				    //synchronizeProcess.persist(processo);
+					saneanteNotification.lodaProcess(newProcess);
 					break;
 				}
 
 			} else {
 
-				SaneanteNotification.setProcess(process);
-				SaneanteNotification.lodaProcess(process);
+				saneanteNotification.lodaProcess(process);
 			}
-			saneanteNotificationsReturn.add(SaneanteNotification);
+			saneanteNotificationsReturn.add(saneanteNotification);
 		}
 
 		return saneanteNotificationsReturn;
 
 	}
+	
 	public static List<SaneanteNotification> filter(QueryRecordParameter queryRecordParameter){
         
 		return saneanteNotificationRepository.findAll(new Specification<SaneanteNotification>() {

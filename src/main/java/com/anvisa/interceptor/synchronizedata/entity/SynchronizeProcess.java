@@ -5,6 +5,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
+import java.util.concurrent.TimeUnit;
 
 import org.hibernate.Session;
 import org.hibernate.Transaction;
@@ -25,6 +26,11 @@ import com.anvisa.repository.generic.ProcessRepository;
 import com.anvisa.rest.model.Peticao;
 import com.anvisa.rest.model.Processo;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 
 @Component
 public class SynchronizeProcess extends SynchronizeData implements IntSynchronize {
@@ -199,6 +205,60 @@ public class SynchronizeProcess extends SynchronizeData implements IntSynchroniz
 			//System.out.println(cont++);	
 		}
 
+	}
+	
+	public ArrayList<BaseEntity> loadData(String cnpj,int qtd) {
+		// TODO Auto-generated method stub
+		ArrayList<BaseEntity> rootObject = new ArrayList<BaseEntity>();
+
+		OkHttpClient client = new OkHttpClient();
+		
+		client.newBuilder().readTimeout(30, TimeUnit.MINUTES);
+		
+		
+		Request url = null;
+
+
+		url = new Request.Builder()
+				.url(URL+cnpj)
+				.get()
+				.addHeader("Accept-Encoding", "gzip")
+				.addHeader("authorization", "Guest").build();
+		       
+		
+		try {
+			
+			Response response = client.newCall(url).execute();
+			
+			ObjectMapper objectMapper = new ObjectMapper();
+			
+			JsonNode rootNode = objectMapper.readTree(this.getGZIPString(response.body().byteStream()));
+			
+			Iterator<JsonNode> elementsContents = rootNode.path("content").iterator();
+			log.info("SynchronizeData Total Registros "+rootNode.get("totalElements"), dateFormat.format(new Date()));
+			int i = 0;
+			while (elementsContents.hasNext()) {
+
+				JsonNode jsonNode = (JsonNode) elementsContents.next();
+				
+				Process BaseEntity = (Process)this.parseData(jsonNode);
+				ProcessDetail drocessDetail = (ProcessDetail)this.loadDetailData(this, cnpj);
+	
+				rootObject.add(BaseEntity);	
+
+				System.out.println(i++);
+				if(qtd==1) break;
+			}
+			response.close();
+			client = null;
+			return rootObject;
+			
+	   } catch (Exception e) {
+		// TODO: handle exception
+		   e.printStackTrace();
+	   }
+		
+		return null;
 	}
 
 }

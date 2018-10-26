@@ -96,8 +96,6 @@ public class SaneanteNotification extends BaseEntity {
 	@JoinColumn(name="SaneanteNotificationDetailFK")
 	SaneanteNotificationDetail saneanteNotificationDetail;
 	
-	@Transient
-	Process process;
 
 	public String getAssunto() {
 		return assunto;
@@ -196,23 +194,6 @@ public class SaneanteNotification extends BaseEntity {
 	}
 
 	public LocalDate getDataAlteracao() {
-		LocalDate localDate = null;
-		List<SaneanteNotificadoPetition> petitions =  this.getSaneanteNotificationDetail().getPeticoes();
-		for (SaneanteNotificadoPetition saneanteNotificadoPetition : petitions) {
-			if (saneanteNotificadoPetition.getPublicacao()!=null) {
-			   localDate = saneanteNotificadoPetition.getPublicacao();
-			}
-		}
-		
-		if(localDate==null && (this.dataAlteracao!=null && this.dataRegistro!=null)) {
-			if (this.dataAlteracao.isBefore(this.dataRegistro)) {
-				return this.dataRegistro;
-			}
-		} else {
-			if (localDate!=null) {
-			   dataAlteracao = localDate;
-			}   
-		}
 		return dataAlteracao;
 	}
 
@@ -244,13 +225,6 @@ public class SaneanteNotification extends BaseEntity {
 		this.saneanteNotificationDetail = saneanteNotificationDetail;
 	}
 	
-	public Process getProcess() {
-		return process;
-	}
-
-	public void setProcess(Process process) {
-		this.process = process;
-	}
 
 	public void lodaProcess(Process process) {
 		

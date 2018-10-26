@@ -103,7 +103,10 @@ public class Process extends BaseEntity {
 	}
 
 	public ProcessDetail getProcessDetail() {
-		return processDetail;
+		if (processDetail==null) {
+			return new ProcessDetail();
+		}
+		return processDetail ;
 	}
 
 	public void setProcessDetail(ProcessDetail processDetail) {

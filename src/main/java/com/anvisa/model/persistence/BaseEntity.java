@@ -40,16 +40,16 @@ public abstract class BaseEntity implements Serializable {
 	@JsonFormat(pattern = "dd/MM/yyyy HH:mm:ss")
 	private LocalDateTime insertDate;
 
-	@ManyToOne
-	private User updateUser;
+	//@ManyToOne
+	//private User updateUser;
 	
 	@Column(name = "update_date", insertable = false, updatable = true)
 	@DateTimeFormat(iso = DateTimeFormat.ISO.TIME)
 	@JsonFormat(pattern = "dd/MM/yyyy HH:mm:ss")
 	private LocalDateTime updateDate;
 
-	@ManyToOne
-	private User ownerUser;
+	//@ManyToOne
+	//private User ownerUser;
 
 	public Long getId() {
 		return id;
@@ -83,13 +83,13 @@ public abstract class BaseEntity implements Serializable {
 		this.insertDate = insertDate;
 	}
 
-	public User getUpdateUser() {
-		return updateUser;
-	}
-
-	public void setUpdateUser(User updateUser) {
-		this.updateUser = updateUser;
-	}
+//	public User getUpdateUser() {
+//		return updateUser;
+//	}
+//
+//	public void setUpdateUser(User updateUser) {
+//		this.updateUser = updateUser;
+//	}
 
 	public LocalDateTime getUpdateDate() {
 		return updateDate==null?insertDate:updateDate;
@@ -99,13 +99,13 @@ public abstract class BaseEntity implements Serializable {
 		this.updateDate = updateDate;
 	}
 
-	public User getOwnerUser() {
+/*	public User getOwnerUser() {
 		return ownerUser;
 	}
 
 	public void setOwnerUser(User ownerUser) {
 		this.ownerUser = ownerUser;
-	}
+	}*/
 	
 	@PrePersist
 	void onCreate() {

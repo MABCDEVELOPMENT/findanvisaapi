@@ -15,6 +15,7 @@ import org.springframework.stereotype.Component;
 import com.anvisa.interceptor.synchronizedata.entity.SynchronizeProcess;
 import com.anvisa.model.persistence.BaseEntity;
 import com.anvisa.model.persistence.rest.process.Process;
+import com.anvisa.model.persistence.rest.process.ProcessDetail;
 import com.anvisa.model.persistence.rest.saneante.product.SaneanteProduct;
 import com.anvisa.repository.generic.ProcessRepository;
 import com.anvisa.repository.generic.SaneanteProductRepository;
@@ -39,7 +40,7 @@ public class FindDataSaneanteProduct {
 
 		List<SaneanteProduct> saneanteProductsReturn = new ArrayList<SaneanteProduct>();
 
-		if (queryRecordParameter.getCnpj() != null && !queryRecordParameter.getCnpj().isEmpty()) {
+		if (queryRecordParameter.getCnpj() == null || queryRecordParameter.getCnpj().isEmpty()) {
 
 			return saneanteProductsReturn;
 		}
@@ -55,19 +56,19 @@ public class FindDataSaneanteProduct {
 			if (process == null) {
 				ArrayList<BaseEntity> processos = synchronizeProcess
 						.loadData(saneanteProduct.getCnpj() + "&filter[processo]="
-								+ saneanteProduct.getProcesso());
+								+ saneanteProduct.getProcesso(),1);
 
 				if (processos.size() > 0) {
-					synchronizeProcess.persist(processos);
 					Process newProcess = (Process) processos.get(0);
-					saneanteProduct.setProcess(newProcess);
+					ArrayList<BaseEntity> processo = new ArrayList<BaseEntity>();
+					processo.add(processos.get(0));
+				    //synchronizeProcess.persist(processo);
 					saneanteProduct.lodaProcess(newProcess);
 					break;
 				}
 
 			} else {
 
-				saneanteProduct.setProcess(process);
 				saneanteProduct.lodaProcess(process);
 			}
 			saneanteProductsReturn.add(saneanteProduct);

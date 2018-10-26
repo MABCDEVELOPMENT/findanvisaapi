@@ -87,8 +87,6 @@ public class SaneanteProduct extends BaseEntity {
 	@JoinColumn(name = "SaneanteProductDetailFK")
 	SaneanteProductDetail saneanteProductDetail;
 	
-	@Transient
-	Process process;
 
 	public String getCodigo() {
 		return codigo;
@@ -212,6 +210,7 @@ public class SaneanteProduct extends BaseEntity {
 	public void setQtdRegistro(int qtdRegistro) {
 		this.qtdRegistro = qtdRegistro;
 	}
+
 
 	@Override
 	public int hashCode() {

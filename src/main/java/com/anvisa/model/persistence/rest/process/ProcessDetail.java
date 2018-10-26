@@ -55,6 +55,9 @@ public class ProcessDetail extends BaseEntity {
 		this.processo = processo;
 	}
 	public List<ProcessPetition> getPeticoes() {
+		if (peticoes==null) {
+			peticoes = new ArrayList<ProcessPetition>();
+		}
 		return peticoes;
 	}
 	public void setPeticoes(ArrayList<ProcessPetition> peticoes) {

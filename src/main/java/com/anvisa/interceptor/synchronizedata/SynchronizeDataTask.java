@@ -168,7 +168,7 @@ public class SynchronizeDataTask {
 //		
 //		log.info("SynchronizeData => End Saneante Product ", dateFormat.format(new Date()));
 		
-		registerCNPJs = registerCNPJRepository.findAll();
+		/*registerCNPJs = registerCNPJRepository.findAll();
 		
 		for (RegisterCNPJ registerCNPJ : registerCNPJs) {
 			log.info("SynchronizeData => Start Process "+registerCNPJ.getCnpj()+" "+registerCNPJ.getFullName(), dateFormat.format(new Date()));
@@ -177,7 +177,7 @@ public class SynchronizeDataTask {
 			log.info("SynchronizeData => End Process Total "+itens.size(), dateFormat.format(new Date()));
 			if(itens!=null)
 			intSynchronize[6].persist(itens);
-		}
+		}*/
 		
 	
 	}

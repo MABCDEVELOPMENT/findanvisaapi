@@ -17,6 +17,7 @@ import com.anvisa.model.persistence.BaseEntity;
 import com.anvisa.model.persistence.rest.cosmetic.register.ContentCosmeticRegister;
 import com.anvisa.model.persistence.rest.foot.ContentFoot;
 import com.anvisa.model.persistence.rest.process.Process;
+import com.anvisa.model.persistence.rest.process.ProcessDetail;
 import com.anvisa.repository.generic.CosmeticRegisterRepository;
 import com.anvisa.repository.generic.ProcessRepository;
 import com.anvisa.rest.QueryRecordParameter;
@@ -49,14 +50,15 @@ public class FindDataCosmeticRegister {
 					contentCosmeticRegister.getCnpj());
 			if (process == null) {
 				ArrayList<BaseEntity> processos = synchronizeProcess.loadData(contentCosmeticRegister.getCnpj()
-						+ "&filter[processo]=" + contentCosmeticRegister.getProcesso());
+						+ "&filter[processo]=" + contentCosmeticRegister.getProcesso(),1);
 
 				if (processos.size() > 0) {
-					synchronizeProcess.persist(processos);
 					Process newProcess = (Process) processos.get(0);
-					contentCosmeticRegister.setProcess(newProcess);
+					ArrayList<BaseEntity> processo = new ArrayList<BaseEntity>();
+					processo.add(processos.get(0));
+				    //synchronizeProcess.persist(processo);
 					contentCosmeticRegister.lodaProcess(newProcess);
-					break;
+
 				}
 
 			} else {
