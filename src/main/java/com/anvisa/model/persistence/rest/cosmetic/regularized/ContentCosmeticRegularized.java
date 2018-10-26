@@ -1,6 +1,7 @@
 package com.anvisa.model.persistence.rest.cosmetic.regularized;
 
 import java.time.LocalDate;
+import java.util.List;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -8,9 +9,13 @@ import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import com.anvisa.model.persistence.BaseEntity;
 import com.anvisa.model.persistence.rest.foot.ContentFoot;
+import com.anvisa.model.persistence.rest.process.Process;
+import com.anvisa.model.persistence.rest.process.ProcessDetail;
+import com.anvisa.model.persistence.rest.process.ProcessPetition;
 import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
@@ -62,6 +67,9 @@ public class ContentCosmeticRegularized extends BaseEntity {
 	@OneToOne(cascade = CascadeType.ALL, optional = true)
 	ContentCosmeticRegularizedDetail contentCosmeticRegularizedDetail;
 
+	@Transient
+	Process process;
+	
 	public String getProcesso() {
 		return processo;
 	}
@@ -137,6 +145,14 @@ public class ContentCosmeticRegularized extends BaseEntity {
 
 	public void setContentCosmeticRegularizedDetail(ContentCosmeticRegularizedDetail contentCosmeticRegularizedDetail) {
 		this.contentCosmeticRegularizedDetail = contentCosmeticRegularizedDetail;
+	}
+
+	public Process getProcess() {
+		return process;
+	}
+
+	public void setProcess(Process process) {
+		this.process = process;
 	}
 
 	@Override
@@ -225,6 +241,37 @@ public class ContentCosmeticRegularized extends BaseEntity {
 		return true;
 	}
 	
-	
+	public void lodaProcess(Process process) {
+		
+		this.setDataAlteracao(null);
+		
+		ProcessDetail detail = process.getProcessDetail();
+		
+		List<ProcessPetition> peticoes = detail.getPeticoes();
+		
+		for (ProcessPetition processPetition : peticoes) {
+			
+			if (processPetition.getDataPublicacao()!=null) {
+				this.setDataAlteracao(processPetition.getDataPublicacao());
+			}
+			
+		}
+		
+		this.setQtdRegistro(peticoes.size());
+		try {
+			
+			if (this.getDataAlteracao()==null) {
+				
+				this.setDataAlteracao(detail.getProcesso().getPeticao().getDataPublicacao());
+				
+			}
+			
+		    this.setDataRegistro(detail.getProcesso().getPeticao().getDataEntrada());
+		} catch (Exception e) {
+			// TODO: handle exception
+			System.out.println(" ContentCosmeticRegularized CNPJ "+this.getContentCosmeticRegularizedDetail().getCnpj()+" Processo "+this.getProcesso()+" ERRO DE DATAS");
+		}
+	}	
+
 
 }

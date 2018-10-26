@@ -1,16 +1,20 @@
 package com.anvisa.model.persistence.rest.saneante.product;
 
 import java.time.LocalDate;
+import java.util.List;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import com.anvisa.model.persistence.BaseEntity;
+import com.anvisa.model.persistence.rest.process.Process;
+import com.anvisa.model.persistence.rest.process.ProcessDetail;
+import com.anvisa.model.persistence.rest.process.ProcessPetition;
 import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
@@ -22,147 +26,171 @@ public class SaneanteProduct extends BaseEntity {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	
+
 	@Column(name = "code", length = 20, nullable = false)
 	@JsonAlias(value = "codigo")
 	String codigo;
-	
+
 	@Column(name = "product", length = 600, nullable = false)
 	@JsonAlias(value = "product")
 	String produto;
-	
+
 	@Column(name = "register", length = 20, nullable = false)
 	@JsonAlias(value = "registro")
 	String registro;
-	
-	@Column(name = "process",  length = 20, nullable = false)
-	@JsonAlias(value = "processo")	
+
+	@Column(name = "process", length = 20, nullable = false)
+	@JsonAlias(value = "processo")
 	String processo;
-	
+
 	@Column(name = "company", nullable = false)
 	@JsonAlias(value = "empresa")
 	String empresa;
-	
+
 	@Column(name = "cnpj", length = 14, nullable = false)
 	@JsonAlias(value = "cnpj")
 	String cnpj;
-	
+
 	@Column(name = "situation", length = 60, nullable = false)
 	@JsonAlias(value = "situacao")
 	String situacao;
-	
+
 	@Column(name = "vencimento", length = 8, nullable = true)
 	@JsonAlias(value = "vencimento")
 	String vencimento;
-	
+
 	@Column(name = "statusVencimento", length = 60, nullable = true)
-	@JsonAlias(value = "statusVencimento")	
+	@JsonAlias(value = "statusVencimento")
 	String statusVencimento;
-	
+
 	@Column(name = "dataVencimento", nullable = true)
-	@JsonAlias(value = "dataVencimento")	
-	@JsonFormat(pattern="dd/MM/yyyy")
+	@JsonAlias(value = "dataVencimento")
+	@JsonFormat(pattern = "dd/MM/yyyy")
 	LocalDate dataVencimento;
-	
+
 	@Column(name = "dateUpdateRegister")
-	@JsonAlias(value = "dataAlteracao")	
-	@JsonFormat(pattern="dd/MM/yyyy")	
+	@JsonAlias(value = "dataAlteracao")
+	@JsonFormat(pattern = "dd/MM/yyyy")
 	LocalDate dataAlteracao;
-	
+
 	@Column(name = "dateRegister")
 	@JsonAlias(value = "dataRegistro")
-	@JsonFormat(pattern="dd/MM/yyyy")
+	@JsonFormat(pattern = "dd/MM/yyyy")
 	LocalDate dataRegistro;
-	
+
 	@Column(name = "qtdRecord")
-	@JsonAlias(value = "qtdRegistro")	
+	@JsonAlias(value = "qtdRegistro")
 	int qtdRegistro;
-	
+
 	@JsonAlias(value = "saneanteProductDetail")
 	@OneToOne(cascade = CascadeType.ALL, optional = true)
-	@JoinColumn(name="SaneanteProductDetailFK")
+	@JoinColumn(name = "SaneanteProductDetailFK")
 	SaneanteProductDetail saneanteProductDetail;
 	
+	@Transient
+	Process process;
+
 	public String getCodigo() {
 		return codigo;
 	}
+
 	public void setCodigo(String codigo) {
 		this.codigo = codigo;
 	}
+
 	public String getProduto() {
 		return produto;
 	}
+
 	public void setProduto(String produto) {
 		this.produto = produto;
 	}
+
 	public String getRegistro() {
 		return registro;
 	}
+
 	public void setRegistro(String registro) {
 		this.registro = registro;
 	}
+
 	public String getProcesso() {
 		return processo;
 	}
+
 	public void setProcesso(String processo) {
 		this.processo = processo;
 	}
+
 	public String getEmpresa() {
 		return empresa;
 	}
+
 	public void setEmpresa(String empresa) {
 		this.empresa = empresa;
 	}
+
 	public String getCnpj() {
 		return cnpj;
 	}
+
 	public void setCnpj(String cnpj) {
 		this.cnpj = cnpj;
 	}
+
 	public String getSituacao() {
 		return situacao;
 	}
+
 	public void setSituacao(String situacao) {
 		this.situacao = situacao;
 	}
+
 	public String getVencimento() {
 		if (this.vencimento.equals("null")) {
 			return "";
 		}
 		return vencimento;
 	}
+
 	public void setVencimento(String vencimento) {
 		this.vencimento = vencimento;
 	}
+
 	public String getStatusVencimento() {
 		return statusVencimento;
 	}
+
 	public void setStatusVencimento(String statusVencimento) {
 		this.statusVencimento = statusVencimento;
 	}
+
 	public LocalDate getDataVencimento() {
 		return dataVencimento;
 	}
+
 	public void setDataVencimento(LocalDate dataVencimento) {
 		this.dataVencimento = dataVencimento;
 	}
-	
+
 	public SaneanteProductDetail getSaneanteProductDetail() {
 		return saneanteProductDetail;
 	}
+
 	public void setSaneanteProductDetail(SaneanteProductDetail saneanteProductDetail) {
 		this.saneanteProductDetail = saneanteProductDetail;
 	}
+
 	public LocalDate getDataAlteracao() {
-		
-		if(this.dataAlteracao!=null && this.dataRegistro!=null) {
+
+		if (this.dataAlteracao != null && this.dataRegistro != null) {
 			if (this.dataAlteracao.isBefore(this.dataRegistro)) {
 				return this.dataRegistro;
 			}
 		}
-		
+
 		return dataAlteracao;
-		
+
 	}
 
 	public void setDataAlteracao(LocalDate dataAlteracao) {
@@ -184,7 +212,7 @@ public class SaneanteProduct extends BaseEntity {
 	public void setQtdRegistro(int qtdRegistro) {
 		this.qtdRegistro = qtdRegistro;
 	}
-	
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -201,6 +229,7 @@ public class SaneanteProduct extends BaseEntity {
 		result = prime * result + ((vencimento == null) ? 0 : vencimento.hashCode());
 		return result;
 	}
+
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj) {
@@ -212,7 +241,7 @@ public class SaneanteProduct extends BaseEntity {
 		if (!(obj instanceof SaneanteProduct)) {
 			return false;
 		}
-		
+
 		SaneanteProduct other = (SaneanteProduct) obj;
 		if (cnpj == null) {
 			if (other.cnpj != null)
@@ -263,5 +292,38 @@ public class SaneanteProduct extends BaseEntity {
 			return false;
 		return true;
 	}
-	
+
+	public void lodaProcess(Process process) {
+
+		this.setDataAlteracao(null);
+
+		ProcessDetail detail = process.getProcessDetail();
+
+		List<ProcessPetition> peticoes = detail.getPeticoes();
+
+		for (ProcessPetition processPetition : peticoes) {
+
+			if (processPetition.getDataPublicacao() != null) {
+				this.setDataAlteracao(processPetition.getDataPublicacao());
+			}
+
+		}
+
+		this.setQtdRegistro(peticoes.size());
+		try {
+
+			if (this.getDataAlteracao() == null) {
+
+				this.setDataAlteracao(detail.getProcesso().getPeticao().getDataPublicacao());
+
+			}
+
+			this.setDataRegistro(detail.getProcesso().getPeticao().getDataEntrada());
+		} catch (Exception e) {
+			// TODO: handle exception
+			System.out.println(
+					" SaneanteProduct CNPJ " + this.getCnpj() + " Processo " + this.getProcesso() + " ERRO DE DATAS");
+		}
+	}
+
 }
