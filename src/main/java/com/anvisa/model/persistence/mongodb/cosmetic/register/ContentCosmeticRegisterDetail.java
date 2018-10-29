@@ -1,73 +1,46 @@
-package com.anvisa.model.persistence.rest.cosmetic.register;
+package com.anvisa.model.persistence.mongodb.cosmetic.register;
 
 import java.time.LocalDate;
 import java.util.List;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
-
-import org.hibernate.annotations.Fetch;
-
-import com.anvisa.core.util.UtilDate;
-import com.anvisa.model.persistence.BaseEntity;
-import com.anvisa.model.persistence.rest.cosmetic.register.petition.CosmeticRegisterPetition;
-import com.anvisa.model.persistence.rest.cosmetic.register.presentation.CosmeticRegisterPresentation;
+import com.anvisa.model.persistence.mongodb.cosmetic.register.petition.CosmeticRegisterPetition;
+import com.anvisa.model.persistence.mongodb.cosmetic.register.presentation.CosmeticRegisterPresentation;
 import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
-@Entity
-@Table(name = "cosmetic_register_detail")
-public class ContentCosmeticRegisterDetail extends BaseEntity {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-	
-	@Column(name = "social_reason", length = 600, nullable = false)
+public class ContentCosmeticRegisterDetail {
+
+
+
 	@JsonAlias(value = "razaoSocial")
 	String razaoSocial;
 	
-	@Column(name = "cnpj", length = 14, nullable = false)
 	@JsonAlias(value = "cnpj")
 	String cnpj;
 	
-	@Column(name = "autorization", length = 20, nullable = false)
 	@JsonAlias(value = "autorizacao")
 	String autorizacao;
 	
-	@Column(name = "product_name", length = 600, nullable = false)
 	@JsonAlias(value = "nomeProduto")
 	String nomeProduto;
 	
-	@Column(name = "category", length = 400, nullable = false)
 	@JsonAlias(value = "categoria")
 	String categoria;
 	
-	@Column(name = "process", length = 20, nullable = false)
 	@JsonAlias(value = "processo")
 	String processo;
 	
-	@Column(name = "maturity_Registration", length = 20, nullable = true)
 	@JsonAlias(value = "vencimentoRegistro")
 	@JsonFormat(pattern="dd/MM/yyyy")
 	LocalDate vencimentoRegistro;
 	
-	@Column(name = "publication_Record", length = 20, nullable = true)
 	@JsonAlias(value = "publicacaoRgistro")	
 	@JsonFormat(pattern="dd/MM/yyyy")
 	LocalDate publicacaoRgistro;
 	
-	@OneToMany(fetch=FetchType.LAZY, cascade=CascadeType.ALL)
 	List<CosmeticRegisterPresentation> apresentacoes;
 	
-	@OneToMany(fetch=FetchType.LAZY, cascade=CascadeType.ALL)
-	//@Fetch(org.hibernate.annotations.FetchMode.SUBSELECT)
 	List<CosmeticRegisterPetition> peticoes;
 	
 	

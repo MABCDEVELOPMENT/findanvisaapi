@@ -1,55 +1,34 @@
-package com.anvisa.model.persistence.rest.cosmetic.register.petition;
+package com.anvisa.model.persistence.mongodb.cosmetic.register.petition;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Table;
-
-import com.anvisa.model.persistence.BaseEntity;
 import com.fasterxml.jackson.annotation.JsonAlias;
 
-@Entity
-@Table(name = "cosmetic_petition_presentation")
-public class CosmeticRegisterPetitionPresentation extends BaseEntity {
+public class CosmeticRegisterPetitionPresentation {
 	
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-	
-	@Column(name = "name", length = 600)
+
 	@JsonAlias(value = "nome")
 	private String nome;
 	
-	@Column(name = "tonality", length = 100)
 	@JsonAlias(value = "tonalidade")
 	private String tonalidade;
 	
-	@Column(name = "physical_form", length = 400)
 	@JsonAlias(value = "formaFisica")
     private String formaFisica;
 	
-	@Column(name = "number", length = 20)
 	@JsonAlias(value = "numero")
 	private String numero;
 
-	@Column(name = "due_date", length = 4)
 	@JsonAlias(value = "prazoValidade")
     private String prazoValidade;
 	
-	
-	@Column(name = "type_validity", length = 20)
 	@JsonAlias(value = "tipoValidade")
 	private String tipoValidade;
 	
-	@Column(name = "register", length = 20)
 	@JsonAlias(value = "registro")
 	private String registro;
 	
-	@Column(name = "primary_package", length = 400)
 	@JsonAlias(value = "embalagemPrimaria")
 	private String embalagemPrimaria;
 	
-	@Column(name = "secondary_packaging", length = 400)
 	@JsonAlias(value = "embalagemSecundaria")
 	private String embalagemSecundaria;
 

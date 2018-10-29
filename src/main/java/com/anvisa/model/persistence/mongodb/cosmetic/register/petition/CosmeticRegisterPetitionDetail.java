@@ -1,65 +1,47 @@
-package com.anvisa.model.persistence.rest.cosmetic.register.petition;
+package com.anvisa.model.persistence.mongodb.cosmetic.register.petition;
 
 import java.time.LocalDate;
 import java.util.List;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
-
-import com.anvisa.model.persistence.BaseEntity;
 import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
-@Entity
-@Table(name = "cosmetic_register_petition_detail")
-public class CosmeticRegisterPetitionDetail extends BaseEntity {
+
+public class CosmeticRegisterPetitionDetail {
 	
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-	
-	@Column(name = "social_reason", length = 400, nullable = false)
+
 	@JsonAlias(value = "razaoSocial")
 	private String razaoSocial;
 	
-	@Column(name = "autorization", length = 20)
+
 	@JsonAlias(value = "autorizacao")
 	private String autorizacao;
 	
-	@Column(name = "cnpj", length = 14, nullable = false)
 	@JsonAlias(value = "cnpj")
 	String cnpj;
 	
-	@Column(name = "product_name", length = 600, nullable = false)
 	@JsonAlias(value = "nomeProduto")
 	String nomeProduto;
 	
-	@Column(name = "category", length = 400)
 	@JsonAlias(value = "categoria")
 	String categoria;
 	
-	@Column(name = "register", length = 20)
 	@JsonAlias(value = "registro")
 	private String registro;
 	
-	@Column(name = "petition", length = 20)
+
 	@JsonAlias(value = "peticao")
 	private String peticao;
 	
-	@Column(name = "maturity")
 	@JsonAlias(value = "vencimento")
 	@JsonFormat(pattern="dd/MM/yyyy")
 	private LocalDate vencimento;
 	
 
-	@OneToMany(cascade=CascadeType.ALL)
+
     private List<PetitionCountryManufacturer> fabricantesNacionais;
 	
-	@OneToMany(cascade=CascadeType.ALL)
+
 	private List<CosmeticRegisterPetitionPresentation> apresentacoes;
 
 	public String getRazaoSocial() {

@@ -1,7 +1,6 @@
 package com.anvisa.interceptor.synchronizedata;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -12,15 +11,10 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import com.anvisa.interceptor.synchronizedata.entity.SynchonizeSaneanteProduct;
-import com.anvisa.interceptor.synchronizedata.entity.SynchronizeCosmeticNotification;
-import com.anvisa.interceptor.synchronizedata.entity.SynchronizeCosmeticRegister;
 import com.anvisa.interceptor.synchronizedata.entity.SynchronizeCosmeticRegularized;
-import com.anvisa.interceptor.synchronizedata.entity.SynchronizeFoot;
 import com.anvisa.interceptor.synchronizedata.entity.SynchronizeProcess;
 import com.anvisa.interceptor.synchronizedata.entity.SynchronizeSaneanteNotification;
-import com.anvisa.model.persistence.BaseEntity;
 import com.anvisa.model.persistence.RegisterCNPJ;
-import com.anvisa.repository.generic.CosmeticRegisterRepository;
 import com.anvisa.repository.generic.RegisterCNPJRepository;
 
 @Component
@@ -31,8 +25,7 @@ public class SynchronizeDataTask {
 
 
 	@Autowired
-	public void setService(RegisterCNPJRepository registerCNPJRepository,
-			               CosmeticRegisterRepository cosmeticRegisterRepository) {
+	public void setService(RegisterCNPJRepository registerCNPJRepository) {
 		this.registerCNPJRepository = registerCNPJRepository;
 	}
 
@@ -45,8 +38,7 @@ public class SynchronizeDataTask {
 
 		log.info("SynchronizeData", dateFormat.format(new Date()));
 		
-		IntSynchronize[] intSynchronize = { new SynchronizeFoot(), new SynchronizeCosmeticRegister(),
-				new SynchronizeCosmeticNotification(), new SynchronizeCosmeticRegularized(),
+		IntSynchronize[] intSynchronize = { new SynchronizeCosmeticRegularized(),
 				new SynchonizeSaneanteProduct(),
 				new SynchronizeSaneanteNotification(),new SynchronizeProcess()};
 		

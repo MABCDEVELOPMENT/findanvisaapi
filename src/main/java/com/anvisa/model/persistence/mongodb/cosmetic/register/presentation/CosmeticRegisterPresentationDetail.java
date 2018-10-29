@@ -1,4 +1,4 @@
-package com.anvisa.model.persistence.rest.cosmetic.register.presentation;
+package com.anvisa.model.persistence.mongodb.cosmetic.register.presentation;
 
 import java.util.List;
 
@@ -17,53 +17,36 @@ import org.hibernate.annotations.Fetch;
 import com.anvisa.model.persistence.BaseEntity;
 import com.fasterxml.jackson.annotation.JsonAlias;
 
-@Entity
-@Table(name = "cosmetic_register_presentation_dateil")
-public class CosmeticRegisterPresentationDetail extends BaseEntity {
+public class CosmeticRegisterPresentationDetail {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
 	
-	@Column(name = "product_name", length = 600)
 	@JsonAlias(value = "nomeProduto")
 	private String nomeProduto;  
 	
-	@Column(name = "process", length = 20)
 	@JsonAlias(value = "processo")
     private String processo;
 	
-	@Column(name = "presentation", length = 600)
 	@JsonAlias(value = "apresentacao")
     private String apresentacao;
 	
-	@Column(name = "category", length = 600)
 	@JsonAlias(value = "categoria")
     private String categoria;
 	
-	@OneToMany(cascade=CascadeType.ALL)
     private List<PresentationCountryManufacturer> fabricantesNacionais;
     
-	@Column(name = "physical_form", length = 600)
 	@JsonAlias(value = "formaFisica")
     private String formaFisica;
 	
-	@Column(name = "tonality", length = 60)
 	@JsonAlias(value = "tonalidade")
     private String tonalidade;
 	
-	@Column(name = "due_date", length = 4)
 	@JsonAlias(value = "prazoValidade")
     private String prazoValidade;
 	
-	@OneToMany(cascade=CascadeType.ALL)
     private List<PresentationConservation> conservacao;
 	
-	@OneToMany(cascade=CascadeType.ALL)
     private List<PresentationDestination> destinacao;
 	
-	@OneToMany(cascade=CascadeType.ALL)
     private List<PresentationRestriction> restricao;
 	
 

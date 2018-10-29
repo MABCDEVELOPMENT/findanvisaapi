@@ -12,9 +12,6 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import com.anvisa.model.persistence.BaseEntity;
-import com.anvisa.model.persistence.rest.cosmetic.notification.ContentCosmeticNotification;
-import com.anvisa.rest.detalhe.comestico.regularizado.EmpresaDetentora;
-import com.anvisa.rest.detalhe.comestico.regularizado.LocalNacional;
 import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonFormat;
 

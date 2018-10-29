@@ -1,61 +1,43 @@
-package com.anvisa.model.persistence.rest.cosmetic.register.presentation;
+package com.anvisa.model.persistence.mongodb.cosmetic.register.presentation;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.MapKey;
-import javax.persistence.MapKeyClass;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
-
-import com.anvisa.model.persistence.BaseEntity;
 import com.fasterxml.jackson.annotation.JsonAlias;
 
-@Entity
-@Table(name = "cosmetic_register_apresentation")
-public class CosmeticRegisterPresentation extends BaseEntity {
-   
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
 
-	@Column(name = "code", length = 20)
+public class CosmeticRegisterPresentation {
+   
+
 	@JsonAlias(value = "codigo")
 	String codigo;
 	
-	@Column(name = "number", length = 20, nullable = true)
+
 	@JsonAlias(value = "numero")	
     String numero;
 	
-	@Column(name = "primary_package", length = 100, nullable = true)
+
 	@JsonAlias(value = "embalagemPrimaria")	
     String embalagemPrimaria;
 	
-	@Column(name = "second_package", length = 100, nullable = true)
+
 	@JsonAlias(value = "embalagemSecundaria")	
     String embalagemSecundaria;
 	
-	@Column(name = "tonality", length = 40)
+
 	@JsonAlias(value = "tonalidade")	
     String tonalidade;
 
-	@Column(name = "situation", length = 60, nullable = true)
+
 	@JsonAlias(value = "situacao")
     String situacao;
 	
-	@Column(name = "featured", nullable = false)
+
 	@JsonAlias(value = "destaque")
     boolean destaque;
 	
-	@Column(name = "register", length = 20, nullable = true)
+
 	@JsonAlias(value = "registro")
     String registro;
     
-    @OneToOne(cascade=CascadeType.ALL)
+
     private CosmeticRegisterPresentationDetail cosmeticRegisterPresentationDetail;
     
 	public String getCodigo() {

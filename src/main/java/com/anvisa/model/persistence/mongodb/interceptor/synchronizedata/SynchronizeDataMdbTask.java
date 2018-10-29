@@ -11,18 +11,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
-import com.anvisa.interceptor.synchronizedata.entity.SynchonizeSaneanteProduct;
-import com.anvisa.interceptor.synchronizedata.entity.SynchronizeCosmeticNotification;
-import com.anvisa.interceptor.synchronizedata.entity.SynchronizeCosmeticRegister;
-import com.anvisa.interceptor.synchronizedata.entity.SynchronizeCosmeticRegularized;
-import com.anvisa.interceptor.synchronizedata.entity.SynchronizeFoot;
-import com.anvisa.interceptor.synchronizedata.entity.SynchronizeProcess;
-import com.anvisa.interceptor.synchronizedata.entity.SynchronizeSaneanteNotification;
-import com.anvisa.model.persistence.BaseEntity;
 import com.anvisa.model.persistence.RegisterCNPJ;
 import com.anvisa.model.persistence.mongodb.BaseEntityMongoDB;
+import com.anvisa.model.persistence.mongodb.synchronze.SynchronizeCosmeticRegisterMdb;
 import com.anvisa.model.persistence.mongodb.synchronze.SynchronizeFootMdb;
-import com.anvisa.repository.generic.CosmeticRegisterRepository;
 import com.anvisa.repository.generic.RegisterCNPJRepository;
 
 @Component
@@ -33,8 +25,7 @@ public class SynchronizeDataMdbTask {
 
 
 	@Autowired
-	public void setService(RegisterCNPJRepository registerCNPJRepository,
-			               CosmeticRegisterRepository cosmeticRegisterRepository) {
+	public void setService(RegisterCNPJRepository registerCNPJRepository) {
 		this.registerCNPJRepository = registerCNPJRepository;
 	}
 
@@ -47,7 +38,7 @@ public class SynchronizeDataMdbTask {
 
 		log.info("SynchronizeData", dateFormat.format(new Date()));
 		
-		IntSynchronizeMdb[] intSynchronize = { new SynchronizeFootMdb()};
+		IntSynchronizeMdb[] intSynchronize = { new SynchronizeFootMdb(),new SynchronizeCosmeticRegisterMdb()};
 		
 		List<RegisterCNPJ> registerCNPJs = registerCNPJRepository.findAll(0);
 
@@ -70,6 +61,28 @@ public class SynchronizeDataMdbTask {
 		}
 	
  		log.info("SynchronizeData => End Foot Total ", dateFormat.format(new Date()));
+ 		
+ 		registerCNPJs = registerCNPJRepository.findAll(1);
+
+ 		
+ 		cont = 0;
+
+		for (RegisterCNPJ registerCNPJ : registerCNPJs) {
+ 			
+ 			log.info("SynchronizeData => Start Cosmetic Register "+registerCNPJ.getCnpj()+" "+registerCNPJ.getFullName(), dateFormat.format(new Date()));
+			
+ 			ArrayList<BaseEntityMongoDB> itens = intSynchronize[1].loadData(registerCNPJ.getCnpj());
+ 			
+ 			
+ 			
+ 			log.info("SynchronizeData => Total "+itens.size(), dateFormat.format(new Date()));
+ 			
+ 			if(itens!=null)
+			intSynchronize[1].persist(itens);
+			
+		}
+	
+ 		log.info("SynchronizeData => End Cosmetic Register ", dateFormat.format(new Date()));
 	
 	}
 	

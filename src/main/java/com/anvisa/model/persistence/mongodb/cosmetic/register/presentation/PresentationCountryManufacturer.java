@@ -1,42 +1,25 @@
-package com.anvisa.model.persistence.rest.cosmetic.register.presentation;
+package com.anvisa.model.persistence.mongodb.cosmetic.register.presentation;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Table;
-
-import com.anvisa.model.persistence.BaseEntity;
 import com.fasterxml.jackson.annotation.JsonAlias;
 
-@Entity
-@Table(name = "cosmetic_presentation_country_manufacturer")
-public class PresentationCountryManufacturer extends BaseEntity {
+public class PresentationCountryManufacturer {
 	
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-	
-	@Column(name = "cnpj", length = 14)
+
 	@JsonAlias(value = "cnpj")
 	private String cnpj;
 	
-	@Column(name = "social_reason", length = 600, nullable = false)
 	@JsonAlias(value = "razaoSocial")
 	private String razaoSocial;
 
-	@Column(name = "city", length = 60)
 	@JsonAlias(value = "cidade")
 	private String cidade;
 	
-	@Column(name = "uf", length = 2)
 	@JsonAlias(value = "uf")
 	private String uf;
 	
-	@Column(name = "county", length = 20)
 	@JsonAlias(value = "pais")
 	private String pais;
 	
-	@Column(name = "type", length = 20)
 	@JsonAlias(value = "type")
 	private String tipo;
 

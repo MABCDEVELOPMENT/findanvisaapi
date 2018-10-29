@@ -1,146 +1,125 @@
-package com.anvisa.model.persistence.rest.cosmetic.notification;
+package com.anvisa.model.persistence.mongodb.cosmetic.register;
 
 import java.time.LocalDate;
 import java.util.List;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
 import javax.persistence.Transient;
 
-import com.anvisa.model.persistence.BaseEntity;
-import com.anvisa.model.persistence.rest.foot.ContentFoot;
+import org.springframework.data.mongodb.core.mapping.Document;
+
+import com.anvisa.model.persistence.mongodb.BaseEntityMongoDB;
+import com.anvisa.model.persistence.mongodb.cosmetic.register.petition.CosmeticRegisterPetition;
 import com.anvisa.model.persistence.rest.process.Process;
 import com.anvisa.model.persistence.rest.process.ProcessDetail;
 import com.anvisa.model.persistence.rest.process.ProcessPetition;
 import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
-@Entity
-@Table(name = "cosmetic_notification")
-public class ContentCosmeticNotification extends BaseEntity {
 
+@Document(collection = "cosmeticRegister")
+public class ContentCosmeticRegister extends BaseEntityMongoDB {
+	
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	@Column(name = "subject_matter", length = 600, nullable = false)
-	@JsonAlias(value = "assunto")
-	String assunto;
-
-	@Column(name = "office_hour", length = 20, nullable = true)
-	@JsonAlias(value = "expedientePeticao")
-	String expedientePeticao;
-
-	@Column(name = "transaction", length = 20, nullable = false)
-	@JsonAlias(value = "transacao")
-	String transacao;
-
-	@Column(name = "process", length = 20, nullable = false)
-	@JsonAlias(value = "processo")
-	String processo;
-
-	@Column(name = "expedient_process", length = 20, nullable = false)
-	@JsonAlias(value = "expedienteProcesso")
-	String expedienteProcesso;
-
-	@Column(name = "product", length = 600, nullable = false)
-	@JsonAlias(value = "produto")
-	String produto;
-
-	@Column(name = "cnpj", length = 14, nullable = false)
-	@JsonAlias(value = "cnpj")
-	String cnpj;
-
-	@Column(name = "social_reason", length = 600, nullable = false)
-	@JsonAlias(value = "razaoSocial")
-	String razaoSocial;
-
-	@Column(name = "situation", length = 600, nullable = false)
-	@JsonAlias(value = "situacao")
-	String situacao;
-
-	@Column(name = "maturity", length = 8, nullable = true)
-	@JsonAlias(value = "vencimento")
-	@JsonFormat(pattern = "dd/MM/yyyy")
-	LocalDate vencimento;
-
-	@Column(name = "status_maturity", length = 60, nullable = true)
-	@JsonAlias(value = "statusVencimento")
-	String statusVencimento;
-
-	@Column(name = "company", length = 600, nullable = true)
-	@JsonAlias(value = "empresa")
-	String empresa;
 	
-	@Column(name = "dateUpdateRegister")
+	@JsonAlias(value = "assunto")
+	String assunto; 
+	
+
+	@JsonAlias(value = "expedientePeticao")
+    String expedientePeticao;
+	
+	@JsonAlias(value = "transacao")
+    String transacao;
+	
+
+	@JsonAlias(value = "processo")
+    String processo;
+	
+
+	@JsonAlias(value = "expedienteProcesso")
+    String expedienteProcesso;
+
+	@JsonAlias(value = "produto")
+    String produto;
+	
+
+	@JsonAlias(value = "cnpj")	
+    String cnpj;
+	
+
+	@JsonAlias(value = "razaoSocial")		
+    String razaoSocial;
+	
+
+	@JsonAlias(value = "situacao")		
+    String situacao;
+	
+	@JsonAlias(value = "vencimento")	
+	@JsonFormat(pattern="dd/MM/yyyy")
+    LocalDate vencimento;
+
+
+	@JsonAlias(value = "statusVencimento")	
+    String statusVencimento;
+	
+
+	@JsonAlias(value = "empresa")		
+    String empresa;
+    
+    ContentCosmeticRegisterDetail contentCosmeticRegisterDetail;
+    
+
 	@JsonAlias(value = "dataAlteracao")	
 	@JsonFormat(pattern="dd/MM/yyyy")	
 	LocalDate dataAlteracao;
 	
-	@Column(name = "dateRegister")
+
 	@JsonAlias(value = "dataRegistro")
 	@JsonFormat(pattern="dd/MM/yyyy")
 	LocalDate dataRegistro;
 	
-	@Column(name = "qtdRecord")
 	@JsonAlias(value = "qtdRegistro")	
 	int qtdRegistro;
-
-	@OneToOne(cascade = CascadeType.ALL, optional = true)
-	ContentCosmeticNotificationDetail contentCosmeticNotificationDetail;
 	
 	@Transient
 	Process process;
-
+	
 	public String getAssunto() {
 		return assunto;
 	}
-
 	public void setAssunto(String assunto) {
 		this.assunto = assunto;
 	}
-
 	public String getExpedientePeticao() {
 		return expedientePeticao;
 	}
-
 	public void setExpedientePeticao(String expedientePeticao) {
 		this.expedientePeticao = expedientePeticao;
 	}
-
 	public String getTransacao() {
 		return transacao;
 	}
-
 	public void setTransacao(String transacao) {
 		this.transacao = transacao;
 	}
-
 	public String getProcesso() {
 		return processo;
 	}
-
 	public void setProcesso(String processo) {
 		this.processo = processo;
 	}
-
 	public String getExpedienteProcesso() {
 		return expedienteProcesso;
 	}
-
 	public void setExpedienteProcesso(String expedienteProcesso) {
 		this.expedienteProcesso = expedienteProcesso;
 	}
-
 	public String getProduto() {
 		return produto;
 	}
-
 	public void setProduto(String produto) {
 		this.produto = produto;
 	}
@@ -148,104 +127,97 @@ public class ContentCosmeticNotification extends BaseEntity {
 	public String getCnpj() {
 		return cnpj;
 	}
-
 	public void setCnpj(String cnpj) {
 		this.cnpj = cnpj;
 	}
-
 	public String getRazaoSocial() {
 		return razaoSocial;
 	}
-
 	public void setRazaoSocial(String razaoSocial) {
 		this.razaoSocial = razaoSocial;
 	}
-
 	public String getSituacao() {
 		return situacao;
 	}
-
 	public void setSituacao(String situacao) {
 		this.situacao = situacao;
 	}
-
 	public LocalDate getVencimento() {
 		return vencimento;
 	}
-
 	public void setVencimento(LocalDate vencimento) {
 		this.vencimento = vencimento;
 	}
-
 	public String getStatusVencimento() {
 		return statusVencimento;
 	}
-
 	public void setStatusVencimento(String statusVencimento) {
 		this.statusVencimento = statusVencimento;
 	}
-
 	public String getEmpresa() {
 		return empresa;
 	}
-
 	public void setEmpresa(String empresa) {
 		this.empresa = empresa;
 	}
-
 	public LocalDate getDataAlteracao() {
-		if(this.dataAlteracao!=null && this.dataRegistro!=null) {
+		LocalDate localDate = null;
+		List<CosmeticRegisterPetition> petitions =  this.getContentCosmeticRegisterDetail().getPeticoes();
+		for (CosmeticRegisterPetition cosmeticRegisterPetition : petitions) {
+			if(cosmeticRegisterPetition.getPublicacao()!=null) {
+			   localDate = cosmeticRegisterPetition.getPublicacao();
+			}
+		}
+		
+		if(localDate==null && (this.dataAlteracao!=null && this.dataRegistro!=null)) {
 			if (this.dataAlteracao.isBefore(this.dataRegistro)) {
 				return this.dataRegistro;
 			}
+		} else {
+			if (localDate!=null) {
+			   dataAlteracao = localDate;
+			}   
 		}
 		return dataAlteracao;
 	}
-
 	public void setDataAlteracao(LocalDate dataAlteracao) {
 		this.dataAlteracao = dataAlteracao;
 	}
-
 	public LocalDate getDataRegistro() {
 		return dataRegistro;
 	}
-
 	public void setDataRegistro(LocalDate dataRegistro) {
 		this.dataRegistro = dataRegistro;
 	}
-
 	public int getQtdRegistro() {
 		return qtdRegistro;
 	}
-
 	public void setQtdRegistro(int qtdRegistro) {
 		this.qtdRegistro = qtdRegistro;
 	}
-
-	public ContentCosmeticNotificationDetail getContentCosmeticNotificationDetail() {
-		return contentCosmeticNotificationDetail;
+	public ContentCosmeticRegisterDetail getContentCosmeticRegisterDetail() {
+		return contentCosmeticRegisterDetail;
 	}
-
-	public void setContentCosmeticNotificationDetail(ContentCosmeticNotificationDetail contentCosmeticNotificationDetail) {
-		this.contentCosmeticNotificationDetail = contentCosmeticNotificationDetail;
+	public void setContentCosmeticRegisterDetail(ContentCosmeticRegisterDetail contentCosmeticRegisterDetail) {
+		this.contentCosmeticRegisterDetail = contentCosmeticRegisterDetail;
 	}
-
 	public Process getProcess() {
 		return process;
 	}
-
 	public void setProcess(Process process) {
 		this.process = process;
 	}
-
+	@Override
+	public Long getId() {
+		// TODO Auto-generated method stub
+		return super.getId();
+	}
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = super.hashCode();
 		result = prime * result + ((assunto == null) ? 0 : assunto.hashCode());
 		result = prime * result + ((cnpj == null) ? 0 : cnpj.hashCode());
-		result = prime * result
-				+ ((contentCosmeticNotificationDetail == null) ? 0 : contentCosmeticNotificationDetail.hashCode());
 		result = prime * result + ((empresa == null) ? 0 : empresa.hashCode());
 		result = prime * result + ((expedientePeticao == null) ? 0 : expedientePeticao.hashCode());
 		result = prime * result + ((expedienteProcesso == null) ? 0 : expedienteProcesso.hashCode());
@@ -258,7 +230,6 @@ public class ContentCosmeticNotification extends BaseEntity {
 		result = prime * result + ((vencimento == null) ? 0 : vencimento.hashCode());
 		return result;
 	}
-
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj) {
@@ -267,10 +238,11 @@ public class ContentCosmeticNotification extends BaseEntity {
 		if (obj == null) {
 			return false;
 		}
-		if (!(obj instanceof ContentCosmeticNotification)) {
+		if (!(obj instanceof ContentCosmeticRegister)) {
 			return false;
 		}
-		ContentCosmeticNotification other = (ContentCosmeticNotification) obj;
+		
+		ContentCosmeticRegister other = (ContentCosmeticRegister) obj;
 		if (assunto == null) {
 			if (other.assunto != null)
 				return false;
@@ -280,11 +252,6 @@ public class ContentCosmeticNotification extends BaseEntity {
 			if (other.cnpj != null)
 				return false;
 		} else if (!cnpj.equals(other.cnpj))
-			return false;
-		if (contentCosmeticNotificationDetail == null) {
-			if (other.contentCosmeticNotificationDetail != null)
-				return false;
-		} else if (!contentCosmeticNotificationDetail.equals(other.contentCosmeticNotificationDetail))
 			return false;
 		if (empresa == null) {
 			if (other.empresa != null)
@@ -350,6 +317,14 @@ public class ContentCosmeticNotification extends BaseEntity {
 			return false;
 		return true;
 	}
+	@Override
+	public String toString() {
+		return "ContentCosmeticRegister [assunto=" + assunto + ", expedientePeticao=" + expedientePeticao
+				+ ", transacao=" + transacao + ", processo=" + processo + ", expedienteProcesso=" + expedienteProcesso
+				+ ", produto=" + produto + ", cnpj=" + cnpj + ", razaoSocial=" + razaoSocial + ", situacao=" + situacao
+				+ ", vencimento=" + vencimento + ", statusVencimento=" + statusVencimento + ", empresa=" + empresa
+				+ ", contentCosmeticRegisterDetail=" + contentCosmeticRegisterDetail + "]";
+	}
 	
 	public void lodaProcess(Process process) {
 		
@@ -382,8 +357,9 @@ public class ContentCosmeticNotification extends BaseEntity {
 		    this.setDataRegistro(detail.getProcesso().getPeticao().getDataEntrada());
 		} catch (Exception e) {
 			// TODO: handle exception
-			System.out.println(" ContentCosmeticNotification CNPJ "+this.getCnpj()+" Processo "+this.getProcesso()+" ERRO DE DATAS");
+			System.out.println(" ContentCosmeticRegister CNPJ "+this.getCnpj()+" Processo "+this.getProcesso()+" ERRO DE DATAS");
 		}
 	}	
+	
 
 }

@@ -1,9 +1,5 @@
-package com.anvisa.interceptor.synchronizedata.entity;
+package com.anvisa.model.persistence.mongodb.synchronze;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -11,33 +7,31 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
-import java.util.zip.GZIPInputStream;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
 import com.anvisa.core.json.JsonToObject;
-import com.anvisa.interceptor.synchronizedata.IntSynchronize;
-import com.anvisa.interceptor.synchronizedata.SynchronizeData;
 import com.anvisa.interceptor.synchronizedata.SynchronizeDataTask;
-import com.anvisa.model.persistence.BaseEntity;
-import com.anvisa.model.persistence.rest.cosmetic.register.ContentCosmeticRegister;
-import com.anvisa.model.persistence.rest.cosmetic.register.ContentCosmeticRegisterDetail;
-import com.anvisa.model.persistence.rest.cosmetic.register.petition.CosmeticRegisterPetition;
-import com.anvisa.model.persistence.rest.cosmetic.register.petition.CosmeticRegisterPetitionDetail;
-import com.anvisa.model.persistence.rest.cosmetic.register.petition.CosmeticRegisterPetitionPresentation;
-import com.anvisa.model.persistence.rest.cosmetic.register.petition.PetitionCountryManufacturer;
-import com.anvisa.model.persistence.rest.cosmetic.register.presentation.CosmeticRegisterPresentation;
-import com.anvisa.model.persistence.rest.cosmetic.register.presentation.CosmeticRegisterPresentationDetail;
-import com.anvisa.model.persistence.rest.cosmetic.register.presentation.PresentationConservation;
-import com.anvisa.model.persistence.rest.cosmetic.register.presentation.PresentationCountryManufacturer;
-import com.anvisa.model.persistence.rest.cosmetic.register.presentation.PresentationDestination;
-import com.anvisa.model.persistence.rest.cosmetic.register.presentation.PresentationRestriction;
-import com.anvisa.repository.generic.CosmeticRegisterDetailRepository;
-import com.anvisa.repository.generic.CosmeticRegisterRepository;
+import com.anvisa.model.persistence.mongodb.BaseEntityMongoDB;
+import com.anvisa.model.persistence.mongodb.cosmetic.register.ContentCosmeticRegister;
+import com.anvisa.model.persistence.mongodb.cosmetic.register.ContentCosmeticRegisterDetail;
+import com.anvisa.model.persistence.mongodb.cosmetic.register.petition.CosmeticRegisterPetition;
+import com.anvisa.model.persistence.mongodb.cosmetic.register.petition.CosmeticRegisterPetitionDetail;
+import com.anvisa.model.persistence.mongodb.cosmetic.register.petition.CosmeticRegisterPetitionPresentation;
+import com.anvisa.model.persistence.mongodb.cosmetic.register.petition.PetitionCountryManufacturer;
+import com.anvisa.model.persistence.mongodb.cosmetic.register.presentation.CosmeticRegisterPresentation;
+import com.anvisa.model.persistence.mongodb.cosmetic.register.presentation.CosmeticRegisterPresentationDetail;
+import com.anvisa.model.persistence.mongodb.cosmetic.register.presentation.PresentationConservation;
+import com.anvisa.model.persistence.mongodb.cosmetic.register.presentation.PresentationCountryManufacturer;
+import com.anvisa.model.persistence.mongodb.cosmetic.register.presentation.PresentationDestination;
+import com.anvisa.model.persistence.mongodb.cosmetic.register.presentation.PresentationRestriction;
+import com.anvisa.model.persistence.mongodb.interceptor.synchronizedata.IntSynchronizeMdb;
+import com.anvisa.model.persistence.mongodb.repository.CosmeticRegisterRepositoryMdb;
+import com.anvisa.model.persistence.mongodb.repository.SynchronizeDataMdb;
+import com.anvisa.model.persistence.mongodb.sequence.SequenceDaoImpl;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
@@ -47,29 +41,31 @@ import okhttp3.Request;
 import okhttp3.Response;
 
 @Component
-public class SynchronizeCosmeticRegister extends SynchronizeData implements IntSynchronize {
+public class SynchronizeCosmeticRegisterMdb extends SynchronizeDataMdb implements IntSynchronizeMdb {
 
 	String URL_COSMETIC_REGISTER_DETAIL_APRESENTACAO = "";
 	String URL_COSMETIC_REGISTER_DETAIL_PETICAO = "";
+	
+	@Autowired
+	public static SequenceDaoImpl sequence;
 
 	@Autowired
-	private static CosmeticRegisterRepository cosmeticRegisterRepository;
+	private static CosmeticRegisterRepositoryMdb cosmeticRegisterRepository;
 
 	@Autowired
-	private static CosmeticRegisterDetailRepository cosmeticRegisterDetailRepository;
-
-	@Autowired
-	public void setService(CosmeticRegisterRepository cosmeticRegisterRepository,
-			CosmeticRegisterDetailRepository cosmeticRegisterDetailRepository) {
+	public void setService(CosmeticRegisterRepositoryMdb cosmeticRegisterRepository,
+			SequenceDaoImpl sequence) {
 
 		this.cosmeticRegisterRepository = cosmeticRegisterRepository;
-		this.cosmeticRegisterDetailRepository = cosmeticRegisterDetailRepository;
-
+		this.sequence = sequence; 
+		
 	}
 
-	public SynchronizeCosmeticRegister() {
+	public SynchronizeCosmeticRegisterMdb() {
+		
+		SEQ_KEY = "cosmetic_register";
 
-		URL = "https://consultas.anvisa.gov.br/api/consulta/cosmeticos/registrados?count=100&page=1&filter[cnpj]=";
+		URL = "https://consultas.anvisa.gov.br/api/consulta/cosmeticos/registrados?count=10000&page=1&filter[cnpj]=";
 
 		URL_DETAIL = "https://consultas.anvisa.gov.br/api/consulta/cosmeticos/registrados/";
 
@@ -79,7 +75,7 @@ public class SynchronizeCosmeticRegister extends SynchronizeData implements IntS
 
 	}
 
-	@Override
+
 	public ContentCosmeticRegister parseData(JsonNode jsonNode) {
 		// TODO Auto-generated method stub
 		ContentCosmeticRegister contentCosmeticRegister = new ContentCosmeticRegister();
@@ -112,7 +108,7 @@ public class SynchronizeCosmeticRegister extends SynchronizeData implements IntS
 		return contentCosmeticRegister;
 	}
 
-	@Override
+
 	public ContentCosmeticRegisterDetail parseDetailData(JsonNode jsonNode) {
 		// TODO Auto-generated method stub
 		ContentCosmeticRegisterDetail contentCosmeticRegisterDetail = new ContentCosmeticRegisterDetail();
@@ -383,8 +379,8 @@ public class SynchronizeCosmeticRegister extends SynchronizeData implements IntS
 	}
 
 	@Override
-	public ArrayList<BaseEntity> loadData(String cnpj) {
-		ArrayList<BaseEntity> rootObject = new ArrayList<BaseEntity>();
+	public ArrayList<BaseEntityMongoDB> loadData(String cnpj) {
+		ArrayList<BaseEntityMongoDB> rootObject = new ArrayList<BaseEntityMongoDB>();
 
 		OkHttpClient client = new OkHttpClient();
 
@@ -414,19 +410,14 @@ public class SynchronizeCosmeticRegister extends SynchronizeData implements IntS
 			log.info("SynchronizeData Total Registros " + rootNode.get("totalElements"), dateFormat.format(new Date()));
 
 			int i = 0;
-			while (elementsContents.hasNext() && i <= 30) {
+			while (elementsContents.hasNext()) {
 
 				JsonNode jsonNode = (JsonNode) elementsContents.next();
 
-				BaseEntity baseEntity = this.parseData(jsonNode);
+				BaseEntityMongoDB baseEntity = this.parseData(jsonNode);
 
 				String processo = ((ContentCosmeticRegister) baseEntity).getProcesso();
-				BaseEntity detail = this.loadDetailData(processo);
-				if (detail != null) {
-					ContentCosmeticRegisterDetail contentCosmeticRegisterDetail = (ContentCosmeticRegisterDetail) detail;
-					((ContentCosmeticRegister) baseEntity)
-							.setContentCosmeticRegisterDetail(contentCosmeticRegisterDetail);
-				}
+				
 				rootObject.add(baseEntity);
 
 				System.out.println(i++);
@@ -445,9 +436,9 @@ public class SynchronizeCosmeticRegister extends SynchronizeData implements IntS
 		// return super.loadData(this, cnpj);
 	}
 
-	@Override
-	public BaseEntity loadDetailData(String concat) {
-		BaseEntity rootObject = null;
+
+	public ContentCosmeticRegisterDetail loadDetailData(String concat) {
+		ContentCosmeticRegisterDetail rootObject = null;
 		OkHttpClient client = new OkHttpClient();
 
 		Request url = null;
@@ -486,9 +477,9 @@ public class SynchronizeCosmeticRegister extends SynchronizeData implements IntS
 		// return super.loadDetailData(this, concat);
 	}
 
-	public BaseEntity loadPresentationDetail(String processo, String apresentacao) {
+	public CosmeticRegisterPresentationDetail loadPresentationDetail(String processo, String apresentacao) {
 
-		BaseEntity rootObject = null;
+		CosmeticRegisterPresentationDetail rootObject = null;
 		OkHttpClient client = new OkHttpClient();
 
 		Request url = null;
@@ -573,93 +564,60 @@ public class SynchronizeCosmeticRegister extends SynchronizeData implements IntS
 	private static final SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
 
 	@Override
-	public void persist(ArrayList<BaseEntity> itens) {
+	public void persist(ArrayList<BaseEntityMongoDB> itens) {
 
 		int size = itens.size();
 		List<ContentCosmeticRegister> bachList = new ArrayList<>();
 		int count = 0;
 
-		for (Iterator<BaseEntity> iterator = itens.iterator(); iterator.hasNext();) {
+		for (Iterator<BaseEntityMongoDB> iterator = itens.iterator(); iterator.hasNext();) {
 
 			ContentCosmeticRegister baseEntity = (ContentCosmeticRegister) iterator.next();
 
 			System.out.println(baseEntity.getProcesso() + " - " + baseEntity.getCnpj());
 
-			ContentCosmeticRegister localCosmetic = cosmeticRegisterRepository.findByProcessExpedienteProcessoCnpj(
+			ContentCosmeticRegister localCosmetic = cosmeticRegisterRepository.findByProcesso(
 					baseEntity.getProcesso(), baseEntity.getExpedienteProcesso(), baseEntity.getCnpj());
 
 			boolean newFoot = (localCosmetic == null);
-			ContentCosmeticRegisterDetail detail = baseEntity.getContentCosmeticRegisterDetail();
-			// (ContentCosmeticRegisterDetail) this
-			// .loadDetailData(contentCosmeticRegister.getProcesso());//
+			
+			if (newFoot == false) continue;
+			
+			//ContentCosmeticRegisterDetail detail = baseEntity.getContentCosmeticRegisterDetail();
+	
+			ContentCosmeticRegisterDetail detail = this.loadDetailData(baseEntity.getProcesso());
+			if (detail != null) {
+				ContentCosmeticRegisterDetail contentCosmeticRegisterDetail = detail;
+				((ContentCosmeticRegister) baseEntity)
+						.setContentCosmeticRegisterDetail(contentCosmeticRegisterDetail);
+			}
+			
 			if (detail != null) {
 
 				if (!newFoot) {
 
 					if (localCosmetic.getContentCosmeticRegisterDetail() != null
 							&& !detail.equals(localCosmetic.getContentCosmeticRegisterDetail())) {
-						detail.setId(localCosmetic.getContentCosmeticRegisterDetail().getId());
-						cosmeticRegisterDetailRepository.save(detail);
-						// bachList.add(detail);
-						// entityCount++;
 					}
 
 				} else {
 					baseEntity.setContentCosmeticRegisterDetail(detail);
 				}
 
-				ArrayList<CosmeticRegisterPetition> peticoes = (ArrayList<CosmeticRegisterPetition>) baseEntity
-						.getContentCosmeticRegisterDetail().getPeticoes();
-
-				int qtdRegistro = 0;
-
-				for (Iterator<CosmeticRegisterPetition> iterator2 = peticoes.iterator(); iterator2.hasNext();) {
-
-					CosmeticRegisterPetition cosmeticRegisterPetition = (CosmeticRegisterPetition) iterator2.next();
-					baseEntity.setDataAlteracao(cosmeticRegisterPetition.getPublicacao());
-					if (baseEntity.getDataAlteracao() == null) {
-						baseEntity.setDataAlteracao(baseEntity.getDataRegistro());
-					}
-					qtdRegistro++;
-				}
-
-				baseEntity.setQtdRegistro(qtdRegistro);
-
-				if (baseEntity.getDataAlteracao() == null) {
-
-					String strAno = baseEntity.getProcesso().substring(baseEntity.getProcesso().length() - 2);
-
-					int ano = Integer.parseInt(strAno);
-
-					if (ano > 19 && ano <= 99) {
-						ano = ano + 1900;
-					} else {
-						ano = ano + 2000;
-					}
-
-					LocalDate dataAlteracao = LocalDate.of(ano, baseEntity.getDataRegistro().getMonthValue(),
-							baseEntity.getDataRegistro().getDayOfMonth());
-
-					baseEntity.setDataAlteracao(dataAlteracao);
-
-				}
 			}
+			
 			if (localCosmetic != null) {
 
 				if (!localCosmetic.equals(baseEntity)) {
 
 					baseEntity.setId(localCosmetic.getId());
-					// detail.setId(localCosmetic.getContentCosmeticRegisterDetail().getId());
-					// baseEntity.setContentCosmeticRegisterDetail(detail);
-					// cosmeticRegisterRepository.save(baseEntity);
 					bachList.add(baseEntity);
 
 				}
 
 			} else {
-
-				// cosmeticRegisterRepository.save(baseEntity);
-				bachList.add(baseEntity);
+					baseEntity.setId(this.sequence.getNextSequenceId(SEQ_KEY));
+				    bachList.add(baseEntity);
 
 			}
 

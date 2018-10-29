@@ -1,6 +1,8 @@
 package com.anvisa.controller.find;
 
 import com.anvisa.controller.mongodb.find.FindDataFootMdb;
+import com.anvisa.controller.mongodb.find.FindDataCosmeticNotificationMdb;
+import com.anvisa.controller.mongodb.find.FindDataCosmeticRegisterMdb;
 import com.anvisa.rest.QueryRecordParameter;
 import com.anvisa.rest.QueryRecordProcessParameter;
 import com.anvisa.rest.RootObject;
@@ -28,9 +30,9 @@ public class FindData {
 		if (queryRecordParameter.getCategory() == CATEGORY_FOOT) {
 			rootObject.getContent().addAll(FindDataFootMdb.find(queryRecordParameter));
 		} else if (queryRecordParameter.getCategory() == CATEGORY_COSMETIC && queryRecordParameter.getOption() == COSMETIC_OPTION_REGISTER) {
-			rootObject.getContent().addAll(FindDataCosmeticRegister.find(queryRecordParameter));
+			rootObject.getContent().addAll(FindDataCosmeticRegisterMdb.find(queryRecordParameter));
 		} else if (queryRecordParameter.getCategory() == CATEGORY_COSMETIC && queryRecordParameter.getOption() == COSMETIC_OPTION_NOTIFICATION) {
-			rootObject.getContent().addAll(FindDataCosmeticNotification.find(queryRecordParameter));
+			rootObject.getContent().addAll(FindDataCosmeticNotificationMdb.find(queryRecordParameter));
 		} else if (queryRecordParameter.getCategory() == CATEGORY_COSMETIC && queryRecordParameter.getOption() == COSMETIC_OPTION_REGULARIZED) {
 			rootObject.getContent().addAll(FindDataCosmeticRegularized.find(queryRecordParameter));		
 		} else if (queryRecordParameter.getCategory() == CATEGORY_SANEANTE && queryRecordParameter.getOption() == SANEANTE_OPTION_PRODUCT) {
