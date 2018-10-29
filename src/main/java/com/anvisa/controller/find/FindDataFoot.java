@@ -16,12 +16,11 @@ import com.anvisa.interceptor.synchronizedata.entity.SynchronizeProcess;
 import com.anvisa.model.persistence.BaseEntity;
 import com.anvisa.model.persistence.rest.foot.ContentFoot;
 import com.anvisa.model.persistence.rest.process.Process;
-import com.anvisa.model.persistence.rest.process.ProcessDetail;
 import com.anvisa.repository.generic.FootRepository;
 import com.anvisa.repository.generic.ProcessRepository;
 import com.anvisa.rest.QueryRecordParameter;
 
-@Component
+
 public class FindDataFoot {
 	
 	@Autowired

@@ -252,7 +252,10 @@ public class ContentCosmeticRegularized extends BaseEntity {
 		for (ProcessPetition processPetition : peticoes) {
 			
 			if (processPetition.getDataPublicacao()!=null) {
-				this.setDataAlteracao(processPetition.getDataPublicacao());
+				if (this.getDataAlteracao() != null
+						&& processPetition.getDataPublicacao().isAfter(this.getDataAlteracao())) {
+					this.setDataAlteracao(processPetition.getDataPublicacao());
+				}
 			}
 			
 		}

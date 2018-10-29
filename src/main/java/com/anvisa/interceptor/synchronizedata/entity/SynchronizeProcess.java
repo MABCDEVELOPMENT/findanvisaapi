@@ -241,10 +241,10 @@ public class SynchronizeProcess extends SynchronizeData implements IntSynchroniz
 
 				JsonNode jsonNode = (JsonNode) elementsContents.next();
 				
-				Process BaseEntity = (Process)this.parseData(jsonNode);
-				ProcessDetail drocessDetail = (ProcessDetail)this.loadDetailData(this, cnpj);
+				Process baseEntity = (Process)this.parseData(jsonNode);
+				ProcessDetail drocessDetail = (ProcessDetail)this.loadDetailData(this, baseEntity.getProcesso());
 	
-				rootObject.add(BaseEntity);	
+				rootObject.add(baseEntity);	
 
 				System.out.println(i++);
 				if(qtd==1) break;

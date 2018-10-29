@@ -1,5 +1,6 @@
 package com.anvisa.controller.find;
 
+import com.anvisa.controller.mongodb.find.FindDataFootMdb;
 import com.anvisa.rest.QueryRecordParameter;
 import com.anvisa.rest.QueryRecordProcessParameter;
 import com.anvisa.rest.RootObject;
@@ -25,7 +26,7 @@ public class FindData {
 		RootObject rootObject = new RootObject();
 		
 		if (queryRecordParameter.getCategory() == CATEGORY_FOOT) {
-			rootObject.getContent().addAll(FindDataFoot.find(queryRecordParameter));
+			rootObject.getContent().addAll(FindDataFootMdb.find(queryRecordParameter));
 		} else if (queryRecordParameter.getCategory() == CATEGORY_COSMETIC && queryRecordParameter.getOption() == COSMETIC_OPTION_REGISTER) {
 			rootObject.getContent().addAll(FindDataCosmeticRegister.find(queryRecordParameter));
 		} else if (queryRecordParameter.getCategory() == CATEGORY_COSMETIC && queryRecordParameter.getOption() == COSMETIC_OPTION_NOTIFICATION) {

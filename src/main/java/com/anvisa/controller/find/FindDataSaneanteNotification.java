@@ -64,7 +64,7 @@ public class FindDataSaneanteNotification {
 					Process newProcess = (Process) processos.get(0);
 					ArrayList<BaseEntity> processo = new ArrayList<BaseEntity>();
 					processo.add(processos.get(0));
-				    //synchronizeProcess.persist(processo);
+				    synchronizeProcess.persist(processo);
 					saneanteNotification.lodaProcess(newProcess);
 					break;
 				}

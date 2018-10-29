@@ -223,8 +223,12 @@ public class Process extends BaseEntity {
 		
 		for (ProcessPetition processPetition : peticoes) {
 			
-			if (processPetition.getDataPublicacao()!=null) {
+			if (this.getDataAlteracao() != null
+					&& processPetition.getDataPublicacao().isAfter(this.getDataAlteracao())) {
 				this.setDataAlteracao(processPetition.getDataPublicacao());
+			} else {
+				if (this.getDataAlteracao() == null)
+				   this.setDataAlteracao(processPetition.getDataPublicacao());
 			}
 			
 		}
