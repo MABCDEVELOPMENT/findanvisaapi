@@ -47,9 +47,9 @@ public class SynchronizeSaneanteNotificationMdb extends SynchronizeDataMdb imple
 
 	public SynchronizeSaneanteNotificationMdb() {
 
-		SEQ_KEY = "Saneante_Notification"; 
+		SEQ_KEY = "saneante_notification"; 
 		
-		URL = "https://consultas.anvisa.gov.br/api/consulta/saneantes/notificados?count=10&page=1&filter[cnpj]=";
+		URL = "https://consultas.anvisa.gov.br/api/consulta/saneantes/notificados?count=10000&page=1&filter[cnpj]=";
 		
 		URL_DETAIL = "https://consultas.anvisa.gov.br/api/consulta/saneantes/notificados/";
 

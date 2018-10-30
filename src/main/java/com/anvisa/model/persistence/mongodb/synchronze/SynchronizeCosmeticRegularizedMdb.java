@@ -51,7 +51,7 @@ public class SynchronizeCosmeticRegularizedMdb extends SynchronizeDataMdb implem
 
 	public SynchronizeCosmeticRegularizedMdb() {
 		
-		SEQ_KEY = "Cometic_Regularized";
+		SEQ_KEY = "cometic_regularized";
 
 		URL = "https://consultas.anvisa.gov.br/api/consulta/cosmeticos/regularizados?count=1000&page=1&filter[cnpj]=";
 

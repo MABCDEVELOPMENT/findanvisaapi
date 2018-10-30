@@ -341,6 +341,9 @@ public class ContentCosmeticRegister extends BaseEntityMongoDB {
 				if (this.getDataAlteracao() != null
 						&& processPetition.getDataPublicacao().isAfter(this.getDataAlteracao())) {
 					this.setDataAlteracao(processPetition.getDataPublicacao());
+				} else {
+					if (this.getDataAlteracao() == null)
+					   this.setDataAlteracao(processPetition.getDataPublicacao());
 				}
 			}
 			
@@ -358,9 +361,9 @@ public class ContentCosmeticRegister extends BaseEntityMongoDB {
 		    this.setDataRegistro(detail.getProcesso().getPeticao().getDataEntrada());
 		} catch (Exception e) {
 			// TODO: handle exception
-			System.out.println(" ContentCosmeticRegister CNPJ "+this.getCnpj()+" Processo "+this.getProcesso()+" ERRO DE DATAS");
+			System.out.println(this.getClass().getName()+" CNPJ "+this.getCnpj()+" Processo "+this.getProcesso()+" ERRO DE DATAS");
 		}
-	}	
+	}
 	
 
 }

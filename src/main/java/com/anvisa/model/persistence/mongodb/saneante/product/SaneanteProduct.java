@@ -271,38 +271,40 @@ public class SaneanteProduct extends BaseEntityMongoDB {
 	}
 
 	public void lodaProcess(Process process) {
-
+		
 		this.setDataAlteracao(null);
-
+		
 		ProcessDetail detail = process.getProcessDetail();
-
+		
 		List<ProcessPetition> peticoes = detail.getPeticoes();
-
+		
 		for (ProcessPetition processPetition : peticoes) {
-
-			if (processPetition.getDataPublicacao() != null) {
+			
+			if (processPetition.getDataPublicacao()!=null) {
 				if (this.getDataAlteracao() != null
 						&& processPetition.getDataPublicacao().isAfter(this.getDataAlteracao())) {
 					this.setDataAlteracao(processPetition.getDataPublicacao());
+				} else {
+					if (this.getDataAlteracao() == null)
+					   this.setDataAlteracao(processPetition.getDataPublicacao());
 				}
 			}
-
+			
 		}
-
+		
 		this.setQtdRegistro(peticoes.size());
 		try {
-
-			if (this.getDataAlteracao() == null) {
-
+			
+			if (this.getDataAlteracao()==null) {
+				
 				this.setDataAlteracao(detail.getProcesso().getPeticao().getDataPublicacao());
-
+				
 			}
-
-			this.setDataRegistro(detail.getProcesso().getPeticao().getDataEntrada());
+			
+		    this.setDataRegistro(detail.getProcesso().getPeticao().getDataEntrada());
 		} catch (Exception e) {
 			// TODO: handle exception
-			System.out.println(
-					" SaneanteProduct CNPJ " + this.getCnpj() + " Processo " + this.getProcesso() + " ERRO DE DATAS");
+			System.out.println(this.getClass().getName()+" CNPJ "+this.getCnpj()+" Processo "+this.getProcesso()+" ERRO DE DATAS");
 		}
 	}
 

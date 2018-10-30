@@ -10,7 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
-import com.anvisa.interceptor.synchronizedata.entity.SynchronizeProcess;
 import com.anvisa.model.persistence.RegisterCNPJ;
 import com.anvisa.repository.generic.RegisterCNPJRepository;
 
@@ -35,7 +34,7 @@ public class SynchronizeDataTask {
 
 		log.info("SynchronizeData", dateFormat.format(new Date()));
 		
-		IntSynchronize[] intSynchronize = { new SynchronizeProcess()};
+		IntSynchronize[] intSynchronize = { };
 		
 		List<RegisterCNPJ> registerCNPJs = registerCNPJRepository.findAll(0);
 

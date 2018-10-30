@@ -11,14 +11,13 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Component;
 
-import com.anvisa.interceptor.synchronizedata.entity.SynchronizeProcess;
-import com.anvisa.model.persistence.BaseEntity;
 import com.anvisa.model.persistence.mongodb.BaseEntityMongoDB;
+import com.anvisa.model.persistence.mongodb.process.Process;
+import com.anvisa.model.persistence.mongodb.repository.ProcessRepositoryMdb;
 import com.anvisa.model.persistence.mongodb.repository.SaneanteNotificationRepositoryMdb;
 import com.anvisa.model.persistence.mongodb.saneante.notification.SaneanteNotification;
-import com.anvisa.repository.generic.ProcessRepository;
+import com.anvisa.model.persistence.mongodb.synchronze.SynchronizeProcessMdb;
 import com.anvisa.rest.QueryRecordParameter;
-import com.anvisa.model.persistence.mongodb.process.Process;
 
 @Component
 public class FindDataSaneanteNotificationMdb {
@@ -30,11 +29,11 @@ public class FindDataSaneanteNotificationMdb {
 	private static MongoTemplate mongoTemplate;
 	
 	@Autowired
-	private static ProcessRepository processRepository;
+	private static ProcessRepositoryMdb processRepository;
 	
 	@Autowired
 	public void setService(SaneanteNotificationRepositoryMdb saneanteNotificationRepository,
-						   ProcessRepository processRepository,
+						   ProcessRepositoryMdb processRepository,
 						   MongoTemplate mongoTemplate) {
 		
 		this.saneanteNotificationRepository = saneanteNotificationRepository;
@@ -56,14 +55,14 @@ public class FindDataSaneanteNotificationMdb {
 		
 		List<SaneanteNotification> saneanteNotifications = filter(queryRecordParameter);
 
-		SynchronizeProcess synchronizeProcess = new SynchronizeProcess();
+		SynchronizeProcessMdb synchronizeProcess = new SynchronizeProcessMdb();
 
 		for (SaneanteNotification saneanteNotification : saneanteNotifications) {
 
-			Process process = processRepository.findByProcessCnpj(saneanteNotification.getProcesso(),
+			Process process = processRepository.findByProcesso(saneanteNotification.getProcesso(),
 					queryRecordParameter.getCnpj());
 			if (process == null) {
-				ArrayList<BaseEntity> processos = synchronizeProcess.loadData(saneanteNotification.getCnpj()
+				ArrayList<BaseEntityMongoDB> processos = synchronizeProcess.loadData(saneanteNotification.getCnpj()
 						+ "&filter[processo]=" + saneanteNotification.getProcesso(),1);
 				
 				if (processos.size() > 0) {

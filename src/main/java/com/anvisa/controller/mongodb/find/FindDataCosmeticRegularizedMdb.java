@@ -11,12 +11,12 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Component;
 
-import com.anvisa.interceptor.synchronizedata.entity.SynchronizeProcess;
 import com.anvisa.model.persistence.mongodb.cosmetic.regularized.ContentCosmeticRegularized;
-import com.anvisa.model.persistence.mongodb.repository.CosmeticRegularizedRepositoryMdb;
-import com.anvisa.repository.generic.ProcessRepository;
-import com.anvisa.rest.QueryRecordParameter;
 import com.anvisa.model.persistence.mongodb.process.Process;
+import com.anvisa.model.persistence.mongodb.repository.CosmeticRegularizedRepositoryMdb;
+import com.anvisa.model.persistence.mongodb.repository.ProcessRepositoryMdb;
+import com.anvisa.model.persistence.mongodb.synchronze.SynchronizeProcessMdb;
+import com.anvisa.rest.QueryRecordParameter;
 
 @Component
 public class FindDataCosmeticRegularizedMdb {
@@ -28,11 +28,11 @@ public class FindDataCosmeticRegularizedMdb {
 	private static MongoTemplate mongoTemplate;
 	
 	@Autowired
-	private static ProcessRepository processRepository;
+	private static ProcessRepositoryMdb processRepository;
 	
 	@Autowired
 	public void setService(CosmeticRegularizedRepositoryMdb cosmeticRegularizedRepository,
-													ProcessRepository processRepository,
+													ProcessRepositoryMdb processRepository,
 													MongoTemplate mongoTemplate) {
 		this.cosmeticRegularizedRepository = cosmeticRegularizedRepository;
 		this.processRepository = processRepository;
@@ -45,11 +45,11 @@ public class FindDataCosmeticRegularizedMdb {
 
 		List<ContentCosmeticRegularized> contentCosmeticRegularizeds = filter(queryRecordParameter);
 
-		SynchronizeProcess synchronizeProcess = new SynchronizeProcess();
+		SynchronizeProcessMdb synchronizeProcess = new SynchronizeProcessMdb();
 
 		for (ContentCosmeticRegularized contentCosmeticRegularized : contentCosmeticRegularizeds) {
 
-			Process process = processRepository.findByProcessCnpj(contentCosmeticRegularized.getProcesso(),
+			Process process = processRepository.findByProcesso(contentCosmeticRegularized.getProcesso(),
 					queryRecordParameter.getCnpj());
 			if (process == null) {
 				continue;

@@ -4,6 +4,7 @@ import com.anvisa.controller.mongodb.find.FindDataCosmeticNotificationMdb;
 import com.anvisa.controller.mongodb.find.FindDataCosmeticRegisterMdb;
 import com.anvisa.controller.mongodb.find.FindDataCosmeticRegularizedMdb;
 import com.anvisa.controller.mongodb.find.FindDataFootMdb;
+import com.anvisa.controller.mongodb.find.FindDataProcessMdb;
 import com.anvisa.controller.mongodb.find.FindDataSaneanteNotificationMdb;
 import com.anvisa.controller.mongodb.find.FindDataSaneanteProductMdb;
 import com.anvisa.rest.QueryRecordParameter;
@@ -51,7 +52,7 @@ public class FindData {
 	public static RootObject findProcess(QueryRecordProcessParameter queryRecordParameter) {
 	
 		RootObject rootObject = new RootObject();
-		rootObject.getContent().addAll(FindDataProcess.find(queryRecordParameter));
+		rootObject.getContent().addAll(FindDataProcessMdb.find(queryRecordParameter));
 		return rootObject;
 	}
 

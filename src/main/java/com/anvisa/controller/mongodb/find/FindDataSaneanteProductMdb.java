@@ -11,13 +11,13 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Component;
 
-import com.anvisa.interceptor.synchronizedata.entity.SynchronizeProcess;
-import com.anvisa.model.persistence.BaseEntity;
+import com.anvisa.model.persistence.mongodb.BaseEntityMongoDB;
+import com.anvisa.model.persistence.mongodb.process.Process;
+import com.anvisa.model.persistence.mongodb.repository.ProcessRepositoryMdb;
 import com.anvisa.model.persistence.mongodb.repository.SaneanteProductRepositoryMdb;
 import com.anvisa.model.persistence.mongodb.saneante.product.SaneanteProduct;
-import com.anvisa.repository.generic.ProcessRepository;
+import com.anvisa.model.persistence.mongodb.synchronze.SynchronizeProcessMdb;
 import com.anvisa.rest.QueryRecordParameter;
-import com.anvisa.model.persistence.mongodb.process.Process;
 @Component
 public class FindDataSaneanteProductMdb {
 
@@ -28,10 +28,10 @@ public class FindDataSaneanteProductMdb {
 	private static MongoTemplate mongoTemplate;
 
 	@Autowired
-	private static ProcessRepository processRepository;
+	private static ProcessRepositoryMdb processRepository;
 
 	@Autowired
-	public void setService(SaneanteProductRepositoryMdb saneanteProductRepository, ProcessRepository processRepository,MongoTemplate mongoTemplate) {
+	public void setService(SaneanteProductRepositoryMdb saneanteProductRepository, ProcessRepositoryMdb processRepository,MongoTemplate mongoTemplate) {
 		this.saneanteProductRepository = saneanteProductRepository;
 		this.processRepository = processRepository;
 		this.mongoTemplate = mongoTemplate;
@@ -48,20 +48,20 @@ public class FindDataSaneanteProductMdb {
 
 		List<SaneanteProduct> saneanteProducts = filter(queryRecordParameter);
 
-		SynchronizeProcess synchronizeProcess = new SynchronizeProcess();
+		SynchronizeProcessMdb synchronizeProcess = new SynchronizeProcessMdb();
 
 		for (SaneanteProduct saneanteProduct : saneanteProducts) {
 
-			Process process = processRepository.findByProcessCnpj(saneanteProduct.getProcesso(),
+			Process process = processRepository.findByProcesso(saneanteProduct.getProcesso(),
 					queryRecordParameter.getCnpj());
 			if (process == null) {
-				ArrayList<BaseEntity> processos = synchronizeProcess
+				ArrayList<BaseEntityMongoDB> processos = synchronizeProcess
 						.loadData(saneanteProduct.getCnpj() + "&filter[processo]="
 								+ saneanteProduct.getProcesso(),1);
 
 				if (processos.size() > 0) {
 					Process newProcess = (Process) processos.get(0);
-					ArrayList<BaseEntity> processo = new ArrayList<BaseEntity>();
+					ArrayList<BaseEntityMongoDB> processo = new ArrayList<BaseEntityMongoDB>();
 					processo.add(processos.get(0));
 				    synchronizeProcess.persist(processo);
 					saneanteProduct.lodaProcess(newProcess);

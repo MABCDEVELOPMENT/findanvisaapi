@@ -11,14 +11,13 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Component;
 
-import com.anvisa.interceptor.synchronizedata.entity.SynchronizeProcess;
-import com.anvisa.model.persistence.BaseEntity;
 import com.anvisa.model.persistence.mongodb.BaseEntityMongoDB;
 import com.anvisa.model.persistence.mongodb.foot.ContentFootMdb;
-import com.anvisa.model.persistence.mongodb.repository.FootRepositoryMdb;
-import com.anvisa.repository.generic.ProcessRepository;
-import com.anvisa.rest.QueryRecordParameter;
 import com.anvisa.model.persistence.mongodb.process.Process;
+import com.anvisa.model.persistence.mongodb.repository.FootRepositoryMdb;
+import com.anvisa.model.persistence.mongodb.repository.ProcessRepositoryMdb;
+import com.anvisa.model.persistence.mongodb.synchronze.SynchronizeProcessMdb;
+import com.anvisa.rest.QueryRecordParameter;
 
 @Component
 public class FindDataFootMdb {
@@ -30,11 +29,11 @@ public class FindDataFootMdb {
 	private static MongoTemplate mongoTemplate;
 	
 	@Autowired
-	private static ProcessRepository processRepository;
+	private static ProcessRepositoryMdb processRepository;
 	
 	@Autowired
 	public void setService(FootRepositoryMdb footRepository,
-						   ProcessRepository processRepository,
+						   ProcessRepositoryMdb processRepository,
 						   MongoTemplate mongoTemplate) {
 		this.footRepository = footRepository;
 		this.processRepository = processRepository;
@@ -47,17 +46,18 @@ public class FindDataFootMdb {
 	
 		List<ContentFootMdb> contentFoots = filter(queryRecordParameter);
 		
-		SynchronizeProcess synchronizeProcess = new SynchronizeProcess();
+		SynchronizeProcessMdb synchronizeProcess = new SynchronizeProcessMdb();
 		
 		for (ContentFootMdb contentFoot : contentFoots) {
 			
-			Process process = processRepository.findByProcessCnpj(contentFoot.getProcesso(), contentFoot.getCnpj());
+			Process process = processRepository.findByProcesso(contentFoot.getProcesso(), contentFoot.getCnpj());
 			if (process==null) {
-				ArrayList<BaseEntity> processos =  synchronizeProcess.loadData(contentFoot.getCnpj()+"&filter[processo]="+contentFoot.getProcesso(),1);
+				ArrayList<BaseEntityMongoDB> processos =  synchronizeProcess.loadData(contentFoot.getCnpj()+"&filter[processo]="+contentFoot.getProcesso(),1);
 				
 				if(processos.size()>0) {
 					Process newProcess = (Process) processos.get(0);
 					ArrayList<BaseEntityMongoDB> processo = new ArrayList<BaseEntityMongoDB>();
+					newProcess.lodaDateProcess();
 					processo.add(processos.get(0));
 				    //synchronizeProcess.persist(processo);
 					contentFoot.lodaProcess(newProcess);
@@ -79,8 +79,6 @@ public class FindDataFootMdb {
 	private static List<ContentFootMdb> filter(QueryRecordParameter queryRecordParameter){
 		
 		Query dynamicQuery = new Query();
-		
-		
 		
 		if(queryRecordParameter.getCnpj()!=null && !queryRecordParameter.getCnpj().isEmpty()) {
 			Criteria nameCriteria = Criteria.where("cnpj").is(queryRecordParameter.getCnpj());

@@ -11,13 +11,13 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Component;
 
-import com.anvisa.interceptor.synchronizedata.entity.SynchronizeProcess;
-import com.anvisa.model.persistence.BaseEntity;
+import com.anvisa.model.persistence.mongodb.BaseEntityMongoDB;
 import com.anvisa.model.persistence.mongodb.cosmetic.register.ContentCosmeticRegister;
-import com.anvisa.model.persistence.mongodb.repository.CosmeticRegisterRepositoryMdb;
-import com.anvisa.repository.generic.ProcessRepository;
-import com.anvisa.rest.QueryRecordParameter;
 import com.anvisa.model.persistence.mongodb.process.Process;
+import com.anvisa.model.persistence.mongodb.repository.CosmeticRegisterRepositoryMdb;
+import com.anvisa.model.persistence.mongodb.repository.ProcessRepositoryMdb;
+import com.anvisa.model.persistence.mongodb.synchronze.SynchronizeProcessMdb;
+import com.anvisa.rest.QueryRecordParameter;
 @Component
 public class FindDataCosmeticRegisterMdb {
 
@@ -28,12 +28,12 @@ public class FindDataCosmeticRegisterMdb {
 	private static MongoTemplate mongoTemplate;
 	
 	@Autowired
-	private static ProcessRepository processRepository;
+	private static ProcessRepositoryMdb processRepository;
 
 	@Autowired
 	public void setService(CosmeticRegisterRepositoryMdb cosmeticRegisterRepository,
 			 			    MongoTemplate mongoTemplate,
-							ProcessRepository processRepository) {
+							ProcessRepositoryMdb processRepository) {
 		this.cosmeticRegisterRepository = cosmeticRegisterRepository;
 		this.processRepository = processRepository;
 		this.mongoTemplate = mongoTemplate;
@@ -45,19 +45,19 @@ public class FindDataCosmeticRegisterMdb {
 
 		List<ContentCosmeticRegister> contentCosmeticRegisters = filter(queryRecordParameter);
 
-		SynchronizeProcess synchronizeProcess = new SynchronizeProcess();
+		SynchronizeProcessMdb synchronizeProcess = new SynchronizeProcessMdb();
 
 		for (ContentCosmeticRegister contentCosmeticRegister : contentCosmeticRegisters) {
 
-			Process process = processRepository.findByProcessCnpj(contentCosmeticRegister.getProcesso(),
+			Process process = processRepository.findByProcesso(contentCosmeticRegister.getProcesso(),
 					contentCosmeticRegister.getCnpj());
 			if (process == null) {
-				ArrayList<BaseEntity> processos = synchronizeProcess.loadData(contentCosmeticRegister.getCnpj()
+				ArrayList<BaseEntityMongoDB> processos = synchronizeProcess.loadData(contentCosmeticRegister.getCnpj()
 						+ "&filter[processo]=" + contentCosmeticRegister.getProcesso(),1);
 
 				if (processos.size() > 0) {
 					Process newProcess = (Process) processos.get(0);
-					ArrayList<BaseEntity> processo = new ArrayList<BaseEntity>();
+					ArrayList<BaseEntityMongoDB> processo = new ArrayList<BaseEntityMongoDB>();
 					processo.add(processos.get(0));
 				    synchronizeProcess.persist(processo);
 					contentCosmeticRegister.lodaProcess(newProcess);

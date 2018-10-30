@@ -1,7 +1,6 @@
 package com.anvisa.model.persistence.mongodb.synchronze;
 
 import java.text.SimpleDateFormat;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
@@ -13,23 +12,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.anvisa.core.json.JsonToObject;
-import com.anvisa.interceptor.synchronizedata.IntSynchronize;
-import com.anvisa.interceptor.synchronizedata.SynchronizeData;
 import com.anvisa.interceptor.synchronizedata.SynchronizeDataTask;
-import com.anvisa.model.persistence.BaseEntity;
 import com.anvisa.model.persistence.mongodb.BaseEntityMongoDB;
-import com.anvisa.model.persistence.mongodb.cosmetic.notification.ContentCosmeticNotificationDetail;
 import com.anvisa.model.persistence.mongodb.interceptor.synchronizedata.IntSynchronizeMdb;
+import com.anvisa.model.persistence.mongodb.process.Process;
 import com.anvisa.model.persistence.mongodb.process.ProcessDetail;
-import com.anvisa.model.persistence.mongodb.process.ProcessPetition;
+import com.anvisa.model.persistence.mongodb.repository.ProcessRepositoryMdb;
 import com.anvisa.model.persistence.mongodb.repository.SynchronizeDataMdb;
 import com.anvisa.model.persistence.mongodb.sequence.SequenceDaoImpl;
-import com.anvisa.repository.generic.ProcessRepository;
 import com.anvisa.rest.model.Peticao;
 import com.anvisa.rest.model.Processo;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.anvisa.model.persistence.mongodb.process.Process;
 
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -46,10 +40,10 @@ public class SynchronizeProcessMdb extends SynchronizeDataMdb implements IntSync
 	public static SequenceDaoImpl sequence;
 	
 	@Autowired
-	private static ProcessRepository processRepository;
+	private static ProcessRepositoryMdb processRepository;
 
 	@Autowired
-	public void setService(ProcessRepository processRepository, SequenceDaoImpl sequence) {
+	public void setService(ProcessRepositoryMdb processRepository, SequenceDaoImpl sequence) {
 
 		this.processRepository = processRepository;
 		this.sequence = sequence;
@@ -155,7 +149,7 @@ public class SynchronizeProcessMdb extends SynchronizeDataMdb implements IntSync
 
 			Process baseEntity = (Process) iterator.next();
 
-			Process localProcess = processRepository.findByProcessCnpj(baseEntity.getProcesso(),
+			Process localProcess = processRepository.findByProcesso(baseEntity.getProcesso(),
 					baseEntity.getCnpj());
 
 			boolean newNotification = (localProcess == null);
@@ -205,9 +199,10 @@ public class SynchronizeProcessMdb extends SynchronizeDataMdb implements IntSync
 
 	}
 	
-	public ArrayList<BaseEntity> loadData(String cnpj,int qtd) {
+
+	public ArrayList<BaseEntityMongoDB> loadData(String cnpj,int qtd) {
 		// TODO Auto-generated method stub
-		ArrayList<BaseEntity> rootObject = new ArrayList<BaseEntity>();
+		ArrayList<BaseEntityMongoDB> rootObject = new ArrayList<BaseEntityMongoDB>();
 
 		OkHttpClient client = new OkHttpClient();
 		
@@ -240,7 +235,7 @@ public class SynchronizeProcessMdb extends SynchronizeDataMdb implements IntSync
 				JsonNode jsonNode = (JsonNode) elementsContents.next();
 				
 				Process baseEntity = (Process)this.parseData(jsonNode);
-				ProcessDetail drocessDetail = (ProcessDetail)this.loadDetailData(this, baseEntity.getProcesso());
+				ProcessDetail drocessDetail = this.loadDetailData(baseEntity.getProcesso());
 	
 				rootObject.add(baseEntity);	
 

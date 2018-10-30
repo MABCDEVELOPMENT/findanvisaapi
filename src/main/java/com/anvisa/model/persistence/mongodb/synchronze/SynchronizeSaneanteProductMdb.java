@@ -45,8 +45,10 @@ public class SynchronizeSaneanteProductMdb extends SynchronizeDataMdb implements
 	}
 
 	public SynchronizeSaneanteProductMdb() {
+		
+		SEQ_KEY = "saneante_product";
 
-		URL = "https://consultas.anvisa.gov.br/api/consulta/produtos/3?count=10&page=1&filter[cnpj]=";
+		URL = "https://consultas.anvisa.gov.br/api/consulta/produtos/3?count=10000&page=1&filter[cnpj]=";
 		
 		URL_DETAIL = "https://consultas.anvisa.gov.br/api/consulta/produtos/3/";
 
@@ -73,7 +75,7 @@ public class SynchronizeSaneanteProductMdb extends SynchronizeDataMdb implements
 		
 		saneanteProduct.setDataRegistro(JsonToObject.getValueDate(jsonNode,"produto","dataRegistro"));
 		
-		if (saneanteProduct.getDataVencimento() != null || saneanteProduct.getDataRegistro() != null) {
+/*		if (saneanteProduct.getDataVencimento() != null || saneanteProduct.getDataRegistro() != null) {
 
 			String strAno = saneanteProduct.getProcesso().substring(saneanteProduct.getProcesso().length() - 2);
 
@@ -91,7 +93,7 @@ public class SynchronizeSaneanteProductMdb extends SynchronizeDataMdb implements
 						data.getDayOfMonth());
 				saneanteProduct.setDataAlteracao(dataAlteracao);
 			}	
-		}
+		}*/
 		return saneanteProduct;
 	}
 
@@ -236,7 +238,7 @@ public class SynchronizeSaneanteProductMdb extends SynchronizeDataMdb implements
 				}
 
 			} else {
-				baseEntity.setId(localSaneanteProduct.getId());
+				baseEntity.setId(this.sequence.getNextSequenceId(SEQ_KEY));
 				baseEntity.setSaneanteProductDetail(saneanteProductDetail);
 				seneanteProductRepository.save(baseEntity);
 				

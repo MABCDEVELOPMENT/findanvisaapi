@@ -356,16 +356,17 @@ public class ContentFootMdb extends BaseEntityMongoDB {
 		this.setQtdRegistro(peticoes.size());
 		try {
 			
-			if (this.getDataAlteracao()==null) {
+			if (this.getDataAlteracao()==null && detail.getProcesso()!=null) {
 				
 				this.setDataAlteracao(detail.getProcesso().getPeticao().getDataPublicacao());
 				
 			}
-			
-		    this.setDataRegistro(detail.getProcesso().getPeticao().getDataEntrada());
+			if (detail.getProcesso()!=null) {
+		       this.setDataRegistro(detail.getProcesso().getPeticao().getDataEntrada());
+			}   
 		} catch (Exception e) {
 			// TODO: handle exception
-			System.out.println(" FOOT CNPJ "+this.getCnpj()+" Processo "+this.getProcesso()+" ERRO DE DATAS");
+			System.out.println(this.getClass().getName()+" CNPJ "+this.getCnpj()+" Processo "+this.getProcesso()+" ERRO DE DATAS");
 		}
 	}
 
