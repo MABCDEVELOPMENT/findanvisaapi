@@ -12,8 +12,9 @@ import java.util.Iterator;
 import java.util.concurrent.TimeUnit;
 
 import com.anvisa.core.type.TypeSearchProductCosmetic;
+import com.anvisa.model.persistence.mongodb.foot.ContentFootDetailMdb;
+import com.anvisa.model.persistence.mongodb.foot.ContentFootMdb;
 import com.anvisa.model.persistence.rest.Content;
-import com.anvisa.model.persistence.rest.foot.ContentFoot;
 import com.anvisa.persistence.rest.ContentProcesso;
 import com.anvisa.rest.QueryRecordParameter;
 import com.anvisa.rest.QueryRecordProcessParameter;
@@ -28,7 +29,6 @@ import com.anvisa.rest.detalhe.comestico.regularizado.EmpresaDetentora;
 import com.anvisa.rest.detalhe.processo.ContentProcessoDetalhe;
 import com.anvisa.rest.detalhe.saneante.notificado.ContentDetalheSaneanteNotificado;
 import com.anvisa.rest.detalhe.saneante.product.ContentDetalheSaneanteProduct;
-import com.anvisa.rest.model.Assunto;
 import com.anvisa.rest.model.ContentProduto;
 import com.anvisa.rest.model.ContentProdutoNotificado;
 import com.anvisa.rest.model.ContentProdutoRegistrado;
@@ -168,7 +168,7 @@ public class UrlToJson {
 
 					content.setProduto(JsonToObject.getProduto(jsonNode));
 
-					ContentFoot contentProduto = new ContentFoot(content);
+					ContentFootMdb contentProduto = new ContentFootMdb(content);
 
 					// contentProduto.setSituacao(content.getProduto().getCategoria().getDescricao());
 

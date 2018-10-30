@@ -9,16 +9,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.stereotype.Component;
 
 import com.anvisa.interceptor.synchronizedata.entity.SynchronizeProcess;
 import com.anvisa.model.persistence.BaseEntity;
 import com.anvisa.model.persistence.mongodb.cosmetic.register.ContentCosmeticRegister;
 import com.anvisa.model.persistence.mongodb.repository.CosmeticRegisterRepositoryMdb;
-import com.anvisa.model.persistence.rest.process.Process;
 import com.anvisa.repository.generic.ProcessRepository;
 import com.anvisa.rest.QueryRecordParameter;
-
-
+import com.anvisa.model.persistence.mongodb.process.Process;
+@Component
 public class FindDataCosmeticRegisterMdb {
 
 	@Autowired

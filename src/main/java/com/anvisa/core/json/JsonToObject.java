@@ -7,8 +7,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Locale;
 
-import com.anvisa.model.persistence.rest.saneante.notification.SaneanteNotificationEan;
-import com.anvisa.model.persistence.rest.saneante.product.SaneanteStringListGeneric;
+import com.anvisa.model.persistence.mongodb.saneante.notification.SaneanteNotificationEan;
+import com.anvisa.model.persistence.mongodb.saneante.product.SaneanteStringListGeneric;
 import com.anvisa.rest.detalhe.saneante.notificado.Ean;
 import com.anvisa.rest.model.Assunto;
 import com.anvisa.rest.model.Categoria;

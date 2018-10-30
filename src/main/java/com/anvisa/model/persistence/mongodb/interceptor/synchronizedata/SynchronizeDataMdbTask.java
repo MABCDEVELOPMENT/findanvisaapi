@@ -43,7 +43,7 @@ public class SynchronizeDataMdbTask {
 		List<RegisterCNPJ> registerCNPJs = registerCNPJRepository.findAll(0);
 
  		
- 		int cont = 0;
+ 		/*int cont = 0;
 
 		for (RegisterCNPJ registerCNPJ : registerCNPJs) {
  			
@@ -60,12 +60,12 @@ public class SynchronizeDataMdbTask {
 			
 		}
 	
- 		log.info("SynchronizeData => End Foot Total ", dateFormat.format(new Date()));
+ 		log.info("SynchronizeData => End Foot Total ", dateFormat.format(new Date()));*/
  		
  		registerCNPJs = registerCNPJRepository.findAll(1);
 
  		
- 		cont = 0;
+ 		int cont = 0;
 
 		for (RegisterCNPJ registerCNPJ : registerCNPJs) {
  			

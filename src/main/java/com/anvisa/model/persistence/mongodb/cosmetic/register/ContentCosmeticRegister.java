@@ -9,11 +9,12 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 import com.anvisa.model.persistence.mongodb.BaseEntityMongoDB;
 import com.anvisa.model.persistence.mongodb.cosmetic.register.petition.CosmeticRegisterPetition;
-import com.anvisa.model.persistence.rest.process.Process;
-import com.anvisa.model.persistence.rest.process.ProcessDetail;
-import com.anvisa.model.persistence.rest.process.ProcessPetition;
+import com.anvisa.model.persistence.mongodb.process.Process;
+import com.anvisa.model.persistence.mongodb.process.ProcessDetail;
+import com.anvisa.model.persistence.mongodb.process.ProcessPetition;
 import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonFormat;
+
 
 
 @Document(collection = "cosmeticRegister")

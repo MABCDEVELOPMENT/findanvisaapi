@@ -13,11 +13,12 @@ import org.springframework.stereotype.Component;
 
 import com.anvisa.interceptor.synchronizedata.entity.SynchronizeProcess;
 import com.anvisa.model.persistence.BaseEntity;
+import com.anvisa.model.persistence.mongodb.BaseEntityMongoDB;
 import com.anvisa.model.persistence.mongodb.foot.ContentFootMdb;
 import com.anvisa.model.persistence.mongodb.repository.FootRepositoryMdb;
-import com.anvisa.model.persistence.rest.process.Process;
 import com.anvisa.repository.generic.ProcessRepository;
 import com.anvisa.rest.QueryRecordParameter;
+import com.anvisa.model.persistence.mongodb.process.Process;
 
 @Component
 public class FindDataFootMdb {
@@ -56,7 +57,7 @@ public class FindDataFootMdb {
 				
 				if(processos.size()>0) {
 					Process newProcess = (Process) processos.get(0);
-					ArrayList<BaseEntity> processo = new ArrayList<BaseEntity>();
+					ArrayList<BaseEntityMongoDB> processo = new ArrayList<BaseEntityMongoDB>();
 					processo.add(processos.get(0));
 				    //synchronizeProcess.persist(processo);
 					contentFoot.lodaProcess(newProcess);

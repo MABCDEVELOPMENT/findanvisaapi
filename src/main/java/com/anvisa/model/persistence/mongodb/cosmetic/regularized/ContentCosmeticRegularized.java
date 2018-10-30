@@ -1,4 +1,4 @@
-package com.anvisa.model.persistence.mongodb.cosmetic.notification;
+package com.anvisa.model.persistence.mongodb.cosmetic.regularized;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -8,59 +8,38 @@ import javax.persistence.Transient;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import com.anvisa.model.persistence.mongodb.BaseEntityMongoDB;
+import com.anvisa.model.persistence.mongodb.process.Process;
 import com.anvisa.model.persistence.mongodb.process.ProcessDetail;
 import com.anvisa.model.persistence.mongodb.process.ProcessPetition;
 import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.anvisa.model.persistence.mongodb.process.Process;
 
 
-@Document(collection = "cosmeticNotification")
-public class ContentCosmeticNotification extends BaseEntityMongoDB {
-
-
+@Document(collection = "cosmeticRegularized")
+public class ContentCosmeticRegularized extends BaseEntityMongoDB {
+	
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-
-	@JsonAlias(value = "assunto")
-	String assunto;
-
-	@JsonAlias(value = "expedientePeticao")
-	String expedientePeticao;
-
-	@JsonAlias(value = "transacao")
-	String transacao;
+	
+	
 
 	@JsonAlias(value = "processo")
-	String processo;
-
-	@JsonAlias(value = "expedienteProcesso")
-	String expedienteProcesso;
-
-	@JsonAlias(value = "produto")
-	String produto;
-
-	@JsonAlias(value = "cnpj")
-	String cnpj;
-
-	@JsonAlias(value = "razaoSocial")
-	String razaoSocial;
+    String processo;
+	
+	@JsonAlias(value = "product")
+    String produto;
+	
+	@JsonAlias(value = "tipo")
+    String tipo; 
 
 	@JsonAlias(value = "situacao")
-	String situacao;
-
+    String situacao;
+	
 	@JsonAlias(value = "vencimento")
-	@JsonFormat(pattern = "dd/MM/yyyy")
-	LocalDate vencimento;
-
-	@JsonAlias(value = "statusVencimento")
-	String statusVencimento;
-
-	@JsonAlias(value = "empresa")
-	String empresa;
-
+    LocalDate vencimento;
+	
 	@JsonAlias(value = "dataAlteracao")	
 	@JsonFormat(pattern="dd/MM/yyyy")	
 	LocalDate dataAlteracao;
@@ -68,53 +47,21 @@ public class ContentCosmeticNotification extends BaseEntityMongoDB {
 	@JsonAlias(value = "dataRegistro")
 	@JsonFormat(pattern="dd/MM/yyyy")
 	LocalDate dataRegistro;
-
+	
 	@JsonAlias(value = "qtdRegistro")	
 	int qtdRegistro;
-
-	ContentCosmeticNotificationDetail contentCosmeticNotificationDetail;
 	
+	ContentCosmeticRegularizedDetail contentCosmeticRegularizedDetail;
+
 	@Transient
 	Process process;
-
-	public String getAssunto() {
-		return assunto;
-	}
-
-	public void setAssunto(String assunto) {
-		this.assunto = assunto;
-	}
-
-	public String getExpedientePeticao() {
-		return expedientePeticao;
-	}
-
-	public void setExpedientePeticao(String expedientePeticao) {
-		this.expedientePeticao = expedientePeticao;
-	}
-
-	public String getTransacao() {
-		return transacao;
-	}
-
-	public void setTransacao(String transacao) {
-		this.transacao = transacao;
-	}
-
+	
 	public String getProcesso() {
 		return processo;
 	}
 
 	public void setProcesso(String processo) {
 		this.processo = processo;
-	}
-
-	public String getExpedienteProcesso() {
-		return expedienteProcesso;
-	}
-
-	public void setExpedienteProcesso(String expedienteProcesso) {
-		this.expedienteProcesso = expedienteProcesso;
 	}
 
 	public String getProduto() {
@@ -125,20 +72,12 @@ public class ContentCosmeticNotification extends BaseEntityMongoDB {
 		this.produto = produto;
 	}
 
-	public String getCnpj() {
-		return cnpj;
+	public String getTipo() {
+		return tipo;
 	}
 
-	public void setCnpj(String cnpj) {
-		this.cnpj = cnpj;
-	}
-
-	public String getRazaoSocial() {
-		return razaoSocial;
-	}
-
-	public void setRazaoSocial(String razaoSocial) {
-		this.razaoSocial = razaoSocial;
+	public void setTipo(String tipo) {
+		this.tipo = tipo;
 	}
 
 	public String getSituacao() {
@@ -155,22 +94,6 @@ public class ContentCosmeticNotification extends BaseEntityMongoDB {
 
 	public void setVencimento(LocalDate vencimento) {
 		this.vencimento = vencimento;
-	}
-
-	public String getStatusVencimento() {
-		return statusVencimento;
-	}
-
-	public void setStatusVencimento(String statusVencimento) {
-		this.statusVencimento = statusVencimento;
-	}
-
-	public String getEmpresa() {
-		return empresa;
-	}
-
-	public void setEmpresa(String empresa) {
-		this.empresa = empresa;
 	}
 
 	public LocalDate getDataAlteracao() {
@@ -202,12 +125,12 @@ public class ContentCosmeticNotification extends BaseEntityMongoDB {
 		this.qtdRegistro = qtdRegistro;
 	}
 
-	public ContentCosmeticNotificationDetail getContentCosmeticNotificationDetail() {
-		return contentCosmeticNotificationDetail;
+	public ContentCosmeticRegularizedDetail getContentCosmeticRegularizedDetail() {
+		return contentCosmeticRegularizedDetail;
 	}
 
-	public void setContentCosmeticNotificationDetail(ContentCosmeticNotificationDetail contentCosmeticNotificationDetail) {
-		this.contentCosmeticNotificationDetail = contentCosmeticNotificationDetail;
+	public void setContentCosmeticRegularizedDetail(ContentCosmeticRegularizedDetail contentCosmeticRegularizedDetail) {
+		this.contentCosmeticRegularizedDetail = contentCosmeticRegularizedDetail;
 	}
 
 	public Process getProcess() {
@@ -222,19 +145,15 @@ public class ContentCosmeticNotification extends BaseEntityMongoDB {
 	public int hashCode() {
 		final int prime = 31;
 		int result = super.hashCode();
-		result = prime * result + ((assunto == null) ? 0 : assunto.hashCode());
-		result = prime * result + ((cnpj == null) ? 0 : cnpj.hashCode());
 		result = prime * result
-				+ ((contentCosmeticNotificationDetail == null) ? 0 : contentCosmeticNotificationDetail.hashCode());
-		result = prime * result + ((empresa == null) ? 0 : empresa.hashCode());
-		result = prime * result + ((expedientePeticao == null) ? 0 : expedientePeticao.hashCode());
-		result = prime * result + ((expedienteProcesso == null) ? 0 : expedienteProcesso.hashCode());
+				+ ((contentCosmeticRegularizedDetail == null) ? 0 : contentCosmeticRegularizedDetail.hashCode());
+		result = prime * result + ((dataAlteracao == null) ? 0 : dataAlteracao.hashCode());
+		result = prime * result + ((dataRegistro == null) ? 0 : dataRegistro.hashCode());
 		result = prime * result + ((processo == null) ? 0 : processo.hashCode());
 		result = prime * result + ((produto == null) ? 0 : produto.hashCode());
-		result = prime * result + ((razaoSocial == null) ? 0 : razaoSocial.hashCode());
+		result = prime * result + qtdRegistro;
 		result = prime * result + ((situacao == null) ? 0 : situacao.hashCode());
-		result = prime * result + ((statusVencimento == null) ? 0 : statusVencimento.hashCode());
-		result = prime * result + ((transacao == null) ? 0 : transacao.hashCode());
+		result = prime * result + ((tipo == null) ? 0 : tipo.hashCode());
 		result = prime * result + ((vencimento == null) ? 0 : vencimento.hashCode());
 		return result;
 	}
@@ -247,39 +166,24 @@ public class ContentCosmeticNotification extends BaseEntityMongoDB {
 		if (obj == null) {
 			return false;
 		}
-		if (!(obj instanceof ContentCosmeticNotification)) {
+		if (!(obj instanceof ContentCosmeticRegularized)) {
 			return false;
 		}
-		ContentCosmeticNotification other = (ContentCosmeticNotification) obj;
-		if (assunto == null) {
-			if (other.assunto != null)
+		ContentCosmeticRegularized other = (ContentCosmeticRegularized) obj;
+		if (contentCosmeticRegularizedDetail == null) {
+			if (other.contentCosmeticRegularizedDetail != null)
 				return false;
-		} else if (!assunto.equals(other.assunto))
+		} else if (!contentCosmeticRegularizedDetail.equals(other.contentCosmeticRegularizedDetail))
 			return false;
-		if (cnpj == null) {
-			if (other.cnpj != null)
+		if (dataAlteracao == null) {
+			if (other.dataAlteracao != null)
 				return false;
-		} else if (!cnpj.equals(other.cnpj))
+		} else if (!dataAlteracao.equals(other.dataAlteracao))
 			return false;
-		if (contentCosmeticNotificationDetail == null) {
-			if (other.contentCosmeticNotificationDetail != null)
+		if (dataRegistro == null) {
+			if (other.dataRegistro != null)
 				return false;
-		} else if (!contentCosmeticNotificationDetail.equals(other.contentCosmeticNotificationDetail))
-			return false;
-		if (empresa == null) {
-			if (other.empresa != null)
-				return false;
-		} else if (!empresa.equals(other.empresa))
-			return false;
-		if (expedientePeticao == null) {
-			if (other.expedientePeticao != null)
-				return false;
-		} else if (!expedientePeticao.equals(other.expedientePeticao))
-			return false;
-		if (expedienteProcesso == null) {
-			if (other.expedienteProcesso != null)
-				return false;
-		} else if (!expedienteProcesso.equals(other.expedienteProcesso))
+		} else if (!dataRegistro.equals(other.dataRegistro))
 			return false;
 		if (processo == null) {
 			if (other.processo != null)
@@ -291,25 +195,17 @@ public class ContentCosmeticNotification extends BaseEntityMongoDB {
 				return false;
 		} else if (!produto.equals(other.produto))
 			return false;
-		if (razaoSocial == null) {
-			if (other.razaoSocial != null)
-				return false;
-		} else if (!razaoSocial.equals(other.razaoSocial))
+		if (qtdRegistro != other.qtdRegistro)
 			return false;
 		if (situacao == null) {
 			if (other.situacao != null)
 				return false;
 		} else if (!situacao.equals(other.situacao))
 			return false;
-		if (statusVencimento == null) {
-			if (other.statusVencimento != null)
+		if (tipo == null) {
+			if (other.tipo != null)
 				return false;
-		} else if (!statusVencimento.equals(other.statusVencimento))
-			return false;
-		if (transacao == null) {
-			if (other.transacao != null)
-				return false;
-		} else if (!transacao.equals(other.transacao))
+		} else if (!tipo.equals(other.tipo))
 			return false;
 		if (vencimento == null) {
 			if (other.vencimento != null)
@@ -362,8 +258,9 @@ public class ContentCosmeticNotification extends BaseEntityMongoDB {
 		    this.setDataRegistro(detail.getProcesso().getPeticao().getDataEntrada());
 		} catch (Exception e) {
 			// TODO: handle exception
-			System.out.println(" ContentCosmeticNotification CNPJ "+this.getCnpj()+" Processo "+this.getProcesso()+" ERRO DE DATAS");
+			System.out.println(" ContentCosmeticRegularized CNPJ "+this.getContentCosmeticRegularizedDetail().getCnpj()+" Processo "+this.getProcesso()+" ERRO DE DATAS");
 		}
 	}	
+
 
 }

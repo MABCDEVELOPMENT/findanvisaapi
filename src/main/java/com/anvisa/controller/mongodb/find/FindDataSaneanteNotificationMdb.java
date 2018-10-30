@@ -13,70 +13,81 @@ import org.springframework.stereotype.Component;
 
 import com.anvisa.interceptor.synchronizedata.entity.SynchronizeProcess;
 import com.anvisa.model.persistence.BaseEntity;
-import com.anvisa.model.persistence.mongodb.cosmetic.notification.ContentCosmeticNotification;
-import com.anvisa.model.persistence.mongodb.repository.CosmeticNotificationRepositoryMdb;
+import com.anvisa.model.persistence.mongodb.BaseEntityMongoDB;
+import com.anvisa.model.persistence.mongodb.repository.SaneanteNotificationRepositoryMdb;
+import com.anvisa.model.persistence.mongodb.saneante.notification.SaneanteNotification;
 import com.anvisa.repository.generic.ProcessRepository;
 import com.anvisa.rest.QueryRecordParameter;
 import com.anvisa.model.persistence.mongodb.process.Process;
 
 @Component
-public class FindDataCosmeticNotificationMdb {
-
+public class FindDataSaneanteNotificationMdb {
+	
 	@Autowired
-	private static CosmeticNotificationRepositoryMdb cosmeticNotificationRepository;
-
+	private static SaneanteNotificationRepositoryMdb saneanteNotificationRepository;
+	
 	@Inject
 	private static MongoTemplate mongoTemplate;
-
+	
 	@Autowired
 	private static ProcessRepository processRepository;
-
+	
 	@Autowired
-	public void setService(CosmeticNotificationRepositoryMdb cosmeticNotificationRepository,
-			MongoTemplate mongoTemplate, ProcessRepository processRepository) {
-		this.cosmeticNotificationRepository = cosmeticNotificationRepository;
+	public void setService(SaneanteNotificationRepositoryMdb saneanteNotificationRepository,
+						   ProcessRepository processRepository,
+						   MongoTemplate mongoTemplate) {
+		
+		this.saneanteNotificationRepository = saneanteNotificationRepository;
 		this.processRepository = processRepository;
 		this.mongoTemplate = mongoTemplate;
+		
 	}
+	
+	public static List<SaneanteNotification> find(QueryRecordParameter queryRecordParameter) {
+		
+		
 
-	public static List<ContentCosmeticNotification> find(QueryRecordParameter queryRecordParameter) {
+		List<SaneanteNotification> saneanteNotificationsReturn = new ArrayList<SaneanteNotification>();
 
-		List<ContentCosmeticNotification> contentCosmeticNotificationsReturn = new ArrayList<ContentCosmeticNotification>();
-
-		List<ContentCosmeticNotification> contentCosmeticNotifications = filter(queryRecordParameter);
+		 if(queryRecordParameter.getCnpj()==null || queryRecordParameter.getCnpj().isEmpty()) {
+			 
+			 return saneanteNotificationsReturn;
+		 }
+		
+		List<SaneanteNotification> saneanteNotifications = filter(queryRecordParameter);
 
 		SynchronizeProcess synchronizeProcess = new SynchronizeProcess();
 
-		for (ContentCosmeticNotification contentCosmeticNotification : contentCosmeticNotifications) {
+		for (SaneanteNotification saneanteNotification : saneanteNotifications) {
 
-			Process process = processRepository.findByProcessCnpj(contentCosmeticNotification.getProcesso(),
-					contentCosmeticNotification.getCnpj());
+			Process process = processRepository.findByProcessCnpj(saneanteNotification.getProcesso(),
+					queryRecordParameter.getCnpj());
 			if (process == null) {
-				ArrayList<BaseEntity> processos = synchronizeProcess.loadData(contentCosmeticNotification.getCnpj()
-						+ "&filter[processo]=" + contentCosmeticNotification.getProcesso(), 1);
-
+				ArrayList<BaseEntity> processos = synchronizeProcess.loadData(saneanteNotification.getCnpj()
+						+ "&filter[processo]=" + saneanteNotification.getProcesso(),1);
+				
 				if (processos.size() > 0) {
 					Process newProcess = (Process) processos.get(0);
-					ArrayList<BaseEntity> processo = new ArrayList<BaseEntity>();
+					ArrayList<BaseEntityMongoDB> processo = new ArrayList<BaseEntityMongoDB>();
 					processo.add(processos.get(0));
-					synchronizeProcess.persist(processo);
-					contentCosmeticNotification.lodaProcess(newProcess);
+				    synchronizeProcess.persist(processo);
+					saneanteNotification.lodaProcess(newProcess);
+					break;
 				}
 
 			} else {
 
-				contentCosmeticNotification.setProcess(process);
-				contentCosmeticNotification.lodaProcess(process);
+				saneanteNotification.lodaProcess(process);
 			}
-			contentCosmeticNotificationsReturn.add(contentCosmeticNotification);
+			saneanteNotificationsReturn.add(saneanteNotification);
 		}
 
-		return contentCosmeticNotificationsReturn;
+		return saneanteNotificationsReturn;
 
 	}
-
-	public static List<ContentCosmeticNotification> filter(QueryRecordParameter queryRecordParameter) {
-
+	
+	public static List<SaneanteNotification> filter(QueryRecordParameter queryRecordParameter){
+		
 		Query dynamicQuery = new Query();
 
 		if (queryRecordParameter.getCnpj() != null && !queryRecordParameter.getCnpj().isEmpty()) {
@@ -91,7 +102,7 @@ public class FindDataCosmeticNotificationMdb {
 
 		if (queryRecordParameter.getAuthorizationNumber() != null
 				&& !queryRecordParameter.getAuthorizationNumber().isEmpty()) {
-			Criteria nameCriteria = Criteria.where("contentCosmeticNotificationDetail.autorizacao")
+			Criteria nameCriteria = Criteria.where("saneanteNotificationDetail.autorizacao")
 					.regex(queryRecordParameter.getAuthorizationNumber());
 			dynamicQuery.addCriteria(nameCriteria);
 		}
@@ -132,11 +143,14 @@ public class FindDataCosmeticNotificationMdb {
 			dynamicQuery.addCriteria(nameCriteria);
 		}
 
-		List<ContentCosmeticNotification> result = mongoTemplate.find(dynamicQuery, ContentCosmeticNotification.class,
-				"cosmeticNotification");
+		List<SaneanteNotification> result = mongoTemplate.find(dynamicQuery, SaneanteNotification.class,
+				"saneanteNotification");
 
 		return result;
-
-	}
+		
+        
+		
+    }
+	
 
 }
