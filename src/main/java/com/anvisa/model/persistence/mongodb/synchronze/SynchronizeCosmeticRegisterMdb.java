@@ -8,6 +8,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.commons.logging.Log;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,7 +46,7 @@ public class SynchronizeCosmeticRegisterMdb extends SynchronizeDataMdb implement
 
 	String URL_COSMETIC_REGISTER_DETAIL_APRESENTACAO = "";
 	String URL_COSMETIC_REGISTER_DETAIL_PETICAO = "";
-	
+
 	@Autowired
 	public static SequenceDaoImpl sequence;
 
@@ -53,16 +54,15 @@ public class SynchronizeCosmeticRegisterMdb extends SynchronizeDataMdb implement
 	private static CosmeticRegisterRepositoryMdb cosmeticRegisterRepository;
 
 	@Autowired
-	public void setService(CosmeticRegisterRepositoryMdb cosmeticRegisterRepository,
-			SequenceDaoImpl sequence) {
+	public void setService(CosmeticRegisterRepositoryMdb cosmeticRegisterRepository, SequenceDaoImpl sequence) {
 
 		this.cosmeticRegisterRepository = cosmeticRegisterRepository;
-		this.sequence = sequence; 
-		
+		this.sequence = sequence;
+
 	}
 
 	public SynchronizeCosmeticRegisterMdb() {
-		
+
 		SEQ_KEY = "cosmetic_register";
 
 		URL = "https://consultas.anvisa.gov.br/api/consulta/cosmeticos/registrados?count=10000&page=1&filter[cnpj]=";
@@ -74,7 +74,6 @@ public class SynchronizeCosmeticRegisterMdb extends SynchronizeDataMdb implement
 		URL_COSMETIC_REGISTER_DETAIL_PETICAO = "https://consultas.anvisa.gov.br/api/consulta/cosmeticos/registrados/[processo]/peticao/[peticao]";
 
 	}
-
 
 	public ContentCosmeticRegister parseData(JsonNode jsonNode) {
 		// TODO Auto-generated method stub
@@ -107,7 +106,6 @@ public class SynchronizeCosmeticRegisterMdb extends SynchronizeDataMdb implement
 
 		return contentCosmeticRegister;
 	}
-
 
 	public ContentCosmeticRegisterDetail parseDetailData(JsonNode jsonNode) {
 		// TODO Auto-generated method stub
@@ -402,7 +400,7 @@ public class SynchronizeCosmeticRegisterMdb extends SynchronizeDataMdb implement
 				client = null;
 				return null;
 			}
-			
+
 			JsonNode rootNode = objectMapper.readTree(this.getGZIPString(response.body().byteStream()));
 
 			Iterator<JsonNode> elementsContents = rootNode.path("content").iterator();
@@ -417,7 +415,7 @@ public class SynchronizeCosmeticRegisterMdb extends SynchronizeDataMdb implement
 				BaseEntityMongoDB baseEntity = this.parseData(jsonNode);
 
 				String processo = ((ContentCosmeticRegister) baseEntity).getProcesso();
-				
+
 				rootObject.add(baseEntity);
 
 				System.out.println(i++);
@@ -435,7 +433,6 @@ public class SynchronizeCosmeticRegisterMdb extends SynchronizeDataMdb implement
 		return null;
 		// return super.loadData(this, cnpj);
 	}
-
 
 	public ContentCosmeticRegisterDetail loadDetailData(String concat) {
 		ContentCosmeticRegisterDetail rootObject = null;
@@ -494,7 +491,7 @@ public class SynchronizeCosmeticRegisterMdb extends SynchronizeDataMdb implement
 			Response response = client.newCall(url).execute();
 
 			ObjectMapper objectMapper = new ObjectMapper();
-			
+
 			if (response.code() == 500) {
 				response.close();
 				client = null;
@@ -535,7 +532,7 @@ public class SynchronizeCosmeticRegisterMdb extends SynchronizeDataMdb implement
 			Response response = client.newCall(url).execute();
 
 			ObjectMapper objectMapper = new ObjectMapper();
-			
+
 			if (response.code() == 500) {
 				response.close();
 				client = null;
@@ -573,65 +570,76 @@ public class SynchronizeCosmeticRegisterMdb extends SynchronizeDataMdb implement
 		for (Iterator<BaseEntityMongoDB> iterator = itens.iterator(); iterator.hasNext();) {
 
 			ContentCosmeticRegister baseEntity = (ContentCosmeticRegister) iterator.next();
-
-			System.out.println(baseEntity.getProcesso() + " - " + baseEntity.getCnpj());
-
-			ContentCosmeticRegister localCosmetic = cosmeticRegisterRepository.findByProcesso(
-					baseEntity.getProcesso(), baseEntity.getExpedienteProcesso(), baseEntity.getCnpj());
-
-			boolean newFoot = (localCosmetic == null);
 			
-			if (newFoot == false) continue;
-			
-			//ContentCosmeticRegisterDetail detail = baseEntity.getContentCosmeticRegisterDetail();
-	
-			ContentCosmeticRegisterDetail detail = this.loadDetailData(baseEntity.getProcesso());
-			if (detail != null) {
-				ContentCosmeticRegisterDetail contentCosmeticRegisterDetail = detail;
-				((ContentCosmeticRegister) baseEntity)
-						.setContentCosmeticRegisterDetail(contentCosmeticRegisterDetail);
-			}
-			
-			if (detail != null) {
+			try {
+				
+				System.out.println(baseEntity.getProcesso() + " - " + baseEntity.getCnpj());
 
-				if (!newFoot) {
+				ContentCosmeticRegister localCosmetic = cosmeticRegisterRepository.findByProcesso(
+						baseEntity.getProcesso(), baseEntity.getExpedienteProcesso(), baseEntity.getCnpj());
 
-					if (localCosmetic.getContentCosmeticRegisterDetail() != null
-							&& !detail.equals(localCosmetic.getContentCosmeticRegisterDetail())) {
+				boolean newFoot = (localCosmetic == null);
+
+				if (newFoot == false)
+					continue;
+
+				// ContentCosmeticRegisterDetail detail =
+				// baseEntity.getContentCosmeticRegisterDetail();
+
+				ContentCosmeticRegisterDetail detail = this.loadDetailData(baseEntity.getProcesso());
+				if (detail != null) {
+					ContentCosmeticRegisterDetail contentCosmeticRegisterDetail = detail;
+					((ContentCosmeticRegister) baseEntity)
+							.setContentCosmeticRegisterDetail(contentCosmeticRegisterDetail);
+				}
+
+				if (detail != null) {
+
+					if (!newFoot) {
+
+						if (localCosmetic.getContentCosmeticRegisterDetail() != null
+								&& !detail.equals(localCosmetic.getContentCosmeticRegisterDetail())) {
+						}
+
+					} else {
+						baseEntity.setContentCosmeticRegisterDetail(detail);
+					}
+
+				}
+
+				if (localCosmetic != null) {
+
+					if (!localCosmetic.equals(baseEntity)) {
+
+						baseEntity.setId(localCosmetic.getId());
+						bachList.add(baseEntity);
+
 					}
 
 				} else {
-					baseEntity.setContentCosmeticRegisterDetail(detail);
-				}
-
-			}
-			
-			if (localCosmetic != null) {
-
-				if (!localCosmetic.equals(baseEntity)) {
-
-					baseEntity.setId(localCosmetic.getId());
+					baseEntity.setId(this.sequence.getNextSequenceId(SEQ_KEY));
 					bachList.add(baseEntity);
 
 				}
 
-			} else {
-					baseEntity.setId(this.sequence.getNextSequenceId(SEQ_KEY));
-				    bachList.add(baseEntity);
+				if ((count + 1) % 10 == 0 || (count + 1) == size) {
 
+					cosmeticRegisterRepository.saveAll(bachList);
+
+					bachList.clear();
+
+				}
+
+				count++;
+				// log.info(baseEntity.toString());
+				System.out.println(count);
+
+			} catch (Exception e) {
+				// TODO: handle exception
+				log.error(this.getClass().getName() + " Cnpj " + baseEntity.getCnpj() + " Processo "
+						+ baseEntity.getProcesso() + " ExpedienteProcesso " + baseEntity.getExpedienteProcesso());
+				log.error(e.getMessage());
 			}
-
-			if ((count + 1) % 10 == 0 || (count + 1) == size) {
-
-				cosmeticRegisterRepository.saveAll(bachList);
-
-				bachList.clear();
-
-			}
-
-			count++;
-			// log.info(baseEntity.toString());
-			System.out.println(count);
 
 		}
 

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import org.apache.commons.logging.Log;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -37,8 +38,8 @@ public class SynchronizeCosmeticNotificationMdb extends SynchronizeDataMdb imple
 	public void setService(CosmeticNotificationRepositoryMdb cosmeticNotificationRepository, SequenceDaoImpl sequence) {
 
 		this.cosmeticNotificationRepository = cosmeticNotificationRepository;
-		
-		this.sequence = sequence; 
+
+		this.sequence = sequence;
 
 	}
 
@@ -46,7 +47,7 @@ public class SynchronizeCosmeticNotificationMdb extends SynchronizeDataMdb imple
 
 		SEQ_KEY = "cosmetic_notification";
 
-		URL = "https://consultas.anvisa.gov.br/api/consulta/cosmeticos/notificados?count=4000&page=1&filter[cnpj]=";
+		URL = "https://consultas.anvisa.gov.br/api/consulta/cosmeticos/notificados?count=10000&page=1&filter[cnpj]=";
 
 		URL_DETAIL = "https://consultas.anvisa.gov.br/api/consulta/cosmeticos/notificados/";
 
@@ -192,42 +193,51 @@ public class SynchronizeCosmeticNotificationMdb extends SynchronizeDataMdb imple
 
 			ContentCosmeticNotification baseEntity = (ContentCosmeticNotification) iterator.next();
 
-			ContentCosmeticNotification localContentCosmeticNotification = cosmeticNotificationRepository
-					.findByProcesso(baseEntity.getProcesso(), baseEntity.getCnpj(), baseEntity.getExpedienteProcesso());
+			try {
 
-			boolean newNotification = (localContentCosmeticNotification == null);
-			
-			if(newNotification == false) continue;
+				ContentCosmeticNotification localContentCosmeticNotification = cosmeticNotificationRepository
+						.findByProcesso(baseEntity.getProcesso(), baseEntity.getCnpj(),
+								baseEntity.getExpedienteProcesso());
 
-			ContentCosmeticNotificationDetail contentCosmeticNotificationDetail = (ContentCosmeticNotificationDetail) this
-					.loadDetailData(baseEntity.getProcesso());
+				boolean newNotification = (localContentCosmeticNotification == null);
 
-			if (!newNotification) {
+				if (newNotification == false)
+					continue;
 
-				if (localContentCosmeticNotification.getContentCosmeticNotificationDetail() != null) {
-					if (!contentCosmeticNotificationDetail
-							.equals(localContentCosmeticNotification.getContentCosmeticNotificationDetail())) {
-						// contentCosmeticNotificationDetail.setId(localContentCosmeticNotification.getContentCosmeticNotificationDetail().getId());
-						baseEntity.setContentCosmeticNotificationDetail(contentCosmeticNotificationDetail);
+				ContentCosmeticNotificationDetail contentCosmeticNotificationDetail = (ContentCosmeticNotificationDetail) this
+						.loadDetailData(baseEntity.getProcesso());
+
+				if (!newNotification) {
+
+					if (localContentCosmeticNotification.getContentCosmeticNotificationDetail() != null) {
+						if (!contentCosmeticNotificationDetail
+								.equals(localContentCosmeticNotification.getContentCosmeticNotificationDetail())) {
+							// contentCosmeticNotificationDetail.setId(localContentCosmeticNotification.getContentCosmeticNotificationDetail().getId());
+							baseEntity.setContentCosmeticNotificationDetail(contentCosmeticNotificationDetail);
+						}
 					}
-				}
 
-				if (!localContentCosmeticNotification.equals(baseEntity)) {
+					if (!localContentCosmeticNotification.equals(baseEntity)) {
 
-					//baseEntity.setId(localContentCosmeticNotification.getId());
+						// baseEntity.setId(localContentCosmeticNotification.getId());
+						cosmeticNotificationRepository.save(baseEntity);
+					}
+
+				} else {
+					baseEntity.setId(this.sequence.getNextSequenceId(SEQ_KEY));
+					baseEntity.setContentCosmeticNotificationDetail(contentCosmeticNotificationDetail);
 					cosmeticNotificationRepository.save(baseEntity);
+
 				}
 
-			} else {
-				baseEntity.setId(this.sequence.getNextSequenceId(SEQ_KEY));
-				baseEntity.setContentCosmeticNotificationDetail(contentCosmeticNotificationDetail);
-				cosmeticNotificationRepository.save(baseEntity);
-
+			} catch (Exception e) {
+				// TODO: handle exception
+				log.error(this.getClass().getName() + " Cnpj " + baseEntity.getCnpj() + " Processo "
+						+ baseEntity.getProcesso() + " ExpedienteProcesso " + baseEntity.getExpedienteProcesso());
+				log.error(e.getMessage());
 			}
 
-			System.out.println(cont++);
 		}
-
 	}
 
 }

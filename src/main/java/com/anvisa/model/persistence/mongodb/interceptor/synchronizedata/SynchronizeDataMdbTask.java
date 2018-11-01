@@ -38,17 +38,21 @@ public class SynchronizeDataMdbTask {
 
 	private static final SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
 
-	@Scheduled(cron = "0 1 1 ? * *")
+	@Scheduled(cron = "0 20 04 ? * *")
 	public static void synchronizeData() {
 
 		log.info("SynchronizeData", dateFormat.format(new Date()));
 		
-		IntSynchronizeMdb[] intSynchronize = { new SynchronizeFootMdb(), new SynchronizeCosmeticRegisterMdb(),
-				new SynchronizeCosmeticNotificationMdb(), new SynchronizeCosmeticRegularizedMdb(), new SynchronizeSaneanteNotificationMdb(), new SynchronizeSaneanteProductMdb(), new SynchronizeProcessMdb() };
+		IntSynchronizeMdb[] intSynchronize = { new SynchronizeFootMdb(), 
+				new SynchronizeCosmeticRegisterMdb(),
+				new SynchronizeCosmeticNotificationMdb(),
+				new SynchronizeCosmeticRegularizedMdb(), 
+				new SynchronizeSaneanteNotificationMdb(), 
+				new SynchronizeSaneanteProductMdb(), 
+				new SynchronizeProcessMdb() };
 		
-		/*List<RegisterCNPJ> registerCNPJs = registerCNPJRepository.findAll(0);
-
- 		
+		List<RegisterCNPJ> registerCNPJs = registerCNPJRepository.findAll(0);
+		
  		int cont = 0;
 
 		for (RegisterCNPJ registerCNPJ : registerCNPJs) {
@@ -61,17 +65,19 @@ public class SynchronizeDataMdbTask {
  			
  			log.info("SynchronizeData => Total "+itens.size(), dateFormat.format(new Date()));
  			
- 			if(itens!=null)
-			intSynchronize[0].persist(itens);
-			
+ 			if(itens!=null) {
+ 			  synchronized (itens) {
+ 				 intSynchronize[0].persist(itens);
+ 			  }	
+ 			}
 		}
 	
  		log.info("SynchronizeData => End Foot Total ", dateFormat.format(new Date()));
  		
- 		registerCNPJs = registerCNPJRepository.findAll(1);
+/* 		registerCNPJs = registerCNPJRepository.findAll(1);
 
  		
- 		int cont = 0;
+ 		cont = 0;
 
 		for (RegisterCNPJ registerCNPJ : registerCNPJs) {
  			
@@ -89,8 +95,12 @@ public class SynchronizeDataMdbTask {
 		}
 	
  		log.info("SynchronizeData => End Cosmetic Register ", dateFormat.format(new Date()));
-		
-		int cont = 0;
+ 		
+ 		
+*/		
+ 		registerCNPJs = registerCNPJRepository.findAll(1);
+ 		
+		cont = 0;
 
 		for (RegisterCNPJ registerCNPJ : registerCNPJs) {
  			
@@ -100,17 +110,19 @@ public class SynchronizeDataMdbTask {
  			
  			log.info("SynchronizeData => Total "+itens.size(), dateFormat.format(new Date()));
  			
- 			if(itens!=null)
-			intSynchronize[2].persist(itens);
+ 			if(itens!=null) {
+ 	 			  synchronized (itens) {
+ 	 				intSynchronize[2].persist(itens);
+ 	 			  }		
+ 			}
 			
 		}
 	
- 		log.info("SynchronizeData => End Cosmetic Register ", dateFormat.format(new Date()));
+ 		log.info("SynchronizeData => End Cosmetic Notification ", dateFormat.format(new Date()));
 		
+ 		registerCNPJs = registerCNPJRepository.findAll(1);
 		
-		log.info("SynchronizeData => End Cosmetic Register ", dateFormat.format(new Date()));
-		
-		int cont = 0;
+		cont = 0;
 
 		for (RegisterCNPJ registerCNPJ : registerCNPJs) {
  			
@@ -120,17 +132,20 @@ public class SynchronizeDataMdbTask {
  			
  			log.info("SynchronizeData => Total "+itens.size(), dateFormat.format(new Date()));
  			
- 			if(itens!=null)
-			intSynchronize[3].persist(itens);
+ 			if(itens!=null) {
+	 			  synchronized (itens) {
+	 				intSynchronize[3].persist(itens);
+	 			  }		
+			}
 			
 		}
 	
  		log.info("SynchronizeData => End Cosmetic Regularized ", dateFormat.format(new Date()));
 		
 	
-		List<RegisterCNPJ> registerCNPJs = registerCNPJRepository.findAll(2);
+		registerCNPJs = registerCNPJRepository.findAll(2);
 	
-		int cont = 0;
+		cont = 0;
 
 		for (RegisterCNPJ registerCNPJ : registerCNPJs) {
  			
@@ -140,37 +155,42 @@ public class SynchronizeDataMdbTask {
  			
  			log.info("SynchronizeData => Total "+itens.size(), dateFormat.format(new Date()));
  			
- 			if(itens!=null)
-			intSynchronize[4].persist(itens);
-			
+ 			if(itens!=null) {
+	 			  synchronized (itens) {
+	 				intSynchronize[4].persist(itens);
+	 			  }	
+ 			}
 		}
 	
  		log.info("SynchronizeData => End Saneante Notification ", dateFormat.format(new Date()));
 		
- 		List<RegisterCNPJ> registerCNPJs = registerCNPJRepository.findAll(2);
+ 		registerCNPJs = registerCNPJRepository.findAll(2);
  		
-		int cont = 0;
+		cont = 0;
 
 		for (RegisterCNPJ registerCNPJ : registerCNPJs) {
  			
- 			log.info("SynchronizeData => Start Saneante Product "+registerCNPJ.getCnpj()+" "+registerCNPJ.getFullName(), dateFormat.format(new Date()));
+ 			log.info("SynchronizeData => Start Saneante Notification "+registerCNPJ.getCnpj()+" "+registerCNPJ.getFullName(), dateFormat.format(new Date()));
 			
  			ArrayList<BaseEntityMongoDB> itens = intSynchronize[5].loadData(registerCNPJ.getCnpj());
  			
  			log.info("SynchronizeData => Total "+itens.size(), dateFormat.format(new Date()));
  			
- 			if(itens!=null)
-			intSynchronize[5].persist(itens);
+ 			if(itens!=null){
+	 			  synchronized (itens) {
+	 				intSynchronize[5].persist(itens);
+	 			  }	
+			}
 			
 		}
 	
- 		log.info("SynchronizeData => End Saneante Product ", dateFormat.format(new Date()));*/
+ 		log.info("SynchronizeData => End Saneante Notification ", dateFormat.format(new Date()));
 		
 		
 		
- 		List<RegisterCNPJ> registerCNPJs = registerCNPJRepository.findAll();
+ 		registerCNPJs = registerCNPJRepository.findAll(2);
  		
-		int cont = 0;
+		cont = 0;
 
 		for (RegisterCNPJ registerCNPJ : registerCNPJs) {
  			
@@ -180,13 +200,38 @@ public class SynchronizeDataMdbTask {
  			
  			log.info("SynchronizeData => Total "+itens.size(), dateFormat.format(new Date()));
  			
- 			if(itens!=null)
-			intSynchronize[6].persist(itens);
+ 			if(itens!=null){
+	 			  synchronized (itens) {
+	 				intSynchronize[6].persist(itens);
+	 			  }	
+			}
 			
 		}
 	
  		log.info("SynchronizeData => End Saneante Product ", dateFormat.format(new Date()));
 
+ 		
+ 		registerCNPJs = registerCNPJRepository.findAll();
+ 		
+		cont = 0;
+
+		for (RegisterCNPJ registerCNPJ : registerCNPJs) {
+ 			
+ 			log.info("SynchronizeData => Start Process "+registerCNPJ.getCnpj()+" "+registerCNPJ.getFullName(), dateFormat.format(new Date()));
+			
+ 			ArrayList<BaseEntityMongoDB> itens = intSynchronize[7].loadData(registerCNPJ.getCnpj());
+ 			
+ 			log.info("SynchronizeData => Total "+itens.size(), dateFormat.format(new Date()));
+ 			
+ 			if(itens!=null){
+	 			  synchronized (itens) {
+	 				intSynchronize[7].persist(itens);
+	 			  }	
+			}
+			
+		}
+	
+ 		log.info("SynchronizeData => End Process ", dateFormat.format(new Date()));
 	
 	}
 	

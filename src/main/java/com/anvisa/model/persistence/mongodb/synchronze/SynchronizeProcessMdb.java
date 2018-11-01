@@ -31,14 +31,14 @@ import okhttp3.Response;
 
 @Component
 public class SynchronizeProcessMdb extends SynchronizeDataMdb implements IntSynchronizeMdb {
-	
+
 	private static final Logger log = LoggerFactory.getLogger(SynchronizeDataTask.class);
 
 	private static final SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
-	
+
 	@Autowired
 	public static SequenceDaoImpl sequence;
-	
+
 	@Autowired
 	private static ProcessRepositoryMdb processRepository;
 
@@ -47,27 +47,25 @@ public class SynchronizeProcessMdb extends SynchronizeDataMdb implements IntSync
 
 		this.processRepository = processRepository;
 		this.sequence = sequence;
-		
 
 	}
 
 	public SynchronizeProcessMdb() {
-		
+
 		SEQ_KEY = "process";
-		
+
 		URL = "https://consultas.anvisa.gov.br/api/documento/tecnico?count=10000&page=1&filter[cnpj]=";
-		
+
 		URL_DETAIL = "https://consultas.anvisa.gov.br/api/documento/tecnico/";
 
 	}
 
 	@Override
 	public BaseEntityMongoDB parseData(JsonNode jsonNode) {
-		
+
 		Process process = new Process();
-		
+
 		process.setOrdem(0);
-		
 
 		Peticao peticao = JsonToObject.getPeticao(jsonNode);
 		process.setAssunto(peticao.getAssunto().toString());
@@ -79,29 +77,28 @@ public class SynchronizeProcessMdb extends SynchronizeDataMdb implements IntSync
 		Processo processo = JsonToObject.getProcesso(jsonNode);
 		process.setProcesso(processo.getNumero());
 
-		return  process;
+		return process;
 
 	}
-
 
 	public ProcessDetail parseDetailData(JsonNode jsonNode) {
 		// TODO Auto-generated method stub
-		
+
 		ProcessDetail processDetail = new ProcessDetail();
 
 		processDetail.build(jsonNode);
-		
+
 		return processDetail;
-		
+
 	}
-	
+
 	@Override
 	public ArrayList<BaseEntityMongoDB> loadData(String concat) {
 		return super.loadData(this, concat);
 	}
 
 	public ProcessDetail loadDetailData(String concat) {
-		
+
 		ProcessDetail rootObject = null;
 
 		OkHttpClient client = new OkHttpClient();
@@ -148,109 +145,111 @@ public class SynchronizeProcessMdb extends SynchronizeDataMdb implements IntSync
 		for (Iterator<BaseEntityMongoDB> iterator = itens.iterator(); iterator.hasNext();) {
 
 			Process baseEntity = (Process) iterator.next();
+			try {
+				Process localProcess = processRepository.findByProcesso(baseEntity.getProcesso(), baseEntity.getCnpj());
 
-			Process localProcess = processRepository.findByProcesso(baseEntity.getProcesso(),
-					baseEntity.getCnpj());
+				boolean newNotification = (localProcess == null);
 
-			boolean newNotification = (localProcess == null);
-			
-			if (newNotification == false) continue;
-			
-			ProcessDetail processDetail = (ProcessDetail) this.loadDetailData(baseEntity.getProcesso());
-				
-			if (!newNotification) {
-				
-				if (localProcess.getProcessDetail()!=null) {
-					if (!processDetail.equals(localProcess.getProcessDetail())){
-						baseEntity.setProcessDetail(processDetail);
+				if (newNotification == false)
+					continue;
+
+				ProcessDetail processDetail = (ProcessDetail) this.loadDetailData(baseEntity.getProcesso());
+
+				if (!newNotification) {
+
+					if (localProcess.getProcessDetail() != null) {
+						if (!processDetail.equals(localProcess.getProcessDetail())) {
+							baseEntity.setProcessDetail(processDetail);
+						}
 					}
-				}
 
-				if (!localProcess.equals(baseEntity)) {
+					if (!localProcess.equals(baseEntity)) {
 
-					baseEntity.setId(localProcess.getId());
+						baseEntity.setId(localProcess.getId());
+						try {
+							processRepository.save(baseEntity);
+							log.info("SynchronizeData => Update Process cnpj " + baseEntity.getCnpj() + "  process "
+									+ baseEntity.getProcesso(), dateFormat.format(new Date()));
+						} catch (Exception e) {
+							// TODO: handle exception
+							log.info("SynchronizeData => Update Process cnpj " + baseEntity.getCnpj() + "  process "
+									+ baseEntity.getProcesso(), dateFormat.format(new Date()));
+							log.error(e.getMessage());
+						}
+
+					}
+
+				} else {
+					baseEntity.setId(this.sequence.getNextSequenceId(SEQ_KEY));
+					baseEntity.setProcessDetail(processDetail);
 					try {
-						processRepository.save(baseEntity);	
-						log.info("SynchronizeData => Update Process cnpj "+baseEntity.getCnpj()+"  process "+baseEntity.getProcesso(), dateFormat.format(new Date()));
+						processRepository.save(baseEntity);
+						log.info("SynchronizeData => Insert Process cnpj " + baseEntity.getCnpj() + "  process "
+								+ baseEntity.getProcesso(), dateFormat.format(new Date()));
 					} catch (Exception e) {
-						// TODO: handle exception
-						log.info("SynchronizeData => Update Process cnpj "+baseEntity.getCnpj()+"  process "+baseEntity.getProcesso(), dateFormat.format(new Date()));
-						log.error(e.getMessage());
-					}
-					
-				}
+						log.info("SynchronizeData => Insert Process cnpj " + baseEntity.getCnpj() + "  process "
+								+ baseEntity.getProcesso(), dateFormat.format(new Date()));
+						log.error(e.getMessage());// TODO: handle exception
 
-			} else {
-				baseEntity.setId(this.sequence.getNextSequenceId(SEQ_KEY));
-				baseEntity.setProcessDetail(processDetail);
-				try {
-					processRepository.save(baseEntity);	
-					log.info("SynchronizeData => Insert Process cnpj "+baseEntity.getCnpj()+"  process "+baseEntity.getProcesso(), dateFormat.format(new Date()));
-				} catch (Exception e) {
-					log.info("SynchronizeData => Insert Process cnpj "+baseEntity.getCnpj()+"  process "+baseEntity.getProcesso(), dateFormat.format(new Date()));
-					log.error(e.getMessage());// TODO: handle exception
-					
+					}
+
 				}
-				
+			} catch (Exception e) {
+				// TODO: handle exception
+				log.error(this.getClass().getName() + " Processo " + baseEntity.getProcesso() + " cnpj "
+						+ baseEntity.getCnpj());
+				log.error(e.getMessage());
 			}
-			
-			//System.out.println(cont++);	
 		}
 
 	}
-	
 
-	public ArrayList<BaseEntityMongoDB> loadData(String cnpj,int qtd) {
+	public ArrayList<BaseEntityMongoDB> loadData(String cnpj, int qtd) {
 		// TODO Auto-generated method stub
 		ArrayList<BaseEntityMongoDB> rootObject = new ArrayList<BaseEntityMongoDB>();
 
 		OkHttpClient client = new OkHttpClient();
-		
+
 		client.newBuilder().readTimeout(30, TimeUnit.MINUTES);
-		
-		
+
 		Request url = null;
 
-
-		url = new Request.Builder()
-				.url(URL+cnpj)
-				.get()
-				.addHeader("Accept-Encoding", "gzip")
+		url = new Request.Builder().url(URL + cnpj).get().addHeader("Accept-Encoding", "gzip")
 				.addHeader("authorization", "Guest").build();
-		       
-		
+
 		try {
-			
+
 			Response response = client.newCall(url).execute();
-			
+
 			ObjectMapper objectMapper = new ObjectMapper();
-			
+
 			JsonNode rootNode = objectMapper.readTree(this.getGZIPString(response.body().byteStream()));
-			
+
 			Iterator<JsonNode> elementsContents = rootNode.path("content").iterator();
-			log.info("SynchronizeData Total Registros "+rootNode.get("totalElements"), dateFormat.format(new Date()));
+			log.info("SynchronizeData Total Registros " + rootNode.get("totalElements"), dateFormat.format(new Date()));
 			int i = 0;
 			while (elementsContents.hasNext()) {
 
 				JsonNode jsonNode = (JsonNode) elementsContents.next();
-				
-				Process baseEntity = (Process)this.parseData(jsonNode);
+
+				Process baseEntity = (Process) this.parseData(jsonNode);
 				ProcessDetail drocessDetail = this.loadDetailData(baseEntity.getProcesso());
-	
-				rootObject.add(baseEntity);	
+
+				rootObject.add(baseEntity);
 
 				System.out.println(i++);
-				if(qtd==1) break;
+				if (qtd == 1)
+					break;
 			}
 			response.close();
 			client = null;
 			return rootObject;
-			
-	   } catch (Exception e) {
-		// TODO: handle exception
-		   e.printStackTrace();
-	   }
-		
+
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+		}
+
 		return null;
 	}
 

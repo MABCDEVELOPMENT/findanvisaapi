@@ -33,7 +33,7 @@ import okhttp3.Response;
 
 @Component
 public class SynchronizeCosmeticRegularizedMdb extends SynchronizeDataMdb implements IntSynchronizeMdb {
-	
+
 	@Autowired
 	public static SequenceDaoImpl sequence;
 
@@ -44,26 +44,26 @@ public class SynchronizeCosmeticRegularizedMdb extends SynchronizeDataMdb implem
 	public void setService(CosmeticRegularizedRepositoryMdb cosmeticRegularizedRepository, SequenceDaoImpl sequence) {
 
 		this.cosmeticRegularizedRepository = cosmeticRegularizedRepository;
-		
-		this.sequence = sequence; 
-		
+
+		this.sequence = sequence;
+
 	}
 
 	public SynchronizeCosmeticRegularizedMdb() {
-		
+
 		SEQ_KEY = "cometic_regularized";
 
-		URL = "https://consultas.anvisa.gov.br/api/consulta/cosmeticos/regularizados?count=1000&page=1&filter[cnpj]=";
+		URL = "https://consultas.anvisa.gov.br/api/consulta/cosmeticos/regularizados?count=10000&page=1&filter[cnpj]=";
 
 		URL_DETAIL = "https://consultas.anvisa.gov.br/api/consulta/cosmeticos/regularizados/";
-	
+
 	}
 
 	@Override
 	public ContentCosmeticRegularized parseData(JsonNode jsonNode) {
 		// TODO Auto-generated method stub
 		ContentCosmeticRegularized contentCosmeticRegularized = new ContentCosmeticRegularized();
-		
+
 		contentCosmeticRegularized.setProduto(JsonToObject.getValue(jsonNode, "produto"));
 
 		contentCosmeticRegularized.setProcesso(JsonToObject.getValue(jsonNode, "processo"));
@@ -77,7 +77,6 @@ public class SynchronizeCosmeticRegularizedMdb extends SynchronizeDataMdb implem
 		return contentCosmeticRegularized;
 	}
 
-
 	public ContentCosmeticRegularizedDetail parseDetailData(JsonNode jsonNode) {
 		// TODO Auto-generated method stub
 		ContentCosmeticRegularizedDetail contentCosmeticRegularizedDetail = new ContentCosmeticRegularizedDetail();
@@ -85,11 +84,14 @@ public class SynchronizeCosmeticRegularizedMdb extends SynchronizeDataMdb implem
 		CosmeticRegularizedDetailHoldingCompany cosmeticRegularizedDetailHoldingCompany = new CosmeticRegularizedDetailHoldingCompany();
 
 		cosmeticRegularizedDetailHoldingCompany.setCnpj(JsonToObject.getValue(jsonNode, "empresaDetentora", "cnpj"));
-		cosmeticRegularizedDetailHoldingCompany.setRazaoSocial(JsonToObject.getValue(jsonNode, "empresaDetentora", "razaoSocial"));
-		cosmeticRegularizedDetailHoldingCompany.setAutorizacao(JsonToObject.getValue(jsonNode, "empresaDetentora", "autorizacao"));
+		cosmeticRegularizedDetailHoldingCompany
+				.setRazaoSocial(JsonToObject.getValue(jsonNode, "empresaDetentora", "razaoSocial"));
+		cosmeticRegularizedDetailHoldingCompany
+				.setAutorizacao(JsonToObject.getValue(jsonNode, "empresaDetentora", "autorizacao"));
 
 		cosmeticRegularizedDetailHoldingCompany.setUf(JsonToObject.getValue(jsonNode, "empresaDetentora", "uf"));
-		cosmeticRegularizedDetailHoldingCompany.setCidade(JsonToObject.getValue(jsonNode, "empresaDetentora", "cidade"));
+		cosmeticRegularizedDetailHoldingCompany
+				.setCidade(JsonToObject.getValue(jsonNode, "empresaDetentora", "cidade"));
 		cosmeticRegularizedDetailHoldingCompany
 				.setCodigoMunicipio(JsonToObject.getValue(jsonNode, "empresaDetentora", "codigoMunicipio"));
 		contentCosmeticRegularizedDetail.setEmpresaDetentora(cosmeticRegularizedDetailHoldingCompany);
@@ -97,7 +99,8 @@ public class SynchronizeCosmeticRegularizedMdb extends SynchronizeDataMdb implem
 		CosmeticRegularizedDetailCharacterizationVigente cosmeticRegularizedDetailCharacterizationVigente = new CosmeticRegularizedDetailCharacterizationVigente();
 		cosmeticRegularizedDetailCharacterizationVigente
 				.setProcesso(JsonToObject.getValue(jsonNode, "caracterizacaoVigente", "processo"));
-		cosmeticRegularizedDetailCharacterizationVigente.setGrupo(JsonToObject.getValue(jsonNode, "caracterizacaoVigente", "grupo"));
+		cosmeticRegularizedDetailCharacterizationVigente
+				.setGrupo(JsonToObject.getValue(jsonNode, "caracterizacaoVigente", "grupo"));
 		cosmeticRegularizedDetailCharacterizationVigente
 				.setProduto(JsonToObject.getValue(jsonNode, "caracterizacaoVigente", "produto"));
 		cosmeticRegularizedDetailCharacterizationVigente
@@ -105,43 +108,42 @@ public class SynchronizeCosmeticRegularizedMdb extends SynchronizeDataMdb implem
 
 		contentCosmeticRegularizedDetail.setCaracterizacaoVigente(cosmeticRegularizedDetailCharacterizationVigente);
 
-		contentCosmeticRegularizedDetail
-				.setDestinacoes(JsonToObject.getArrayValue(jsonNode, "destinacoes"));
+		contentCosmeticRegularizedDetail.setDestinacoes(JsonToObject.getArrayValue(jsonNode, "destinacoes"));
 
-		
-		CosmeticRegularizedDetailLocalNational cosmeticRegularizedDetailLocalNational = lodalLocalNacional(jsonNode, "locaisNacionais");
+		CosmeticRegularizedDetailLocalNational cosmeticRegularizedDetailLocalNational = lodalLocalNacional(jsonNode,
+				"locaisNacionais");
 		contentCosmeticRegularizedDetail.setLocaisNacionais(cosmeticRegularizedDetailLocalNational);
-		if (cosmeticRegularizedDetailLocalNational!=null && cosmeticRegularizedDetailLocalNational.getCnpj()!=null) {
-		   contentCosmeticRegularizedDetail.setCnpj(cosmeticRegularizedDetailLocalNational.getCnpj());
+		if (cosmeticRegularizedDetailLocalNational != null
+				&& cosmeticRegularizedDetailLocalNational.getCnpj() != null) {
+			contentCosmeticRegularizedDetail.setCnpj(cosmeticRegularizedDetailLocalNational.getCnpj());
 		}
-		ArrayNode element = (ArrayNode)jsonNode.findValue("apresentacoes");
-		
+		ArrayNode element = (ArrayNode) jsonNode.findValue("apresentacoes");
+
 		ArrayList<CosmeticRegularizedDatailPresentation> apresentacoes = new ArrayList<CosmeticRegularizedDatailPresentation>();
-		
-		if (element!=null) {
-				
-		
-				
-				for (Iterator<JsonNode> it = element.iterator(); it.hasNext();) {
-					
-					JsonNode nodeIt = it.next();
-					
-					CosmeticRegularizedDatailPresentation cosmeticRegularizedDatailPresentation = new CosmeticRegularizedDatailPresentation();
-					
-					cosmeticRegularizedDatailPresentation.setPeriodoValidade(JsonToObject.getValue(nodeIt,"periodoValidade")+" "+JsonToObject.getValue(nodeIt,"tipoValidade"));
-					cosmeticRegularizedDatailPresentation.setRestricaoUso(JsonToObject.getValue(nodeIt,"restricaoUso"));
-					cosmeticRegularizedDatailPresentation.setCuidadoConservacao(JsonToObject.getValue(nodeIt,"cuidadoConservacao"));
-					cosmeticRegularizedDatailPresentation.setEmbalagemPrimaria(JsonToObject.getValue(nodeIt,"embalagemPrimaria"));
-					cosmeticRegularizedDatailPresentation.setEmbalagemSecundaria(JsonToObject.getValue(nodeIt,"embalagemSecundaria"));
 
-					
+		if (element != null) {
 
-					apresentacoes.add(cosmeticRegularizedDatailPresentation);
-					
-				}
-			
-			
-			
+			for (Iterator<JsonNode> it = element.iterator(); it.hasNext();) {
+
+				JsonNode nodeIt = it.next();
+
+				CosmeticRegularizedDatailPresentation cosmeticRegularizedDatailPresentation = new CosmeticRegularizedDatailPresentation();
+
+				cosmeticRegularizedDatailPresentation
+						.setPeriodoValidade(JsonToObject.getValue(nodeIt, "periodoValidade") + " "
+								+ JsonToObject.getValue(nodeIt, "tipoValidade"));
+				cosmeticRegularizedDatailPresentation.setRestricaoUso(JsonToObject.getValue(nodeIt, "restricaoUso"));
+				cosmeticRegularizedDatailPresentation
+						.setCuidadoConservacao(JsonToObject.getValue(nodeIt, "cuidadoConservacao"));
+				cosmeticRegularizedDatailPresentation
+						.setEmbalagemPrimaria(JsonToObject.getValue(nodeIt, "embalagemPrimaria"));
+				cosmeticRegularizedDatailPresentation
+						.setEmbalagemSecundaria(JsonToObject.getValue(nodeIt, "embalagemSecundaria"));
+
+				apresentacoes.add(cosmeticRegularizedDatailPresentation);
+
+			}
+
 		}
 
 		contentCosmeticRegularizedDetail.setApresentacoes(apresentacoes);
@@ -149,48 +151,43 @@ public class SynchronizeCosmeticRegularizedMdb extends SynchronizeDataMdb implem
 		return contentCosmeticRegularizedDetail;
 	}
 
-	public CosmeticRegularizedDetailLocalNational lodalLocalNacional(JsonNode node,String attribute) {
-		
-		ArrayNode element = (ArrayNode)node.findValue(attribute);
-		
+	public CosmeticRegularizedDetailLocalNational lodalLocalNacional(JsonNode node, String attribute) {
+
+		ArrayNode element = (ArrayNode) node.findValue(attribute);
+
 		CosmeticRegularizedDetailLocalNational localNacional = null;
-		
-		if (element!=null) {
-				
-		
-				
-				for (Iterator<JsonNode> it = element.iterator(); it.hasNext();) {
-					
-					JsonNode nodeIt = it.next();
-					
-					localNacional = new CosmeticRegularizedDetailLocalNational();
-					localNacional.setCnpj(JsonToObject.getValue(nodeIt,"cnpj"));
-					localNacional.setRazaoSocial(JsonToObject.getValue(nodeIt,"razaoSocial"));
-					localNacional.setUf( JsonToObject.getValue(nodeIt,"uf"));
-					localNacional.setCidade( JsonToObject.getValue(nodeIt,"cidade"));
-					localNacional.setCodigoMunicipio( JsonToObject.getValue(nodeIt,"codigoMunicipio"));
-					localNacional.setAutorizacao(JsonToObject.getValue(nodeIt,"autorizacao"));
-					
-					break;
-					
-				}
-			
-			
-			
+
+		if (element != null) {
+
+			for (Iterator<JsonNode> it = element.iterator(); it.hasNext();) {
+
+				JsonNode nodeIt = it.next();
+
+				localNacional = new CosmeticRegularizedDetailLocalNational();
+				localNacional.setCnpj(JsonToObject.getValue(nodeIt, "cnpj"));
+				localNacional.setRazaoSocial(JsonToObject.getValue(nodeIt, "razaoSocial"));
+				localNacional.setUf(JsonToObject.getValue(nodeIt, "uf"));
+				localNacional.setCidade(JsonToObject.getValue(nodeIt, "cidade"));
+				localNacional.setCodigoMunicipio(JsonToObject.getValue(nodeIt, "codigoMunicipio"));
+				localNacional.setAutorizacao(JsonToObject.getValue(nodeIt, "autorizacao"));
+
+				break;
+
+			}
+
 		}
-		
+
 		return localNacional;
-		
+
 	}
-	
+
 	@Override
 	public ArrayList<BaseEntityMongoDB> loadData(String cnpj) {
 		return super.loadData(this, cnpj);
 	}
 
-
 	public ContentCosmeticRegularizedDetail loadDetailData(String concat) {
-		
+
 		ContentCosmeticRegularizedDetail rootObject = null;
 
 		OkHttpClient client = new OkHttpClient();
@@ -230,8 +227,6 @@ public class SynchronizeCosmeticRegularizedMdb extends SynchronizeDataMdb implem
 		return null;
 	}
 
-
-
 	private static final Logger log = LoggerFactory.getLogger(SynchronizeDataTask.class);
 
 	private static final SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
@@ -240,42 +235,49 @@ public class SynchronizeCosmeticRegularizedMdb extends SynchronizeDataMdb implem
 	public void persist(ArrayList<BaseEntityMongoDB> itens) {
 
 		int cont = 0;
-		
+
 		for (Iterator<BaseEntityMongoDB> iterator = itens.iterator(); iterator.hasNext();) {
 
 			ContentCosmeticRegularized baseEntity = (ContentCosmeticRegularized) iterator.next();
+			try {
+				ContentCosmeticRegularized localContentCosmeticRegularized = cosmeticRegularizedRepository
+						.findByProcesso(baseEntity.getProcesso());
 
-			ContentCosmeticRegularized localContentCosmeticRegularized = cosmeticRegularizedRepository.findByProcesso(baseEntity.getProcesso());
+				boolean newRegularized = (localContentCosmeticRegularized == null);
 
-			boolean newRegularized = (localContentCosmeticRegularized == null);
-			
-			ContentCosmeticRegularizedDetail contentCosmeticRegularizedDetail = (ContentCosmeticRegularizedDetail) this.loadDetailData(baseEntity.getProcesso());
-			
-			if (!newRegularized) {
-				
-				if (localContentCosmeticRegularized.getContentCosmeticRegularizedDetail()!=null) {
-					if (!contentCosmeticRegularizedDetail.equals(localContentCosmeticRegularized.getContentCosmeticRegularizedDetail())){
-						baseEntity.setContentCosmeticRegularizedDetail(contentCosmeticRegularizedDetail);
+				ContentCosmeticRegularizedDetail contentCosmeticRegularizedDetail = (ContentCosmeticRegularizedDetail) this
+						.loadDetailData(baseEntity.getProcesso());
+
+				if (!newRegularized) {
+
+					if (localContentCosmeticRegularized.getContentCosmeticRegularizedDetail() != null) {
+						if (!contentCosmeticRegularizedDetail
+								.equals(localContentCosmeticRegularized.getContentCosmeticRegularizedDetail())) {
+							baseEntity.setContentCosmeticRegularizedDetail(contentCosmeticRegularizedDetail);
+						}
 					}
-				}
 
-				if (!localContentCosmeticRegularized.equals(baseEntity)) {
+					if (!localContentCosmeticRegularized.equals(baseEntity)) {
 
-					baseEntity.setId(localContentCosmeticRegularized.getId());
+						baseEntity.setId(localContentCosmeticRegularized.getId());
+						cosmeticRegularizedRepository.save(baseEntity);
+					}
+
+				} else {
+					baseEntity.setId(this.sequence.getNextSequenceId(SEQ_KEY));
+					baseEntity.setContentCosmeticRegularizedDetail(contentCosmeticRegularizedDetail);
 					cosmeticRegularizedRepository.save(baseEntity);
-				}
 
-			} else {
-				baseEntity.setId(this.sequence.getNextSequenceId(SEQ_KEY));
-				baseEntity.setContentCosmeticRegularizedDetail(contentCosmeticRegularizedDetail);
-				cosmeticRegularizedRepository.save(baseEntity);
-				
+				}
+				System.out.println(cont++);
+
+			} catch (Exception e) {
+				// TODO: handle exception
+				log.error(this.getClass().getName() + " Processo " + baseEntity.getProcesso());
+				log.error(e.getMessage());
 			}
-			System.out.println(cont++);
 		}
-		
-		
+
 	}
 
 }
-

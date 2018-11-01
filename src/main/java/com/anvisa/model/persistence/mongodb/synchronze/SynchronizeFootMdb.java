@@ -26,27 +26,25 @@ import okhttp3.Response;
 @Component
 public class SynchronizeFootMdb extends SynchronizeDataMdb implements IntSynchronizeMdb {
 
-	
 	@Autowired
 	public static SequenceDaoImpl sequence;
-	
+
 	@Autowired
 	private static FootRepositoryMdb footRepository;
 
 	@Autowired
-	public void setService(FootRepositoryMdb footRepository,
-			SequenceDaoImpl sequence) {
-		
+	public void setService(FootRepositoryMdb footRepository, SequenceDaoImpl sequence) {
+
 		this.footRepository = footRepository;
-		this.sequence = sequence; 
+		this.sequence = sequence;
 
 	}
 
 	public SynchronizeFootMdb() {
-		
+
 		SEQ_KEY = "foot";
 
-		URL = "https://consultas.anvisa.gov.br/api/consulta/produtos/6?count=2000&page=1&filter[cnpj]=";
+		URL = "https://consultas.anvisa.gov.br/api/consulta/produtos/6?count=10000&page=1&filter[cnpj]=";
 
 		URL_DETAIL = "https://consultas.anvisa.gov.br/api/consulta/produtos/6/";
 
@@ -66,10 +64,10 @@ public class SynchronizeFootMdb extends SynchronizeDataMdb implements IntSynchro
 		content.setProduto(JsonToObject.getProduto(jsonNode));
 
 		ContentFootMdb contentProduto = new ContentFootMdb(content);
-		
-		contentProduto.setDataRegistro(JsonToObject.getValueDate(jsonNode,"dataRegistro"));
-		contentProduto.setDataVencimento(JsonToObject.getValueDate(jsonNode,"dataVencimentoRegistro"));
-		
+
+		contentProduto.setDataRegistro(JsonToObject.getValueDate(jsonNode, "dataRegistro"));
+		contentProduto.setDataVencimento(JsonToObject.getValueDate(jsonNode, "dataVencimentoRegistro"));
+
 		return contentProduto;
 	}
 
@@ -101,44 +99,39 @@ public class SynchronizeFootMdb extends SynchronizeDataMdb implements IntSynchro
 	}
 
 	public ContentFootDetailMdb loadDetailData(String concat) {
-		
-			// TODO Auto-generated method stub
-		    ContentFootDetailMdb rootObject = null;
-			OkHttpClient client = new OkHttpClient();
 
-			Request url = null;
+		// TODO Auto-generated method stub
+		ContentFootDetailMdb rootObject = null;
+		OkHttpClient client = new OkHttpClient();
 
+		Request url = null;
 
-			url = new Request.Builder()
-					.url(URL_DETAIL+concat)
-					.get()
-					.addHeader("authorization", "Guest")
-					.addHeader("Accept-Encoding", "gzip").build();
-			
-			try {
+		url = new Request.Builder().url(URL_DETAIL + concat).get().addHeader("authorization", "Guest")
+				.addHeader("Accept-Encoding", "gzip").build();
 
-				Response response = client.newCall(url).execute();
+		try {
 
-				ObjectMapper objectMapper = new ObjectMapper();
+			Response response = client.newCall(url).execute();
 
-				JsonNode rootNode = objectMapper.readTree(this.getGZIPString(response.body().byteStream()));
-				
-				if (rootNode!=null) {
+			ObjectMapper objectMapper = new ObjectMapper();
 
-					rootObject = this.parseDetailData(rootNode);
-				}
-				response.close();
-				client = null;
-				return rootObject;
-				
-		   } catch (Exception e) {
+			JsonNode rootNode = objectMapper.readTree(this.getGZIPString(response.body().byteStream()));
+
+			if (rootNode != null) {
+
+				rootObject = this.parseDetailData(rootNode);
+			}
+			response.close();
+			client = null;
+			return rootObject;
+
+		} catch (Exception e) {
 			// TODO: handle exception
-			   e.printStackTrace();
-		   }
-			
-			return null;
+			e.printStackTrace();
 		}
 
+		return null;
+	}
 
 	@Override
 	public void persist(ArrayList<BaseEntityMongoDB> itens) {
@@ -146,54 +139,59 @@ public class SynchronizeFootMdb extends SynchronizeDataMdb implements IntSynchro
 		for (Iterator<BaseEntityMongoDB> iterator = itens.iterator(); iterator.hasNext();) {
 
 			ContentFootMdb baseEntity = (ContentFootMdb) iterator.next();
+			try {
+				ContentFootMdb localFoot = footRepository.findByProcesso(baseEntity.getProcesso(), baseEntity.getCnpj(),
+						baseEntity.getCodigo(), baseEntity.getRegistro(), baseEntity.getDataVencimento());
 
-			ContentFootMdb localFoot = footRepository.findByProcesso(baseEntity.getProcesso(),
-					baseEntity.getCnpj(), baseEntity.getCodigo(), baseEntity.getRegistro(),
-					baseEntity.getDataVencimento());
+				boolean newFoot = (localFoot == null);
 
-			boolean newFoot = (localFoot == null);
+				ContentFootDetailMdb detail = (ContentFootDetailMdb) this.loadDetailData(baseEntity.getProcesso());
 
-			ContentFootDetailMdb detail = (ContentFootDetailMdb) this.loadDetailData(baseEntity.getProcesso());
+				if (detail != null) {
 
-			if (detail != null) {
+					if (!newFoot) {
 
-				if (!newFoot) {
-
-					if (localFoot.getContentFootDetail() != null && !detail.equals(localFoot.getContentFootDetail())) {
-						detail.setId(localFoot.getContentFootDetail().getId());
-						baseEntity.setContentFootDetail(detail);
+						if (localFoot.getContentFootDetail() != null
+								&& !detail.equals(localFoot.getContentFootDetail())) {
+							detail.setId(localFoot.getContentFootDetail().getId());
+							baseEntity.setContentFootDetail(detail);
+						} else {
+							detail.setId(localFoot.getContentFootDetail().getId());
+						}
 					} else {
-					    detail.setId(localFoot.getContentFootDetail().getId());
-					}    
-				} else {
 
-					baseEntity.setContentFootDetail(detail);
+						baseEntity.setContentFootDetail(detail);
+					}
+
 				}
 
-			}
+				if (localFoot != null) {
 
-			if (localFoot != null) {
+					if (!localFoot.equals(baseEntity)) {
 
-				if (!localFoot.equals(baseEntity)) {
+						baseEntity.setId(localFoot.getId());
+						detail.setId(localFoot.getContentFootDetail().getId());
+						baseEntity.setContentFootDetail(detail);
+						footRepository.save(baseEntity);
 
-					baseEntity.setId(localFoot.getId());
-					detail.setId(localFoot.getContentFootDetail().getId());
-					baseEntity.setContentFootDetail(detail);
+					}
+
+				} else {
+					baseEntity.setId(this.sequence.getNextSequenceId(SEQ_KEY));
 					footRepository.save(baseEntity);
 
 				}
 
-			} else {
-				baseEntity.setId(this.sequence.getNextSequenceId(SEQ_KEY));
-				footRepository.save(baseEntity);
+				System.out.println(cont++);
 
+			} catch (Exception e) {
+				// TODO: handle exception
+				log.error(this.getClass().getName() +" Processo "+baseEntity.getProcesso()+" cnpj "+ baseEntity.getCnpj()+" Codigo "
+						+baseEntity.getCodigo()+" Registro "+baseEntity.getRegistro()+" Vencimento "+baseEntity.getDataVencimento());
+				log.error(e.getMessage());
 			}
-			
-			System.out.println(cont++);
-			
 		}
-		
-		
+
 	}
 
 }

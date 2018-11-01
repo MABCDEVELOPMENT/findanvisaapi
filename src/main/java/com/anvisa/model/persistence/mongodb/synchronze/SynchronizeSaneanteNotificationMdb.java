@@ -32,13 +32,12 @@ public class SynchronizeSaneanteNotificationMdb extends SynchronizeDataMdb imple
 
 	@Autowired
 	public static SequenceDaoImpl sequence;
-	
+
 	@Autowired
 	private static SaneanteNotificationRepositoryMdb saneanteNotificationRepository;
 
 	@Autowired
-	public void setService(SaneanteNotificationRepositoryMdb saneanteNotificationRepository,
-						   SequenceDaoImpl sequence) {
+	public void setService(SaneanteNotificationRepositoryMdb saneanteNotificationRepository, SequenceDaoImpl sequence) {
 
 		this.saneanteNotificationRepository = saneanteNotificationRepository;
 		this.sequence = sequence;
@@ -47,10 +46,10 @@ public class SynchronizeSaneanteNotificationMdb extends SynchronizeDataMdb imple
 
 	public SynchronizeSaneanteNotificationMdb() {
 
-		SEQ_KEY = "saneante_notification"; 
-		
+		SEQ_KEY = "saneante_notification";
+
 		URL = "https://consultas.anvisa.gov.br/api/consulta/saneantes/notificados?count=10000&page=1&filter[cnpj]=";
-		
+
 		URL_DETAIL = "https://consultas.anvisa.gov.br/api/consulta/saneantes/notificados/";
 
 	}
@@ -68,8 +67,7 @@ public class SynchronizeSaneanteNotificationMdb extends SynchronizeDataMdb imple
 
 		saneanteNotification.setTransacao(JsonToObject.getValue(jsonNode, "transacao"));
 
-		saneanteNotification
-				.setExpedienteProcesso(JsonToObject.getValue(jsonNode, "expedienteProcesso"));
+		saneanteNotification.setExpedienteProcesso(JsonToObject.getValue(jsonNode, "expedienteProcesso"));
 
 		saneanteNotification.setExpedientePeticao(JsonToObject.getValue(jsonNode, "expedientePeticao"));
 
@@ -81,21 +79,17 @@ public class SynchronizeSaneanteNotificationMdb extends SynchronizeDataMdb imple
 
 		saneanteNotification.setSituacao(JsonToObject.getValue(jsonNode, "situacao", "situacao"));
 
-		saneanteNotification.setVencimento(JsonToObject.getValueDate(jsonNode,"vencimento", "vencimento"));
-		
-		
-		
-		return  saneanteNotification;
-		
+		saneanteNotification.setVencimento(JsonToObject.getValueDate(jsonNode, "vencimento", "vencimento"));
+
+		return saneanteNotification;
 
 	}
 
-
 	public SaneanteNotificationDetail parseDetailData(JsonNode jsonNode) {
 		// TODO Auto-generated method stub
-		
+
 		SaneanteNotificationDetail saneanteNotificationDetail = new SaneanteNotificationDetail();
-		
+
 		String assunto = JsonToObject.getValue(jsonNode, "assunto", "codigo") + " - "
 				+ JsonToObject.getValue(jsonNode, "assunto", "descricao");
 		saneanteNotificationDetail.setAssunto(assunto);
@@ -108,111 +102,94 @@ public class SynchronizeSaneanteNotificationMdb extends SynchronizeDataMdb imple
 
 		saneanteNotificationDetail.setProcesso(JsonToObject.getValue(jsonNode, "processo"));
 		saneanteNotificationDetail.setArea(JsonToObject.getValue(jsonNode, "area"));
-		saneanteNotificationDetail
-				.setSituacao(JsonToObject.getValue(jsonNode, "situacao", "situacao"));
-		saneanteNotificationDetail
-				.setDataNotificacao(JsonToObject.getValueDate(jsonNode, "situacao", "data"));
-		
+		saneanteNotificationDetail.setSituacao(JsonToObject.getValue(jsonNode, "situacao", "situacao"));
+		saneanteNotificationDetail.setDataNotificacao(JsonToObject.getValueDate(jsonNode, "situacao", "data"));
+
 		ArrayList<String> strRotulos = JsonToObject.getArrayStringValue(jsonNode, "rotulos");
-		
+
 		ArrayList<SaneanteNotificationLabel> labels = new ArrayList<SaneanteNotificationLabel>();
-		
+
 		for (String strRotulo : strRotulos) {
 			SaneanteNotificationLabel saneanteNotificationLabel = new SaneanteNotificationLabel();
 			saneanteNotificationLabel.setValor(strRotulo);
 			labels.add(saneanteNotificationLabel);
 		}
-		
+
 		saneanteNotificationDetail.setRotulos(labels);
-		
-		
+
 		saneanteNotificationDetail.setApresentacoes(this.parseApresentationData(jsonNode, "apresentacoes"));
 
 		saneanteNotificationDetail.setPeticoes(this.parsePetitionnData(jsonNode, "peticoes"));
-		
+
 		return saneanteNotificationDetail;
 	}
-	
+
 	public ArrayList<SaneanteNotificationPresentation> parseApresentationData(JsonNode jsonNode, String attribute) {
 
-		ArrayNode element = (ArrayNode)jsonNode.findValue(attribute);
-		
+		ArrayNode element = (ArrayNode) jsonNode.findValue(attribute);
+
 		ArrayList<SaneanteNotificationPresentation> apresentacoes = new ArrayList<SaneanteNotificationPresentation>();
-		
-		if (element!=null) {
-				
-		
-				
-				for (Iterator<JsonNode> it = element.iterator(); it.hasNext();) {
-					
-					JsonNode nodeIt = it.next();
-					
-					SaneanteNotificationPresentation cosmeticNotificationPresentation = new SaneanteNotificationPresentation();
-					
-					cosmeticNotificationPresentation.setApresentacao(JsonToObject.getValue(nodeIt,"apresentacao"));
-					cosmeticNotificationPresentation.setTonalidade(JsonToObject.getValue(nodeIt,"tonalidade"));
-					cosmeticNotificationPresentation.setEans(JsonToObject.getArraySaneanteNotificationEanValue(nodeIt, "eans"));
-					
-					
-					
-					apresentacoes.add(cosmeticNotificationPresentation);
-					
-					
-					
-				}
-			
-			
-			
-		} 
-		
+
+		if (element != null) {
+
+			for (Iterator<JsonNode> it = element.iterator(); it.hasNext();) {
+
+				JsonNode nodeIt = it.next();
+
+				SaneanteNotificationPresentation cosmeticNotificationPresentation = new SaneanteNotificationPresentation();
+
+				cosmeticNotificationPresentation.setApresentacao(JsonToObject.getValue(nodeIt, "apresentacao"));
+				cosmeticNotificationPresentation.setTonalidade(JsonToObject.getValue(nodeIt, "tonalidade"));
+				cosmeticNotificationPresentation
+						.setEans(JsonToObject.getArraySaneanteNotificationEanValue(nodeIt, "eans"));
+
+				apresentacoes.add(cosmeticNotificationPresentation);
+
+			}
+
+		}
 
 		return apresentacoes;
 
 	}
-	
+
 	public ArrayList<SaneanteNotificadoPetition> parsePetitionnData(JsonNode jsonNode, String attribute) {
 
-		ArrayNode element = (ArrayNode)jsonNode.findValue(attribute);
-		
+		ArrayNode element = (ArrayNode) jsonNode.findValue(attribute);
+
 		ArrayList<SaneanteNotificadoPetition> peticoes = new ArrayList<SaneanteNotificadoPetition>();
-		
-		if (element!=null) {
-				
-		
-				
-				for (Iterator<JsonNode> it = element.iterator(); it.hasNext();) {
-					
-					JsonNode nodeIt = it.next();
-					
-					SaneanteNotificadoPetition saneanteNotificadoPetition = new SaneanteNotificadoPetition();
-					
-					saneanteNotificadoPetition.setExpediente(JsonToObject.getValue(nodeIt, "expediente"));
-					saneanteNotificadoPetition.setPublicacao(JsonToObject.getValueDate(nodeIt, "data"));
-					saneanteNotificadoPetition.setTransacao(JsonToObject.getValue(nodeIt, "transacao"));
-					saneanteNotificadoPetition.setAssunto(JsonToObject.getAssunto(nodeIt));
-					saneanteNotificadoPetition.setSituacao(JsonToObject.getValue(nodeIt,"situacao" ,"situacao"));
-					
-					peticoes.add(saneanteNotificadoPetition);
-					
-					
-				}
-			
-			
-			
-		} 
-		
+
+		if (element != null) {
+
+			for (Iterator<JsonNode> it = element.iterator(); it.hasNext();) {
+
+				JsonNode nodeIt = it.next();
+
+				SaneanteNotificadoPetition saneanteNotificadoPetition = new SaneanteNotificadoPetition();
+
+				saneanteNotificadoPetition.setExpediente(JsonToObject.getValue(nodeIt, "expediente"));
+				saneanteNotificadoPetition.setPublicacao(JsonToObject.getValueDate(nodeIt, "data"));
+				saneanteNotificadoPetition.setTransacao(JsonToObject.getValue(nodeIt, "transacao"));
+				saneanteNotificadoPetition.setAssunto(JsonToObject.getAssunto(nodeIt));
+				saneanteNotificadoPetition.setSituacao(JsonToObject.getValue(nodeIt, "situacao", "situacao"));
+
+				peticoes.add(saneanteNotificadoPetition);
+
+			}
+
+		}
 
 		return peticoes;
 
 	}
+
 	@Override
 	public ArrayList<BaseEntityMongoDB> loadData(String cnpj) {
 		return super.loadData(this, cnpj);
 	}
 
-	
 	public SaneanteNotificationDetail loadDetailData(String concat) {
-		
+
 		SaneanteNotificationDetail rootObject = null;
 
 		OkHttpClient client = new OkHttpClient();
@@ -258,38 +235,47 @@ public class SynchronizeSaneanteNotificationMdb extends SynchronizeDataMdb imple
 		for (Iterator<BaseEntityMongoDB> iterator = itens.iterator(); iterator.hasNext();) {
 
 			SaneanteNotification baseEntity = (SaneanteNotification) iterator.next();
+			try {
+				SaneanteNotification localSaneanteNotification = saneanteNotificationRepository.findByProcesso(
+						baseEntity.getProcesso(), baseEntity.getCnpj(), baseEntity.getExpedienteProcesso());
 
-			SaneanteNotification localSaneanteNotification = saneanteNotificationRepository.findByProcesso(baseEntity.getProcesso(),
-					baseEntity.getCnpj(),baseEntity.getExpedienteProcesso());
+				boolean newNotification = (localSaneanteNotification == null);
 
-			boolean newNotification = (localSaneanteNotification == null);
-			
-			if (newNotification == false) continue;
-			
-			SaneanteNotificationDetail saneanteNotificationDetail = (SaneanteNotificationDetail) this.loadDetailData(baseEntity.getProcesso());
-			
-			if (!newNotification) {
-				
-				if (localSaneanteNotification.getSaneanteNotificationDetail()!=null) {
-					if (!saneanteNotificationDetail.equals(localSaneanteNotification.getSaneanteNotificationDetail())){
-						baseEntity.setSaneanteNotificationDetail(saneanteNotificationDetail);
+				if (newNotification == false)
+					continue;
+
+				SaneanteNotificationDetail saneanteNotificationDetail = (SaneanteNotificationDetail) this
+						.loadDetailData(baseEntity.getProcesso());
+
+				if (!newNotification) {
+
+					if (localSaneanteNotification.getSaneanteNotificationDetail() != null) {
+						if (!saneanteNotificationDetail
+								.equals(localSaneanteNotification.getSaneanteNotificationDetail())) {
+							baseEntity.setSaneanteNotificationDetail(saneanteNotificationDetail);
+						}
 					}
-				}
 
-				if (!localSaneanteNotification.equals(baseEntity)) {
+					if (!localSaneanteNotification.equals(baseEntity)) {
 
-					baseEntity.setId(localSaneanteNotification.getId());
+						baseEntity.setId(localSaneanteNotification.getId());
+						saneanteNotificationRepository.save(baseEntity);
+					}
+
+				} else {
+					baseEntity.setId(this.sequence.getNextSequenceId(SEQ_KEY));
+					baseEntity.setSaneanteNotificationDetail(saneanteNotificationDetail);
 					saneanteNotificationRepository.save(baseEntity);
+
 				}
 
-			} else {
-				baseEntity.setId(this.sequence.getNextSequenceId(SEQ_KEY));
-				baseEntity.setSaneanteNotificationDetail(saneanteNotificationDetail);
-				saneanteNotificationRepository.save(baseEntity);
-				
+				System.out.println(cont++);
+			} catch (Exception e) {
+				// TODO: handle exception
+				log.error(this.getClass().getName() + " Processo " + baseEntity.getProcesso() + " cnpj "
+						+ baseEntity.getCnpj());
+				log.error(e.getMessage());
 			}
-			
-			System.out.println(cont++);	
 		}
 
 	}

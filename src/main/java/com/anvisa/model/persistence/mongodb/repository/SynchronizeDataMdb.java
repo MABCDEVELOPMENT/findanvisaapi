@@ -39,9 +39,9 @@ public class SynchronizeDataMdb {
 	
 	public String URL_DETAIL = "";
 	
-	private static final Logger log = LoggerFactory.getLogger(SynchronizeDataTask.class);
+	public static final Logger log = LoggerFactory.getLogger(SynchronizeDataTask.class);
 
-	private static final SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
+	public static final SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
 	
 	
 	
