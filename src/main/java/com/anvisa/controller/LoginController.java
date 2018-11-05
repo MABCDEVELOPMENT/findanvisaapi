@@ -182,7 +182,8 @@ public class LoginController {
 				return new ResponseEntity<CustomErrorType>(new CustomErrorType("User invalido!"), HttpStatus.CONFLICT);
 			} else {
 	
-				sendToken(user,"Re-definição de senha.");
+			sendToken(user, "Regravação de senha de acesso ao Findanvisa",
+					"Olá, click no link abaixo para cadastrar uma nova senha de acesso ao nosso sistema.");
 				
 				return new ResponseEntity<User>(user, HttpStatus.OK);
 			}
@@ -191,7 +192,7 @@ public class LoginController {
 
 	}
 	
-	public static void sendToken(User user,String subject) {
+	public static void sendToken(User user,String subject,String body) {
 		
 		UserToken userToken = new UserToken();
 		userToken.setActive(true);
@@ -218,11 +219,14 @@ public class LoginController {
 		scheduledEmail.setEmail(user.getEmail());
 		scheduledEmail.setName(user.getFullName());
 		scheduledEmail.setInsertUser(user);
-		//scheduledEmail.setInsertDate(new)
+
 		scheduledEmail.setSubject(subject);
-		//scheduledEmail.setBody("http://localhost:21094/#/redefine/"+userToken.getToken());
 		
-		scheduledEmail.setBody("http://findinfo.kinghost.net/findanvisa/#/redefine/"+userToken.getToken());
+		StringBuffer bf = new StringBuffer();
+		bf.append(body);
+		bf.append("http://findinfo.kinghost.net/findanvisa/#/redefine/"+userToken.getToken());
+		
+		scheduledEmail.setBody(body);
 
 		//this.scheduledEmail.saveAndFlush(scheduledEmail);
 		

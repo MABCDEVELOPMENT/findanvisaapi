@@ -1,5 +1,6 @@
 package com.anvisa.model.persistence.mongodb.synchronze;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -14,7 +15,9 @@ import com.anvisa.model.persistence.mongodb.cosmetic.notification.ContentCosmeti
 import com.anvisa.model.persistence.mongodb.cosmetic.notification.ContentCosmeticNotificationDetail;
 import com.anvisa.model.persistence.mongodb.cosmetic.notification.CosmeticNotificationPresentation;
 import com.anvisa.model.persistence.mongodb.interceptor.synchronizedata.IntSynchronizeMdb;
+import com.anvisa.model.persistence.mongodb.loggerprocessing.LoggerProcessing;
 import com.anvisa.model.persistence.mongodb.repository.CosmeticNotificationRepositoryMdb;
+import com.anvisa.model.persistence.mongodb.repository.LoggerRepositoryMdb;
 import com.anvisa.model.persistence.mongodb.repository.SynchronizeDataMdb;
 import com.anvisa.model.persistence.mongodb.sequence.SequenceDaoImpl;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -33,13 +36,20 @@ public class SynchronizeCosmeticNotificationMdb extends SynchronizeDataMdb imple
 
 	@Autowired
 	private static CosmeticNotificationRepositoryMdb cosmeticNotificationRepository;
+	
+	@Autowired
+	private static LoggerRepositoryMdb loggerRepositoryMdb;
 
 	@Autowired
-	public void setService(CosmeticNotificationRepositoryMdb cosmeticNotificationRepository, SequenceDaoImpl sequence) {
+	public void setService(CosmeticNotificationRepositoryMdb cosmeticNotificationRepository, SequenceDaoImpl sequence, 	@Autowired
+			LoggerRepositoryMdb loggerRepositoryMdb) {
 
 		this.cosmeticNotificationRepository = cosmeticNotificationRepository;
 
 		this.sequence = sequence;
+		
+		this.loggerRepositoryMdb = loggerRepositoryMdb;
+		
 
 	}
 
@@ -187,22 +197,28 @@ public class SynchronizeCosmeticNotificationMdb extends SynchronizeDataMdb imple
 	}
 
 	@Override
-	public void persist(ArrayList<BaseEntityMongoDB> itens) {
-		int cont = 0;
+	public void persist(ArrayList<BaseEntityMongoDB> itens, LoggerProcessing loggerProcessing ) {
+		
+		int totalInserido   = 0;
+		int totalAtualizado = 0;
+		int totalErro       = 0;
+		
 		for (Iterator<BaseEntityMongoDB> iterator = itens.iterator(); iterator.hasNext();) {
 
 			ContentCosmeticNotification baseEntity = (ContentCosmeticNotification) iterator.next();
 
 			try {
 
+				log.info("Synchronize "+this.getClass().getName()+" "+baseEntity.getProcesso() + " - " + baseEntity.getCnpj());
+				
 				ContentCosmeticNotification localContentCosmeticNotification = cosmeticNotificationRepository
 						.findByProcesso(baseEntity.getProcesso(), baseEntity.getCnpj(),
 								baseEntity.getExpedienteProcesso());
 
 				boolean newNotification = (localContentCosmeticNotification == null);
 
-				if (newNotification == false)
-					continue;
+				/*if (newNotification == false)
+					continue;*/
 
 				ContentCosmeticNotificationDetail contentCosmeticNotificationDetail = (ContentCosmeticNotificationDetail) this
 						.loadDetailData(baseEntity.getProcesso());
@@ -220,13 +236,18 @@ public class SynchronizeCosmeticNotificationMdb extends SynchronizeDataMdb imple
 					if (!localContentCosmeticNotification.equals(baseEntity)) {
 
 						// baseEntity.setId(localContentCosmeticNotification.getId());
+						baseEntity.setUpdateDate(LocalDateTime.now());
 						cosmeticNotificationRepository.save(baseEntity);
+						totalAtualizado++;
+						
 					}
 
 				} else {
 					baseEntity.setId(this.sequence.getNextSequenceId(SEQ_KEY));
 					baseEntity.setContentCosmeticNotificationDetail(contentCosmeticNotificationDetail);
+					baseEntity.setInsertDate(LocalDateTime.now());
 					cosmeticNotificationRepository.save(baseEntity);
+					totalInserido ++;
 
 				}
 
@@ -235,9 +256,15 @@ public class SynchronizeCosmeticNotificationMdb extends SynchronizeDataMdb imple
 				log.error(this.getClass().getName() + " Cnpj " + baseEntity.getCnpj() + " Processo "
 						+ baseEntity.getProcesso() + " ExpedienteProcesso " + baseEntity.getExpedienteProcesso());
 				log.error(e.getMessage());
+				totalErro++;
 			}
 
 		}
+		
+		loggerProcessing.setTotalInserido(new Long(totalInserido));
+		loggerProcessing.setTotalAtualizado(new Long(totalAtualizado));
+		loggerProcessing.setTotalErro(new Long(totalErro));
+		loggerRepositoryMdb.save(loggerProcessing);
 	}
 
 }

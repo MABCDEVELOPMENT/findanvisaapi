@@ -59,7 +59,7 @@ public class FindDataCosmeticRegisterMdb {
 					Process newProcess = (Process) processos.get(0);
 					ArrayList<BaseEntityMongoDB> processo = new ArrayList<BaseEntityMongoDB>();
 					processo.add(processos.get(0));
-				    synchronizeProcess.persist(processo);
+				    //synchronizeProcess.persist(processo);
 					contentCosmeticRegister.lodaProcess(newProcess);
 
 				}

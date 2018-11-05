@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.anvisa.controller.find.FindData;
 import com.anvisa.core.json.UrlToJson;
 import com.anvisa.rest.QueryRecordDetail;
+import com.anvisa.rest.QueryRecordLogParameter;
 import com.anvisa.rest.QueryRecordParameter;
 import com.anvisa.rest.QueryRecordProcessParameter;
 import com.anvisa.rest.RootObject;
@@ -65,14 +66,21 @@ public class FindAnvisaController {
 	@RequestMapping(value = "/product", method = RequestMethod.POST, produces = "application/json")
 	public RootObject findProduct(@RequestBody QueryRecordParameter queryRecordParameter) {
 
-//		if (queryRecordParameter.getCategory()!=0 && queryRecordParameter.getCategory()!=1 && ( queryRecordParameter.getOption()!=0 && queryRecordParameter.getCategory()==0)) {
-//		    RootObject rootObject = UrlToJson.find(queryRecordParameter);
-//		    return rootObject;
-//		} else {
-//		    return FindData.find(queryRecordParameter);
-//		} 
 		 return FindData.find(queryRecordParameter);
 	}
+
+	@ApiOperation(value = "View a list of log", response = Iterable.class)
+	@ApiResponses(value = { @ApiResponse(code = 200, message = "Successfully retrieved list"),
+			@ApiResponse(code = 401, message = "You are not authorized to view the resource"),
+			@ApiResponse(code = 403, message = "Accessing the resource you were trying to reach is forbidden"),
+			@ApiResponse(code = 404, message = "The resource you were trying to reach is not found") })
+
+	@RequestMapping(value = "/log", method = RequestMethod.POST, produces = "application/json")
+	public RootObject findLog(@RequestBody QueryRecordLogParameter queryRecordParameter) {
+
+		 return FindData.findLog(queryRecordParameter);
+	}
+
 	
 	@ApiOperation(value = "View a detail of produtc")
 	@ApiResponses(value = { @ApiResponse(code = 200, message = "Successfully retrieved list"),

@@ -1,21 +1,16 @@
 package com.anvisa.model.persistence.mongodb.synchronze;
 
-import java.text.SimpleDateFormat;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.commons.logging.Log;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.anvisa.core.json.JsonToObject;
-import com.anvisa.interceptor.synchronizedata.SynchronizeDataTask;
 import com.anvisa.model.persistence.mongodb.BaseEntityMongoDB;
 import com.anvisa.model.persistence.mongodb.cosmetic.register.ContentCosmeticRegister;
 import com.anvisa.model.persistence.mongodb.cosmetic.register.ContentCosmeticRegisterDetail;
@@ -30,7 +25,9 @@ import com.anvisa.model.persistence.mongodb.cosmetic.register.presentation.Prese
 import com.anvisa.model.persistence.mongodb.cosmetic.register.presentation.PresentationDestination;
 import com.anvisa.model.persistence.mongodb.cosmetic.register.presentation.PresentationRestriction;
 import com.anvisa.model.persistence.mongodb.interceptor.synchronizedata.IntSynchronizeMdb;
+import com.anvisa.model.persistence.mongodb.loggerprocessing.LoggerProcessing;
 import com.anvisa.model.persistence.mongodb.repository.CosmeticRegisterRepositoryMdb;
+import com.anvisa.model.persistence.mongodb.repository.LoggerRepositoryMdb;
 import com.anvisa.model.persistence.mongodb.repository.SynchronizeDataMdb;
 import com.anvisa.model.persistence.mongodb.sequence.SequenceDaoImpl;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -52,12 +49,16 @@ public class SynchronizeCosmeticRegisterMdb extends SynchronizeDataMdb implement
 
 	@Autowired
 	private static CosmeticRegisterRepositoryMdb cosmeticRegisterRepository;
+	
+	@Autowired
+	private static LoggerRepositoryMdb loggerRepositoryMdb;
 
 	@Autowired
-	public void setService(CosmeticRegisterRepositoryMdb cosmeticRegisterRepository, SequenceDaoImpl sequence) {
+	public void setService(CosmeticRegisterRepositoryMdb cosmeticRegisterRepository, SequenceDaoImpl sequence, LoggerRepositoryMdb loggerRepositoryMdb) {
 
 		this.cosmeticRegisterRepository = cosmeticRegisterRepository;
 		this.sequence = sequence;
+		this.loggerRepositoryMdb = loggerRepositoryMdb;
 
 	}
 
@@ -65,7 +66,7 @@ public class SynchronizeCosmeticRegisterMdb extends SynchronizeDataMdb implement
 
 		SEQ_KEY = "cosmetic_register";
 
-		URL = "https://consultas.anvisa.gov.br/api/consulta/cosmeticos/registrados?count=10000&page=1&filter[cnpj]=";
+		URL = "https://consultas.anvisa.gov.br/api/consulta/cosmeticos/registrados?count=1000&page=1&filter[cnpj]=";
 
 		URL_DETAIL = "https://consultas.anvisa.gov.br/api/consulta/cosmeticos/registrados/";
 
@@ -430,7 +431,7 @@ public class SynchronizeCosmeticRegisterMdb extends SynchronizeDataMdb implement
 			e.printStackTrace();
 		}
 
-		return null;
+		return rootObject;
 		// return super.loadData(this, cnpj);
 	}
 
@@ -556,16 +557,13 @@ public class SynchronizeCosmeticRegisterMdb extends SynchronizeDataMdb implement
 		return null;
 	}
 
-	private static final Logger log = LoggerFactory.getLogger(SynchronizeDataTask.class);
-
-	private static final SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
-
 	@Override
-	public void persist(ArrayList<BaseEntityMongoDB> itens) {
+	public void persist(ArrayList<BaseEntityMongoDB> itens, LoggerProcessing loggerProcessing) {
 
-		int size = itens.size();
-		List<ContentCosmeticRegister> bachList = new ArrayList<>();
-		int count = 0;
+				
+		int totalInserido   = 0;
+		int totalAtualizado = 0;
+		int totalErro       = 0;
 
 		for (Iterator<BaseEntityMongoDB> iterator = itens.iterator(); iterator.hasNext();) {
 
@@ -573,15 +571,15 @@ public class SynchronizeCosmeticRegisterMdb extends SynchronizeDataMdb implement
 			
 			try {
 				
-				System.out.println(baseEntity.getProcesso() + " - " + baseEntity.getCnpj());
+				log.info("Synchronize "+this.getClass().getName()+" "+baseEntity.getProcesso() + " - " + baseEntity.getCnpj());
 
 				ContentCosmeticRegister localCosmetic = cosmeticRegisterRepository.findByProcesso(
 						baseEntity.getProcesso(), baseEntity.getExpedienteProcesso(), baseEntity.getCnpj());
 
 				boolean newFoot = (localCosmetic == null);
 
-				if (newFoot == false)
-					continue;
+				/*if (newFoot == false)
+					continue;*/
 
 				// ContentCosmeticRegisterDetail detail =
 				// baseEntity.getContentCosmeticRegisterDetail();
@@ -612,37 +610,33 @@ public class SynchronizeCosmeticRegisterMdb extends SynchronizeDataMdb implement
 					if (!localCosmetic.equals(baseEntity)) {
 
 						baseEntity.setId(localCosmetic.getId());
-						bachList.add(baseEntity);
-
+						baseEntity.setUpdateDate(LocalDateTime.now());
+						cosmeticRegisterRepository.save(baseEntity);
+						totalAtualizado++;
 					}
 
 				} else {
 					baseEntity.setId(this.sequence.getNextSequenceId(SEQ_KEY));
-					bachList.add(baseEntity);
-
+					baseEntity.setInsertDate(LocalDateTime.now());
+					cosmeticRegisterRepository.save(baseEntity);
+					totalInserido++;
 				}
-
-				if ((count + 1) % 10 == 0 || (count + 1) == size) {
-
-					cosmeticRegisterRepository.saveAll(bachList);
-
-					bachList.clear();
-
-				}
-
-				count++;
-				// log.info(baseEntity.toString());
-				System.out.println(count);
 
 			} catch (Exception e) {
 				// TODO: handle exception
 				log.error(this.getClass().getName() + " Cnpj " + baseEntity.getCnpj() + " Processo "
 						+ baseEntity.getProcesso() + " ExpedienteProcesso " + baseEntity.getExpedienteProcesso());
 				log.error(e.getMessage());
+				
+				totalErro++;
 			}
 
 		}
 
+		loggerProcessing.setTotalInserido(new Long(totalInserido));
+		loggerProcessing.setTotalAtualizado(new Long(totalAtualizado));
+		loggerProcessing.setTotalErro(new Long(totalErro));
+		this.loggerRepositoryMdb.save(loggerProcessing);
 	}
 
 }

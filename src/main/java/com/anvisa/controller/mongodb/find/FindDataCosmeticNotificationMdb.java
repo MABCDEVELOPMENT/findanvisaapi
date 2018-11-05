@@ -59,7 +59,7 @@ public class FindDataCosmeticNotificationMdb {
 					Process newProcess = (Process) processos.get(0);
 					ArrayList<BaseEntityMongoDB> processo = new ArrayList<BaseEntityMongoDB>();
 					processo.add(processos.get(0));
-					synchronizeProcess.persist(processo);
+					synchronizeProcess.persist(processo,null);
 					contentCosmeticNotification.lodaProcess(newProcess);
 				}
 

@@ -125,14 +125,16 @@ public class UserController {
 			StringBuffer sb = new StringBuffer();
 			
 			sb.append("Prezado Administrado,\n");
-			sb.append(" Foi efetuado um registro de usuário no sistema FINDANVISA, favor efetuar a ativação do mesmo confime dados abaixo:\n");
+			sb.append("Foi efetuado um novo registro de usuário no sistema FINDANVISA, favor efetuar a ativação do");
+			sb.append("mesmo conforme dados abaixo:");
 			sb.append("\n");
 			sb.append("\n");
 			sb.append(" Usuário : "+user.getFullName()+"\n");
 			sb.append(" Login "+user.getEmail()+"\n");
 			sb.append("\n");
 			sb.append("\n");
-			sb.append(" Acesse o link http://findinfo.kinghost.net/findanvisa/#/userList");
+			sb.append("Para liberar o acesso, entre no sistema através deste link:");
+			sb.append("http://findinfo.kinghost.net/findanvisa/#/userList");
 			
 			
 			List<User> users = this.userRepository.findSendActivation();
@@ -146,7 +148,7 @@ public class UserController {
 				email.setName(user.getFullName());
 				email.setInsertUser(user);
 				//email.setInsertDate(user.getInsertDate());
-				email.setSubject("Ativação de conta");
+				email.setSubject("Novo usuário registrado no sistema Findanvisa");
 				email.setEmail(usermail.getEmail());
 				email.setBody(sb.toString());
 				
@@ -159,7 +161,8 @@ public class UserController {
 
 		} else if(isActivation) {
 			
-			LoginController.sendToken(user,"Definir senha.");
+			LoginController.sendToken(user, "Seja bem vindo ao Findanvisa!",
+					"Olá, click no link abaixo para cadastrar uma senha de acesso ao nosso sistema.");
 			
 		}
 

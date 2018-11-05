@@ -1,22 +1,21 @@
 package com.anvisa.model.persistence.mongodb.synchronze;
 
-import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.concurrent.TimeUnit;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.anvisa.core.json.JsonToObject;
-import com.anvisa.interceptor.synchronizedata.SynchronizeDataTask;
 import com.anvisa.model.persistence.mongodb.BaseEntityMongoDB;
 import com.anvisa.model.persistence.mongodb.interceptor.synchronizedata.IntSynchronizeMdb;
+import com.anvisa.model.persistence.mongodb.loggerprocessing.LoggerProcessing;
 import com.anvisa.model.persistence.mongodb.process.Process;
 import com.anvisa.model.persistence.mongodb.process.ProcessDetail;
+import com.anvisa.model.persistence.mongodb.repository.LoggerRepositoryMdb;
 import com.anvisa.model.persistence.mongodb.repository.ProcessRepositoryMdb;
 import com.anvisa.model.persistence.mongodb.repository.SynchronizeDataMdb;
 import com.anvisa.model.persistence.mongodb.sequence.SequenceDaoImpl;
@@ -32,15 +31,15 @@ import okhttp3.Response;
 @Component
 public class SynchronizeProcessMdb extends SynchronizeDataMdb implements IntSynchronizeMdb {
 
-	private static final Logger log = LoggerFactory.getLogger(SynchronizeDataTask.class);
-
-	private static final SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
-
+	
 	@Autowired
 	public static SequenceDaoImpl sequence;
 
 	@Autowired
 	private static ProcessRepositoryMdb processRepository;
+	
+	@Autowired
+	private static LoggerRepositoryMdb loggerRepositoryMdb;
 
 	@Autowired
 	public void setService(ProcessRepositoryMdb processRepository, SequenceDaoImpl sequence) {
@@ -139,19 +138,26 @@ public class SynchronizeProcessMdb extends SynchronizeDataMdb implements IntSync
 	}
 
 	@Override
-	public void persist(ArrayList<BaseEntityMongoDB> itens) {
+	public void persist(ArrayList<BaseEntityMongoDB> itens, LoggerProcessing loggerProcessing) {
 		int cont = 0;
 
+		int totalInserido   = 0;
+		int totalAtualizado = 0;
+		int totalErro       = 0;
+		
 		for (Iterator<BaseEntityMongoDB> iterator = itens.iterator(); iterator.hasNext();) {
 
 			Process baseEntity = (Process) iterator.next();
 			try {
+				
+				log.info("Synchronize "+this.getClass().getName()+" "+baseEntity.getProcesso() + " - " + baseEntity.getCnpj());
+				
 				Process localProcess = processRepository.findByProcesso(baseEntity.getProcesso(), baseEntity.getCnpj());
 
 				boolean newNotification = (localProcess == null);
 
-				if (newNotification == false)
-					continue;
+/*				if (newNotification == false)
+					continue;*/
 
 				ProcessDetail processDetail = (ProcessDetail) this.loadDetailData(baseEntity.getProcesso());
 
@@ -166,8 +172,10 @@ public class SynchronizeProcessMdb extends SynchronizeDataMdb implements IntSync
 					if (!localProcess.equals(baseEntity)) {
 
 						baseEntity.setId(localProcess.getId());
+						baseEntity.setUpdateDate(LocalDateTime.now());
 						try {
 							processRepository.save(baseEntity);
+							totalAtualizado++;
 							log.info("SynchronizeData => Update Process cnpj " + baseEntity.getCnpj() + "  process "
 									+ baseEntity.getProcesso(), dateFormat.format(new Date()));
 						} catch (Exception e) {
@@ -183,7 +191,9 @@ public class SynchronizeProcessMdb extends SynchronizeDataMdb implements IntSync
 					baseEntity.setId(this.sequence.getNextSequenceId(SEQ_KEY));
 					baseEntity.setProcessDetail(processDetail);
 					try {
+						baseEntity.setInsertDate(LocalDateTime.now());
 						processRepository.save(baseEntity);
+						totalInserido++;
 						log.info("SynchronizeData => Insert Process cnpj " + baseEntity.getCnpj() + "  process "
 								+ baseEntity.getProcesso(), dateFormat.format(new Date()));
 					} catch (Exception e) {
@@ -199,7 +209,17 @@ public class SynchronizeProcessMdb extends SynchronizeDataMdb implements IntSync
 				log.error(this.getClass().getName() + " Processo " + baseEntity.getProcesso() + " cnpj "
 						+ baseEntity.getCnpj());
 				log.error(e.getMessage());
+				totalErro++;
 			}
+		}
+
+		if (loggerProcessing!=null) {
+		
+			loggerProcessing.setTotalInserido(new Long(totalInserido));
+			loggerProcessing.setTotalAtualizado(new Long(totalAtualizado));
+			loggerProcessing.setTotalErro(new Long(totalErro));
+			loggerRepositoryMdb.save(loggerProcessing);
+			
 		}
 
 	}

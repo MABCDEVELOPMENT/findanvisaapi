@@ -34,7 +34,7 @@ public class ScheduledTasks {
 		//this.mailSender = mailSender;
 	}
 
-	private static final Logger log = LoggerFactory.getLogger(ScheduledTasks.class);
+	private static final Logger log = LoggerFactory.getLogger("ScheduledTasks");
 
 	private static final SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
 

@@ -25,7 +25,7 @@ public class SynchronizeDataTask {
 		this.registerCNPJRepository = registerCNPJRepository;
 	}
 
-	private static final Logger log = LoggerFactory.getLogger(SynchronizeDataTask.class);
+	private static final Logger log = LoggerFactory.getLogger("SynchronizeData");
 
 	private static final SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
 

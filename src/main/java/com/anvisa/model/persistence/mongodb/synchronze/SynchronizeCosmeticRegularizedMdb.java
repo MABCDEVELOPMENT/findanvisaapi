@@ -1,17 +1,13 @@
 package com.anvisa.model.persistence.mongodb.synchronze;
 
-import java.text.SimpleDateFormat;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.anvisa.core.json.JsonToObject;
-import com.anvisa.interceptor.synchronizedata.SynchronizeDataTask;
 import com.anvisa.model.persistence.mongodb.BaseEntityMongoDB;
 import com.anvisa.model.persistence.mongodb.cosmetic.regularized.ContentCosmeticRegularized;
 import com.anvisa.model.persistence.mongodb.cosmetic.regularized.ContentCosmeticRegularizedDetail;
@@ -20,7 +16,9 @@ import com.anvisa.model.persistence.mongodb.cosmetic.regularized.CosmeticRegular
 import com.anvisa.model.persistence.mongodb.cosmetic.regularized.CosmeticRegularizedDetailHoldingCompany;
 import com.anvisa.model.persistence.mongodb.cosmetic.regularized.CosmeticRegularizedDetailLocalNational;
 import com.anvisa.model.persistence.mongodb.interceptor.synchronizedata.IntSynchronizeMdb;
+import com.anvisa.model.persistence.mongodb.loggerprocessing.LoggerProcessing;
 import com.anvisa.model.persistence.mongodb.repository.CosmeticRegularizedRepositoryMdb;
+import com.anvisa.model.persistence.mongodb.repository.LoggerRepositoryMdb;
 import com.anvisa.model.persistence.mongodb.repository.SynchronizeDataMdb;
 import com.anvisa.model.persistence.mongodb.sequence.SequenceDaoImpl;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -39,13 +37,20 @@ public class SynchronizeCosmeticRegularizedMdb extends SynchronizeDataMdb implem
 
 	@Autowired
 	private static CosmeticRegularizedRepositoryMdb cosmeticRegularizedRepository;
+	
+	@Autowired
+	private static LoggerRepositoryMdb loggerRepositoryMdb;
 
 	@Autowired
-	public void setService(CosmeticRegularizedRepositoryMdb cosmeticRegularizedRepository, SequenceDaoImpl sequence) {
+	public void setService(CosmeticRegularizedRepositoryMdb cosmeticRegularizedRepository, 
+						   SequenceDaoImpl sequence, 	
+						   LoggerRepositoryMdb loggerRepositoryMdb) {
 
 		this.cosmeticRegularizedRepository = cosmeticRegularizedRepository;
 
 		this.sequence = sequence;
+		
+		this.loggerRepositoryMdb = loggerRepositoryMdb; 
 
 	}
 
@@ -227,19 +232,23 @@ public class SynchronizeCosmeticRegularizedMdb extends SynchronizeDataMdb implem
 		return null;
 	}
 
-	private static final Logger log = LoggerFactory.getLogger(SynchronizeDataTask.class);
-
-	private static final SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
 
 	@Override
-	public void persist(ArrayList<BaseEntityMongoDB> itens) {
+	public void persist(ArrayList<BaseEntityMongoDB> itens, LoggerProcessing loggerProcessing) {
 
 		int cont = 0;
+		
+		int totalInserido   = 0;
+		int totalAtualizado = 0;
+		int totalErro       = 0;
 
 		for (Iterator<BaseEntityMongoDB> iterator = itens.iterator(); iterator.hasNext();) {
 
 			ContentCosmeticRegularized baseEntity = (ContentCosmeticRegularized) iterator.next();
 			try {
+				
+				log.info("Synchronize "+this.getClass().getName()+" "+baseEntity.getProcesso());
+				
 				ContentCosmeticRegularized localContentCosmeticRegularized = cosmeticRegularizedRepository
 						.findByProcesso(baseEntity.getProcesso());
 
@@ -260,23 +269,32 @@ public class SynchronizeCosmeticRegularizedMdb extends SynchronizeDataMdb implem
 					if (!localContentCosmeticRegularized.equals(baseEntity)) {
 
 						baseEntity.setId(localContentCosmeticRegularized.getId());
+						baseEntity.setUpdateDate(LocalDateTime.now());
 						cosmeticRegularizedRepository.save(baseEntity);
+						totalAtualizado++;
 					}
 
 				} else {
 					baseEntity.setId(this.sequence.getNextSequenceId(SEQ_KEY));
 					baseEntity.setContentCosmeticRegularizedDetail(contentCosmeticRegularizedDetail);
+					baseEntity.setInsertDate(LocalDateTime.now());
 					cosmeticRegularizedRepository.save(baseEntity);
+					totalInserido++;
 
 				}
-				System.out.println(cont++);
 
 			} catch (Exception e) {
 				// TODO: handle exception
 				log.error(this.getClass().getName() + " Processo " + baseEntity.getProcesso());
 				log.error(e.getMessage());
+				totalErro++;
 			}
 		}
+		
+		loggerProcessing.setTotalInserido(new Long(totalInserido));
+		loggerProcessing.setTotalAtualizado(new Long(totalAtualizado));
+		loggerProcessing.setTotalErro(new Long(totalErro));
+		loggerRepositoryMdb.save(loggerProcessing);
 
 	}
 

@@ -4,9 +4,11 @@ import com.anvisa.controller.mongodb.find.FindDataCosmeticNotificationMdb;
 import com.anvisa.controller.mongodb.find.FindDataCosmeticRegisterMdb;
 import com.anvisa.controller.mongodb.find.FindDataCosmeticRegularizedMdb;
 import com.anvisa.controller.mongodb.find.FindDataFootMdb;
+import com.anvisa.controller.mongodb.find.FindDataLogMdb;
 import com.anvisa.controller.mongodb.find.FindDataProcessMdb;
 import com.anvisa.controller.mongodb.find.FindDataSaneanteNotificationMdb;
 import com.anvisa.controller.mongodb.find.FindDataSaneanteProductMdb;
+import com.anvisa.rest.QueryRecordLogParameter;
 import com.anvisa.rest.QueryRecordParameter;
 import com.anvisa.rest.QueryRecordProcessParameter;
 import com.anvisa.rest.RootObject;
@@ -46,6 +48,12 @@ public class FindData {
 		}
 
 		
+		return rootObject;
+	}
+	
+	public static RootObject findLog(QueryRecordLogParameter queryRecordParameter) {
+		RootObject rootObject = new RootObject();
+		rootObject.getContent().addAll(FindDataLogMdb.find(queryRecordParameter));
 		return rootObject;
 	}
 	

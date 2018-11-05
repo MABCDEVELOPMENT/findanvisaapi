@@ -1,6 +1,7 @@
 package com.anvisa.model.persistence.mongodb.synchronze;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Iterator;
 
@@ -10,6 +11,8 @@ import org.springframework.stereotype.Component;
 import com.anvisa.core.json.JsonToObject;
 import com.anvisa.model.persistence.mongodb.BaseEntityMongoDB;
 import com.anvisa.model.persistence.mongodb.interceptor.synchronizedata.IntSynchronizeMdb;
+import com.anvisa.model.persistence.mongodb.loggerprocessing.LoggerProcessing;
+import com.anvisa.model.persistence.mongodb.repository.LoggerRepositoryMdb;
 import com.anvisa.model.persistence.mongodb.repository.SaneanteNotificationRepositoryMdb;
 import com.anvisa.model.persistence.mongodb.repository.SynchronizeDataMdb;
 import com.anvisa.model.persistence.mongodb.saneante.notification.SaneanteNotificadoPetition;
@@ -35,12 +38,16 @@ public class SynchronizeSaneanteNotificationMdb extends SynchronizeDataMdb imple
 
 	@Autowired
 	private static SaneanteNotificationRepositoryMdb saneanteNotificationRepository;
+	
+	@Autowired
+	private static LoggerRepositoryMdb loggerRepositoryMdb;
 
 	@Autowired
-	public void setService(SaneanteNotificationRepositoryMdb saneanteNotificationRepository, SequenceDaoImpl sequence) {
+	public void setService(SaneanteNotificationRepositoryMdb saneanteNotificationRepository, SequenceDaoImpl sequence, LoggerRepositoryMdb loggerRepositoryMdb) {
 
 		this.saneanteNotificationRepository = saneanteNotificationRepository;
 		this.sequence = sequence;
+		this.loggerRepositoryMdb = loggerRepositoryMdb;
 
 	}
 
@@ -230,19 +237,28 @@ public class SynchronizeSaneanteNotificationMdb extends SynchronizeDataMdb imple
 	}
 
 	@Override
-	public void persist(ArrayList<BaseEntityMongoDB> itens) {
+	public void persist(ArrayList<BaseEntityMongoDB> itens, LoggerProcessing loggerProcessing) {
+		
 		int cont = 0;
+		
+		int totalInserido   = 0;
+		int totalAtualizado = 0;
+		int totalErro       = 0;
+		
 		for (Iterator<BaseEntityMongoDB> iterator = itens.iterator(); iterator.hasNext();) {
 
 			SaneanteNotification baseEntity = (SaneanteNotification) iterator.next();
 			try {
+				
+				log.info("Synchronize "+this.getClass().getName()+" "+baseEntity.getProcesso() + " - " + baseEntity.getCnpj());
+				
 				SaneanteNotification localSaneanteNotification = saneanteNotificationRepository.findByProcesso(
 						baseEntity.getProcesso(), baseEntity.getCnpj(), baseEntity.getExpedienteProcesso());
 
 				boolean newNotification = (localSaneanteNotification == null);
 
-				if (newNotification == false)
-					continue;
+				/*if (newNotification == false)
+					continue;*/
 
 				SaneanteNotificationDetail saneanteNotificationDetail = (SaneanteNotificationDetail) this
 						.loadDetailData(baseEntity.getProcesso());
@@ -259,14 +275,17 @@ public class SynchronizeSaneanteNotificationMdb extends SynchronizeDataMdb imple
 					if (!localSaneanteNotification.equals(baseEntity)) {
 
 						baseEntity.setId(localSaneanteNotification.getId());
+						baseEntity.setUpdateDate(LocalDateTime.now());
 						saneanteNotificationRepository.save(baseEntity);
+						totalAtualizado++;
 					}
 
 				} else {
 					baseEntity.setId(this.sequence.getNextSequenceId(SEQ_KEY));
 					baseEntity.setSaneanteNotificationDetail(saneanteNotificationDetail);
+					baseEntity.setInsertDate(LocalDateTime.now());
 					saneanteNotificationRepository.save(baseEntity);
-
+					totalInserido++;
 				}
 
 				System.out.println(cont++);
@@ -275,8 +294,14 @@ public class SynchronizeSaneanteNotificationMdb extends SynchronizeDataMdb imple
 				log.error(this.getClass().getName() + " Processo " + baseEntity.getProcesso() + " cnpj "
 						+ baseEntity.getCnpj());
 				log.error(e.getMessage());
+				totalErro++;
 			}
 		}
+		
+		loggerProcessing.setTotalInserido(new Long(totalInserido));
+		loggerProcessing.setTotalAtualizado(new Long(totalAtualizado));
+		loggerProcessing.setTotalErro(new Long(totalErro));
+		loggerRepositoryMdb.save(loggerProcessing);
 
 	}
 

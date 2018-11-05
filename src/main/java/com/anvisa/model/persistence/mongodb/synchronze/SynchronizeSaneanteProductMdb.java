@@ -1,6 +1,6 @@
 package com.anvisa.model.persistence.mongodb.synchronze;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -11,6 +11,8 @@ import org.springframework.stereotype.Component;
 import com.anvisa.core.json.JsonToObject;
 import com.anvisa.model.persistence.mongodb.BaseEntityMongoDB;
 import com.anvisa.model.persistence.mongodb.interceptor.synchronizedata.IntSynchronizeMdb;
+import com.anvisa.model.persistence.mongodb.loggerprocessing.LoggerProcessing;
+import com.anvisa.model.persistence.mongodb.repository.LoggerRepositoryMdb;
 import com.anvisa.model.persistence.mongodb.repository.SaneanteProductRepositoryMdb;
 import com.anvisa.model.persistence.mongodb.repository.SynchronizeDataMdb;
 import com.anvisa.model.persistence.mongodb.saneante.product.SaneanteProduct;
@@ -33,13 +35,20 @@ public class SynchronizeSaneanteProductMdb extends SynchronizeDataMdb implements
 
 	@Autowired
 	private static SaneanteProductRepositoryMdb seneanteProductRepository;
+	
+	@Autowired
+	private static LoggerRepositoryMdb loggerRepositoryMdb;
 
 	@Autowired
-	public void setService(SaneanteProductRepositoryMdb seneanteProductRepository, SequenceDaoImpl sequence) {
+	public void setService(SaneanteProductRepositoryMdb seneanteProductRepository, 
+			SequenceDaoImpl sequence,
+			LoggerRepositoryMdb loggerRepositoryMdb) {
 
 		this.seneanteProductRepository = seneanteProductRepository;
 
 		this.sequence = sequence;
+		
+		this.loggerRepositoryMdb = loggerRepositoryMdb;
 
 	}
 
@@ -175,14 +184,21 @@ public class SynchronizeSaneanteProductMdb extends SynchronizeDataMdb implements
 	}
 
 	@Override
-	public void persist(ArrayList<BaseEntityMongoDB> itens) {
+	public void persist(ArrayList<BaseEntityMongoDB> itens, LoggerProcessing loggerProcessing) {
 
 		int cont = 0;
+		
+		int totalInserido   = 0;
+		int totalAtualizado = 0;
+		int totalErro       = 0;
 
 		for (Iterator<BaseEntityMongoDB> iterator = itens.iterator(); iterator.hasNext();) {
 
 			SaneanteProduct baseEntity = (SaneanteProduct) iterator.next();
 			try {
+				
+				log.info("Synchronize "+this.getClass().getName()+" "+baseEntity.getProcesso() + " - " + baseEntity.getCnpj());
+				
 				SaneanteProduct localSaneanteProduct = seneanteProductRepository.findByProcesso(
 						baseEntity.getProcesso(), baseEntity.getCnpj(), baseEntity.getCodigo(),
 						baseEntity.getRegistro(), baseEntity.getDataVencimento());
@@ -204,23 +220,37 @@ public class SynchronizeSaneanteProductMdb extends SynchronizeDataMdb implements
 					if (!localSaneanteProduct.equals(baseEntity)) {
 
 						baseEntity.setId(localSaneanteProduct.getId());
+						baseEntity.setUpdateDate(LocalDateTime.now());
 						seneanteProductRepository.save(baseEntity);
+						totalAtualizado++;
 					}
 
 				} else {
 					baseEntity.setId(this.sequence.getNextSequenceId(SEQ_KEY));
 					baseEntity.setSaneanteProductDetail(saneanteProductDetail);
+					baseEntity.setInsertDate(LocalDateTime.now());
 					seneanteProductRepository.save(baseEntity);
+					totalInserido++;
 
 				}
-				System.out.println(cont++);
+
 			} catch (Exception e) {
 				// TODO: handle exception
+				
 				log.error(this.getClass().getName() + " Processo " + baseEntity.getProcesso() + " cnpj "
 						+ baseEntity.getCnpj() + " Codigo " + baseEntity.getCodigo() + " Registro "
 						+ baseEntity.getRegistro() + " Vencimento " + baseEntity.getDataVencimento());
+				
 				log.error(e.getMessage());
+				
+				totalErro++;
+				
 			}
 		}
+		
+		loggerProcessing.setTotalInserido(new Long(totalInserido));
+		loggerProcessing.setTotalAtualizado(new Long(totalAtualizado));
+		loggerProcessing.setTotalErro(new Long(totalErro));
+		loggerRepositoryMdb.save(loggerProcessing);
 	}
 }

@@ -1,5 +1,6 @@
 package com.anvisa.model.persistence.mongodb.synchronze;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Iterator;
 
@@ -11,7 +12,9 @@ import com.anvisa.model.persistence.mongodb.BaseEntityMongoDB;
 import com.anvisa.model.persistence.mongodb.foot.ContentFootDetailMdb;
 import com.anvisa.model.persistence.mongodb.foot.ContentFootMdb;
 import com.anvisa.model.persistence.mongodb.interceptor.synchronizedata.IntSynchronizeMdb;
+import com.anvisa.model.persistence.mongodb.loggerprocessing.LoggerProcessing;
 import com.anvisa.model.persistence.mongodb.repository.FootRepositoryMdb;
+import com.anvisa.model.persistence.mongodb.repository.LoggerRepositoryMdb;
 import com.anvisa.model.persistence.mongodb.repository.SequenceRepositoryMdb;
 import com.anvisa.model.persistence.mongodb.repository.SynchronizeDataMdb;
 import com.anvisa.model.persistence.mongodb.sequence.SequenceDaoImpl;
@@ -31,12 +34,16 @@ public class SynchronizeFootMdb extends SynchronizeDataMdb implements IntSynchro
 
 	@Autowired
 	private static FootRepositoryMdb footRepository;
+	
+	@Autowired
+	private static LoggerRepositoryMdb loggerRepositoryMdb;
 
 	@Autowired
-	public void setService(FootRepositoryMdb footRepository, SequenceDaoImpl sequence) {
+	public void setService(FootRepositoryMdb footRepository, SequenceDaoImpl sequence, LoggerRepositoryMdb loggerRepositoryMdb) {
 
 		this.footRepository = footRepository;
 		this.sequence = sequence;
+		this.loggerRepositoryMdb = loggerRepositoryMdb;
 
 	}
 
@@ -134,12 +141,19 @@ public class SynchronizeFootMdb extends SynchronizeDataMdb implements IntSynchro
 	}
 
 	@Override
-	public void persist(ArrayList<BaseEntityMongoDB> itens) {
-		int cont = 0;
+	public void persist(ArrayList<BaseEntityMongoDB> itens, LoggerProcessing loggerProcessing) {
+		
+		int totalInserido   = 0;
+		int totalAtualizado = 0;
+		int totalErro       = 0;
+		
 		for (Iterator<BaseEntityMongoDB> iterator = itens.iterator(); iterator.hasNext();) {
 
 			ContentFootMdb baseEntity = (ContentFootMdb) iterator.next();
 			try {
+				
+				log.info("Synchronize "+this.getClass().getName()+" "+baseEntity.getProcesso() + " - " + baseEntity.getCnpj());
+				
 				ContentFootMdb localFoot = footRepository.findByProcesso(baseEntity.getProcesso(), baseEntity.getCnpj(),
 						baseEntity.getCodigo(), baseEntity.getRegistro(), baseEntity.getDataVencimento());
 
@@ -172,25 +186,36 @@ public class SynchronizeFootMdb extends SynchronizeDataMdb implements IntSynchro
 						baseEntity.setId(localFoot.getId());
 						detail.setId(localFoot.getContentFootDetail().getId());
 						baseEntity.setContentFootDetail(detail);
+						baseEntity.setUpdateDate(LocalDateTime.now());
 						footRepository.save(baseEntity);
-
+						totalAtualizado++;
 					}
 
 				} else {
 					baseEntity.setId(this.sequence.getNextSequenceId(SEQ_KEY));
+					baseEntity.setInsertDate(LocalDateTime.now());
 					footRepository.save(baseEntity);
+					totalInserido++;
 
 				}
-
-				System.out.println(cont++);
 
 			} catch (Exception e) {
 				// TODO: handle exception
 				log.error(this.getClass().getName() +" Processo "+baseEntity.getProcesso()+" cnpj "+ baseEntity.getCnpj()+" Codigo "
 						+baseEntity.getCodigo()+" Registro "+baseEntity.getRegistro()+" Vencimento "+baseEntity.getDataVencimento());
 				log.error(e.getMessage());
+				totalErro++;
 			}
+			
 		}
+		
+
+		loggerProcessing.setTotalInserido(new Long(totalInserido));
+		loggerProcessing.setTotalAtualizado(new Long(totalAtualizado));
+		loggerProcessing.setTotalErro(new Long(totalErro));
+		loggerRepositoryMdb.save(loggerProcessing);
+
+		
 
 	}
 
