@@ -6,6 +6,7 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.concurrent.TimeUnit;
 
+import org.bson.Document;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -18,11 +19,16 @@ import com.anvisa.model.persistence.mongodb.process.ProcessDetail;
 import com.anvisa.model.persistence.mongodb.repository.LoggerRepositoryMdb;
 import com.anvisa.model.persistence.mongodb.repository.ProcessRepositoryMdb;
 import com.anvisa.model.persistence.mongodb.repository.SynchronizeDataMdb;
+import com.anvisa.model.persistence.mongodb.saneante.product.SaneanteProduct;
 import com.anvisa.model.persistence.mongodb.sequence.SequenceDaoImpl;
 import com.anvisa.rest.model.Peticao;
 import com.anvisa.rest.model.Processo;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.Gson;
+import com.mongodb.MongoClient;
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoDatabase;
 
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -139,6 +145,22 @@ public class SynchronizeProcessMdb extends SynchronizeDataMdb implements IntSync
 
 	@Override
 	public void persist(ArrayList<BaseEntityMongoDB> itens, LoggerProcessing loggerProcessing) {
+		
+		@SuppressWarnings("resource")
+		MongoClient mongoClient = new MongoClient("localhost");	
+		
+		//MongoCredential credential = MongoCredential.createPlainCredential("findinfo01", "findinfo01", "idkfa0101".toCharArray());
+		
+		MongoDatabase database = mongoClient.getDatabase("findinfo01");
+		
+		MongoCollection<Document> coll = database.getCollection("process");
+		
+		Gson gson = new Gson();
+		
+		
+		ArrayList<Document>  listSave = new ArrayList<Document>();
+		
+		int size = itens.size();
 		int cont = 0;
 
 		int totalInserido   = 0;
@@ -174,8 +196,11 @@ public class SynchronizeProcessMdb extends SynchronizeDataMdb implements IntSync
 						baseEntity.setId(localProcess.getId());
 						baseEntity.setUpdateDate(LocalDateTime.now());
 						try {
-							processRepository.save(baseEntity);
+							Document document = Document.parse(gson.toJson(baseEntity));
+							coll.updateOne(new Document("_id", localProcess.getId()), document);
+							//listSave.add(document);
 							totalAtualizado++;
+
 							log.info("SynchronizeData => Update Process cnpj " + baseEntity.getCnpj() + "  process "
 									+ baseEntity.getProcesso(), dateFormat.format(new Date()));
 						} catch (Exception e) {
@@ -192,7 +217,8 @@ public class SynchronizeProcessMdb extends SynchronizeDataMdb implements IntSync
 					baseEntity.setProcessDetail(processDetail);
 					try {
 						baseEntity.setInsertDate(LocalDateTime.now());
-						processRepository.save(baseEntity);
+						Document document = Document.parse(gson.toJson(baseEntity));
+						listSave.add(document);
 						totalInserido++;
 						log.info("SynchronizeData => Insert Process cnpj " + baseEntity.getCnpj() + "  process "
 								+ baseEntity.getProcesso(), dateFormat.format(new Date()));
@@ -211,6 +237,23 @@ public class SynchronizeProcessMdb extends SynchronizeDataMdb implements IntSync
 				log.error(e.getMessage());
 				totalErro++;
 			}
+			
+			try {
+				if (cont % 500 == 0 || cont == size) {
+					//seneanteProductRepository.saveAll(listSave);    
+					coll.insertMany(listSave);
+					listSave = new ArrayList<Document>();
+				}
+			} catch (Exception e) {
+				// TODO: handle exception
+				log.error(this.getClass().getName() + " Processo " + baseEntity.getProcesso() + " cnpj "
+						+ baseEntity.getCnpj());
+				
+				log.error(e.getMessage());
+				totalErro++;
+			}	
+	
+			cont++;
 		}
 
 		if (loggerProcessing!=null) {
@@ -221,6 +264,8 @@ public class SynchronizeProcessMdb extends SynchronizeDataMdb implements IntSync
 			loggerRepositoryMdb.save(loggerProcessing);
 			
 		}
+		
+		mongoClient.close();
 
 	}
 

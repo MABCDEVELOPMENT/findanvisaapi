@@ -28,7 +28,7 @@ import com.anvisa.model.persistence.mongodb.synchronze.SynchronizeSaneanteProduc
 import com.anvisa.repository.generic.RegisterCNPJRepository;
 
 @Component
-public class SynchronizeDataMdbTask {
+public class SynchronizeDataMdbTask implements Runnable {
 
 	@Autowired
 	private static RegisterCNPJRepository registerCNPJRepository;
@@ -54,111 +54,98 @@ public class SynchronizeDataMdbTask {
 
 	@Scheduled(cron = "0 10 02 * * *")
 	public static void  synchronizeData() {
-		
+			
+		Thread  thread = new Thread(new SynchronizeDataMdbTask(),"SynchronizeDataMdbTask");
+		thread.start();
+	
+	}
+	
+	@Override
+	public void run() {
+		boolean foot = false;
+		boolean saneantNotification  = false;
+		boolean saneantProduct       = false;
+		boolean process = true;
+		boolean cosmeticRegister = false;
+		boolean cosmeticNotification = false;
+		boolean cosmeticRegularized  = true;
 
+		
 		log.info("SynchronizeData", dateFormat.format(new Date()));
 		
 		IntSynchronizeMdb[] intSynchronize = { new SynchronizeFootMdb(), 
-				new SynchronizeCosmeticRegisterMdb(),
-				new SynchronizeCosmeticNotificationMdb(),
-				new SynchronizeCosmeticRegularizedMdb(), 
 				new SynchronizeSaneanteNotificationMdb(), 
 				new SynchronizeSaneanteProductMdb(), 
-				new SynchronizeProcessMdb() };
+				new SynchronizeProcessMdb(),
+				new SynchronizeCosmeticRegisterMdb(),
+				new SynchronizeCosmeticNotificationMdb(),
+				new SynchronizeCosmeticRegularizedMdb()};
 		
-		List<RegisterCNPJ> registerCNPJs = registerCNPJRepository.findAll(1);
+		List<RegisterCNPJ> registerCNPJs;
 		
-		
- 		int cont = 0;
+		if (foot) {
 
- 		
- 		
- 		
-		for (RegisterCNPJ registerCNPJ : registerCNPJs) {
- 			
- 			log.info("SynchronizeData => Start Foot "+registerCNPJ.getCnpj()+" "+registerCNPJ.getFullName(), dateFormat.format(new Date()));
+			registerCNPJs = registerCNPJRepository.findAll();
 
- 			ArrayList<BaseEntityMongoDB> itens = intSynchronize[0].loadData(registerCNPJ.getCnpj());
- 			
- 			log.info("SynchronizeData => Total "+itens.size(), dateFormat.format(new Date()));
- 			
- 			
- 			
- 			if(itens!=null && itens.size()>0) {
- 			  synchronized (itens) {
- 				
- 				LoggerProcessing loggerProcessing = new LoggerProcessing();
- 	 	 		
- 	 	 		loggerProcessing.setId(sequence.getNextSequenceId(LoggerProcessing.KEY_SEQ));
- 	 	 		loggerProcessing.setCnpj(registerCNPJ);
- 	 	 		loggerProcessing.setDescricao("Alimentos");
- 	 	 		loggerProcessing.setCategoria(0);
- 	 	 		loggerProcessing.setOpcao(0);
- 	 	 		loggerProcessing.setTotalAnvisa(new Long(itens.size()));
- 	 	 		loggerProcessing.setInsertDate(LocalDateTime.now());
+			int cont = 0;
 
- 	 	 		loggerRepositoryMdb.save(loggerProcessing); 
- 				 intSynchronize[0].persist(itens,loggerProcessing);
- 			  }	
- 			}
-		}
-	
- 		log.info("SynchronizeData => End Foot Total ", dateFormat.format(new Date()));
- 		
- 		
-		
-	
-		registerCNPJs = registerCNPJRepository.findAll();
-	
-		cont = 0;
+			for (RegisterCNPJ registerCNPJ : registerCNPJs) {
 
-		for (RegisterCNPJ registerCNPJ : registerCNPJs) {
+				log.info("SynchronizeData => Start Foot " + registerCNPJ.getCnpj() + " " + registerCNPJ.getFullName(),
+						dateFormat.format(new Date()));
 
-			log.info("SynchronizeData => Start Saneante Notification " + registerCNPJ.getCnpj() + " "
-					+ registerCNPJ.getFullName(), dateFormat.format(new Date()));
-
-			ArrayList<BaseEntityMongoDB> itens = intSynchronize[4].loadData(registerCNPJ.getCnpj());
-
-			log.info("SynchronizeData => Total " + itens.size(), dateFormat.format(new Date()));
-
-			if (itens != null && itens.size()>0) {
 				
-				synchronized (itens) {
+				
+				ArrayList<BaseEntityMongoDB> itens = intSynchronize[0].loadData(registerCNPJ.getCnpj());
 
-					LoggerProcessing loggerProcessing = new LoggerProcessing();
+				log.info("SynchronizeData => Total " + itens.size(), dateFormat.format(new Date()));
+				
+				cont=cont+itens.size();
+				
+				if (itens != null && itens.size() > 0) {
 
-					loggerProcessing.setId(sequence.getNextSequenceId(LoggerProcessing.KEY_SEQ));
-					loggerProcessing.setCnpj(registerCNPJ);
-					loggerProcessing.setDescricao("Cosméticos Regularizados");
-					loggerProcessing.setCategoria(1);
-					loggerProcessing.setOpcao(2);
-					loggerProcessing.setTotalAnvisa(new Long(itens.size()));
-					loggerProcessing.setInsertDate(LocalDateTime.now());
-	 	 	 		
-					loggerRepositoryMdb.save(loggerProcessing); 
-	 	 	 		
-					intSynchronize[4].persist(itens, loggerProcessing);
+
+						LoggerProcessing loggerProcessing = new LoggerProcessing();
+
+						loggerProcessing.setId(sequence.getNextSequenceId(LoggerProcessing.KEY_SEQ));
+						loggerProcessing.setCnpj(registerCNPJ);
+						loggerProcessing.setDescricao("Alimentos");
+						loggerProcessing.setCategoria(0);
+						loggerProcessing.setOpcao(0);
+						loggerProcessing.setTotalAnvisa(new Long(itens.size()));
+						loggerProcessing.setInsertDate(LocalDateTime.now());
+
+						loggerRepositoryMdb.save(loggerProcessing);
+						try {
+							intSynchronize[0].persist(itens, loggerProcessing);
+						} catch (Exception e) {
+								// TODO: handle exception
+						}
+
 				}
 			}
+
+			log.info("SynchronizeData => End Foot Total "+cont, dateFormat.format(new Date()));
+
 		}
-	
- 		log.info("SynchronizeData => End Saneante Notification ", dateFormat.format(new Date()));
 		
- 		registerCNPJs = registerCNPJRepository.findAll();
+		if (saneantNotification) {
+
+			registerCNPJs = registerCNPJRepository.findAll(2);
  		
-		cont = 0;
+		int cont = 0;
 
 		for (RegisterCNPJ registerCNPJ : registerCNPJs) {
  			
  			log.info("SynchronizeData => Start Saneante Notification "+registerCNPJ.getCnpj()+" "+registerCNPJ.getFullName(), dateFormat.format(new Date()));
 			
- 			ArrayList<BaseEntityMongoDB> itens = intSynchronize[5].loadData(registerCNPJ.getCnpj());
+ 			ArrayList<BaseEntityMongoDB> itens = intSynchronize[1].loadData(registerCNPJ.getCnpj());
  			
  			log.info("SynchronizeData => Total "+itens.size(), dateFormat.format(new Date()));
  			
+ 			cont=cont+itens.size();
+ 			
 			if (itens != null && itens.size()>0) {
-				
-				synchronized (itens) {
 					
 					LoggerProcessing loggerProcessing = new LoggerProcessing();
 
@@ -172,211 +159,254 @@ public class SynchronizeDataMdbTask {
 
 	 	 	 		loggerRepositoryMdb.save(loggerProcessing); 
 					
-					intSynchronize[5].persist(itens, loggerProcessing);
-					
-				}
+					try {
+						intSynchronize[1].persist(itens, loggerProcessing);
+					} catch (Exception e) {
+							// TODO: handle exception
+					}
+
 			}
 			
 		}
 	
- 		log.info("SynchronizeData => End Saneante Notification ", dateFormat.format(new Date()));
+ 		log.info("SynchronizeData => End Saneante Notification Total "+cont, dateFormat.format(new Date()));
 		
+		}
 		
-		
- 		registerCNPJs = registerCNPJRepository.findAll();
- 		
-		cont = 0;
+		if (saneantProduct) {
 
-		for (RegisterCNPJ registerCNPJ : registerCNPJs) {
- 			
- 			log.info("SynchronizeData => Start Saneante Product "+registerCNPJ.getCnpj()+" "+registerCNPJ.getFullName(), dateFormat.format(new Date()));
-			
- 			ArrayList<BaseEntityMongoDB> itens = intSynchronize[6].loadData(registerCNPJ.getCnpj());
- 			
- 			log.info("SynchronizeData => Total "+itens.size(), dateFormat.format(new Date()));
- 			
-			if (itens != null) {
+			registerCNPJs = registerCNPJRepository.findAll();
+
+			int cont = 0;
+
+			for (RegisterCNPJ registerCNPJ : registerCNPJs) {
+
+				log.info("SynchronizeData => Start Saneante Product " + registerCNPJ.getCnpj() + " "
+						+ registerCNPJ.getFullName(), dateFormat.format(new Date()));
+
+				ArrayList<BaseEntityMongoDB> itens = intSynchronize[2].loadData(registerCNPJ.getCnpj());
+
+				log.info("SynchronizeData => Total " + itens.size(), dateFormat.format(new Date()));
+
+				cont=cont+itens.size();
 				
-				synchronized (itens) {
-					
-					LoggerProcessing loggerProcessing = new LoggerProcessing();
+				if (itens != null) {
 
-					loggerProcessing.setId(sequence.getNextSequenceId(LoggerProcessing.KEY_SEQ));
-					loggerProcessing.setCnpj(registerCNPJ);
-					loggerProcessing.setDescricao("Saneante - Registros Risco 2");
-					loggerProcessing.setCategoria(2);
-					loggerProcessing.setOpcao(0);
-					loggerProcessing.setTotalAnvisa(new Long(itens.size()));
-					loggerProcessing.setInsertDate(LocalDateTime.now());
-					
-	 	 	 		loggerRepositoryMdb.save(loggerProcessing); 
-					
-					intSynchronize[6].persist(itens, loggerProcessing);
-					
+
+
+						LoggerProcessing loggerProcessing = new LoggerProcessing();
+
+						loggerProcessing.setId(sequence.getNextSequenceId(LoggerProcessing.KEY_SEQ));
+						loggerProcessing.setCnpj(registerCNPJ);
+						loggerProcessing.setDescricao("Saneante - Registros Risco 2");
+						loggerProcessing.setCategoria(2);
+						loggerProcessing.setOpcao(1);
+						loggerProcessing.setTotalAnvisa(new Long(itens.size()));
+						loggerProcessing.setInsertDate(LocalDateTime.now());
+
+						loggerRepositoryMdb.save(loggerProcessing);
+
+						try {
+							intSynchronize[2].persist(itens, loggerProcessing);
+						} catch (Exception e) {
+								// TODO: handle exception
+						}
+
 				}
-				
+
 			}
-			
+
+	 		log.info("SynchronizeData => End Process Total "+cont, dateFormat.format(new Date()));
 		}
-	
- 		log.info("SynchronizeData => End Saneante Product ", dateFormat.format(new Date()));
+		
+		if (process) {
 
- 		
- 		registerCNPJs = registerCNPJRepository.findAll();
- 		
-		cont = 0;
+			registerCNPJs = registerCNPJRepository.findAll();
 
-		for (RegisterCNPJ registerCNPJ : registerCNPJs) {
- 			
- 			log.info("SynchronizeData => Start Process "+registerCNPJ.getCnpj()+" "+registerCNPJ.getFullName(), dateFormat.format(new Date()));
-			
- 			ArrayList<BaseEntityMongoDB> itens = intSynchronize[7].loadData(registerCNPJ.getCnpj());
- 			
- 			log.info("SynchronizeData => Total "+itens.size(), dateFormat.format(new Date()));
- 			
-			if (itens != null) {
+			int cont = 0;
+
+			for (RegisterCNPJ registerCNPJ : registerCNPJs) {
 				
-				synchronized (itens) {
-					
-					LoggerProcessing loggerProcessing = new LoggerProcessing();
+				if (registerCNPJ.getId() >= 36) continue;
+				
+				log.info(
+						"SynchronizeData => Start Process " + registerCNPJ.getCnpj() + " " + registerCNPJ.getFullName(),
+						dateFormat.format(new Date()));
 
-					loggerProcessing.setId(sequence.getNextSequenceId(LoggerProcessing.KEY_SEQ));
-					loggerProcessing.setCnpj(registerCNPJ);
-					loggerProcessing.setDescricao("Processo");
-					loggerProcessing.setCategoria(2);
-					loggerProcessing.setOpcao(0);
-					loggerProcessing.setTotalAnvisa(new Long(itens.size()));
-					loggerProcessing.setInsertDate(LocalDateTime.now());
-					
-	 	 	 		loggerRepositoryMdb.save(loggerProcessing); 
-					
-					intSynchronize[7].persist(itens,loggerProcessing);
-					
+				ArrayList<BaseEntityMongoDB> itens = intSynchronize[3].loadData(registerCNPJ.getCnpj());
+
+				log.info("SynchronizeData => Total " + itens.size(), dateFormat.format(new Date()));
+
+				cont=cont+itens.size();
+				
+				if (itens != null) {
+
+
+
+						LoggerProcessing loggerProcessing = new LoggerProcessing();
+
+						loggerProcessing.setId(sequence.getNextSequenceId(LoggerProcessing.KEY_SEQ));
+						loggerProcessing.setCnpj(registerCNPJ);
+						loggerProcessing.setDescricao("Processo");
+						loggerProcessing.setCategoria(0);
+						loggerProcessing.setOpcao(0);
+						loggerProcessing.setTotalAnvisa(new Long(itens.size()));
+						loggerProcessing.setInsertDate(LocalDateTime.now());
+
+						loggerRepositoryMdb.save(loggerProcessing);
+
+						try {
+							intSynchronize[3].persist(itens, loggerProcessing);
+						} catch (Exception e) {
+								// TODO: handle exception
+						}
+
+
+
 				}
-				
+
 			}
-			
+
+			log.info("SynchronizeData => End Process Total "+cont, dateFormat.format(new Date()));
 		}
-	
- 		log.info("SynchronizeData => End Process ", dateFormat.format(new Date()));
- 		
-registerCNPJs = registerCNPJRepository.findAll();
-
- 		
- 		cont = 0;
-
-		for (RegisterCNPJ registerCNPJ : registerCNPJs) {
- 			
- 			log.info("SynchronizeData => Start Cosmetic Register "+registerCNPJ.getCnpj()+" "+registerCNPJ.getFullName(), dateFormat.format(new Date()));
-			
- 			ArrayList<BaseEntityMongoDB> itens = intSynchronize[1].loadData(registerCNPJ.getCnpj());
- 			
- 			
- 			
- 			log.info("SynchronizeData => Total "+itens.size(), dateFormat.format(new Date()));
- 			
- 			if(itens!=null && itens.size()>0) {
-				   synchronized (itens) {
-					   
-		 				LoggerProcessing loggerProcessing = new LoggerProcessing();
-		 	 	 		
-		 	 	 		loggerProcessing.setId(sequence.getNextSequenceId(LoggerProcessing.KEY_SEQ));
-		 	 	 		loggerProcessing.setCnpj(registerCNPJ);
-		 	 	 		loggerProcessing.setDescricao("Cosméticos Registrados");
-		 	 	 		loggerProcessing.setCategoria(1);
-		 	 	 		loggerProcessing.setOpcao(0);
-		 	 	 		loggerProcessing.setTotalAnvisa(new Long(itens.size()));
-		 	 	 		loggerProcessing.setInsertDate(LocalDateTime.now());
-		 	 	 		
-		 	 	 		loggerRepositoryMdb.save(loggerProcessing); 
-		 	 	 		
-		 	 	 		intSynchronize[1].persist(itens, loggerProcessing);
-				   }		
- 			}
-			
-			
-		}
-	
- 		log.info("SynchronizeData => End Cosmetic Register ", dateFormat.format(new Date()));
- 		
- 		
 		
- 		registerCNPJs = registerCNPJRepository.findAll();
- 		
-		cont = 0;
-
-		for (RegisterCNPJ registerCNPJ : registerCNPJs) {
- 			
- 			log.info("SynchronizeData => Start Cosmetic Notification "+registerCNPJ.getCnpj()+" "+registerCNPJ.getFullName(), dateFormat.format(new Date()));
-			
- 			ArrayList<BaseEntityMongoDB> itens = intSynchronize[2].loadData(registerCNPJ.getCnpj());
- 			
- 			log.info("SynchronizeData => Total "+itens.size(), dateFormat.format(new Date()));
- 			
- 			if(itens!=null && itens.size()>0) {
- 	 			  
- 				   synchronized (itens) {
- 	  				
-	 	 				LoggerProcessing loggerProcessing = new LoggerProcessing();
-	 	 	 	 		
-	 	 	 	 		loggerProcessing.setId(sequence.getNextSequenceId(LoggerProcessing.KEY_SEQ));
-	 	 	 	 		loggerProcessing.setCnpj(registerCNPJ);
-	 	 	 	 		loggerProcessing.setDescricao("Cosméticos Notificados");
-	 	 	 	 		loggerProcessing.setCategoria(1);
-	 	 	 	 		loggerProcessing.setOpcao(1);
-	 	 	 	 		loggerProcessing.setTotalAnvisa(new Long(itens.size()));
-	 	 	 	 		loggerProcessing.setInsertDate(LocalDateTime.now());
-	 	 	 	 		
-	 	 	 	 		loggerRepositoryMdb.save(loggerProcessing); 
-	 	 	 	 		
-	 	 				intSynchronize[2].persist(itens,loggerProcessing);
- 	 			  }
- 				   
- 			}
-			
-		}
-	
- 		log.info("SynchronizeData => End Cosmetic Notification ", dateFormat.format(new Date()));
 		
- 		registerCNPJs = registerCNPJRepository.findAll();
-		
-		cont = 0;
+		if (cosmeticRegister) {
 
-		for (RegisterCNPJ registerCNPJ : registerCNPJs) {
- 			
- 			log.info("SynchronizeData => Start Cosmetic Regularized "+registerCNPJ.getCnpj()+" "+registerCNPJ.getFullName(), dateFormat.format(new Date()));
-			
- 			ArrayList<BaseEntityMongoDB> itens = intSynchronize[3].loadData(registerCNPJ.getCnpj());
- 			
- 			log.info("SynchronizeData => Total "+itens.size(), dateFormat.format(new Date()));
- 			
-			if (itens != null && itens.size()>0) {
-				
-				synchronized (itens) {
-					
-					LoggerProcessing loggerProcessing = new LoggerProcessing();
+			registerCNPJs = registerCNPJRepository.findAll();
 
-					loggerProcessing.setId(sequence.getNextSequenceId(LoggerProcessing.KEY_SEQ));
-					loggerProcessing.setCnpj(registerCNPJ);
-					loggerProcessing.setDescricao("Cosméticos Regularizados");
-					loggerProcessing.setCategoria(1);
-					loggerProcessing.setOpcao(2);
-					loggerProcessing.setTotalAnvisa(new Long(itens.size()));
-					loggerProcessing.setInsertDate(LocalDateTime.now());
+			int cont = 0;
 
-	 	 	 		loggerRepositoryMdb.save(loggerProcessing); 
-	 	 	 		
-					intSynchronize[3].persist(itens, loggerProcessing);
-					
+			for (RegisterCNPJ registerCNPJ : registerCNPJs) {
+
+				log.info("SynchronizeData => Start Cosmetic Register " + registerCNPJ.getCnpj() + " "
+						+ registerCNPJ.getFullName(), dateFormat.format(new Date()));
+
+				ArrayList<BaseEntityMongoDB> itens = intSynchronize[4].loadData(registerCNPJ.getCnpj());
+
+				log.info("SynchronizeData => Total " + itens.size(), dateFormat.format(new Date()));
+
+				if (itens != null && itens.size() > 0) {
+
+
+						LoggerProcessing loggerProcessing = new LoggerProcessing();
+
+						loggerProcessing.setId(sequence.getNextSequenceId(LoggerProcessing.KEY_SEQ));
+						loggerProcessing.setCnpj(registerCNPJ);
+						loggerProcessing.setDescricao("Cosméticos Registrados");
+						loggerProcessing.setCategoria(1);
+						loggerProcessing.setOpcao(0);
+						loggerProcessing.setTotalAnvisa(new Long(itens.size()));
+						loggerProcessing.setInsertDate(LocalDateTime.now());
+
+						loggerRepositoryMdb.save(loggerProcessing);
+
+						try {
+							intSynchronize[4].persist(itens, loggerProcessing);
+						} catch (Exception e) {
+								// TODO: handle exception
+						}
+
+
 				}
-				
+
 			}
-			
+
+			log.info("SynchronizeData => End Cosmetic Register ", dateFormat.format(new Date()));
+
+		}	
+	 	
+		if (cosmeticNotification) {
+
+			registerCNPJs = registerCNPJRepository.findAll();
+
+			int cont = 0;
+
+			for (RegisterCNPJ registerCNPJ : registerCNPJs) {
+
+				log.info("SynchronizeData => Start Cosmetic Notification " + registerCNPJ.getCnpj() + " "
+						+ registerCNPJ.getFullName(), dateFormat.format(new Date()));
+
+				ArrayList<BaseEntityMongoDB> itens = intSynchronize[5].loadData(registerCNPJ.getCnpj());
+
+				log.info("SynchronizeData => Total " + itens.size(), dateFormat.format(new Date()));
+
+				if (itens != null && itens.size() > 0) {
+
+
+
+						LoggerProcessing loggerProcessing = new LoggerProcessing();
+
+						loggerProcessing.setId(sequence.getNextSequenceId(LoggerProcessing.KEY_SEQ));
+						loggerProcessing.setCnpj(registerCNPJ);
+						loggerProcessing.setDescricao("Cosméticos Notificados");
+						loggerProcessing.setCategoria(1);
+						loggerProcessing.setOpcao(1);
+						loggerProcessing.setTotalAnvisa(new Long(itens.size()));
+						loggerProcessing.setInsertDate(LocalDateTime.now());
+
+						loggerRepositoryMdb.save(loggerProcessing);
+
+						try {
+							intSynchronize[5].persist(itens, loggerProcessing);
+						} catch (Exception e) {
+								// TODO: handle exception
+						}
+
+
+
+				}
+
+			}
+
+			log.info("SynchronizeData => End Cosmetic Notification ", dateFormat.format(new Date()));
 		}
-	
- 		log.info("SynchronizeData => End Cosmetic Regularized ", dateFormat.format(new Date()));
-	
+		
+		if (cosmeticRegularized) {
+			registerCNPJs = registerCNPJRepository.findAll();
+
+			int cont = 0;
+
+			for (RegisterCNPJ registerCNPJ : registerCNPJs) {
+
+				log.info("SynchronizeData => Start Cosmetic Regularized " + registerCNPJ.getCnpj() + " "
+						+ registerCNPJ.getFullName(), dateFormat.format(new Date()));
+
+				ArrayList<BaseEntityMongoDB> itens = intSynchronize[6].loadData(registerCNPJ.getCnpj());
+
+				log.info("SynchronizeData => Total " + itens.size(), dateFormat.format(new Date()));
+
+				if (itens != null && itens.size() > 0) {
+
+
+
+						LoggerProcessing loggerProcessing = new LoggerProcessing();
+
+						loggerProcessing.setId(sequence.getNextSequenceId(LoggerProcessing.KEY_SEQ));
+						loggerProcessing.setCnpj(registerCNPJ);
+						loggerProcessing.setDescricao("Cosméticos Regularizados");
+						loggerProcessing.setCategoria(1);
+						loggerProcessing.setOpcao(2);
+						loggerProcessing.setTotalAnvisa(new Long(itens.size()));
+						loggerProcessing.setInsertDate(LocalDateTime.now());
+
+						loggerRepositoryMdb.save(loggerProcessing);
+						try {
+						   intSynchronize[6].persist(itens, loggerProcessing);
+						} catch (Exception e) {
+							// TODO: handle exception
+						}
+
+
+				}
+
+			}
+
+			log.info("SynchronizeData => End Cosmetic Regularized ", dateFormat.format(new Date()));
+		}
 	}
+
 	
+
 	
 }

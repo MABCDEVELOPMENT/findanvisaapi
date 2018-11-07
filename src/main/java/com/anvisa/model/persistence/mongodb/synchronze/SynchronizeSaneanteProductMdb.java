@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import org.bson.Document;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -15,6 +16,7 @@ import com.anvisa.model.persistence.mongodb.loggerprocessing.LoggerProcessing;
 import com.anvisa.model.persistence.mongodb.repository.LoggerRepositoryMdb;
 import com.anvisa.model.persistence.mongodb.repository.SaneanteProductRepositoryMdb;
 import com.anvisa.model.persistence.mongodb.repository.SynchronizeDataMdb;
+import com.anvisa.model.persistence.mongodb.saneante.notification.SaneanteNotification;
 import com.anvisa.model.persistence.mongodb.saneante.product.SaneanteProduct;
 import com.anvisa.model.persistence.mongodb.saneante.product.SaneanteProductDetail;
 import com.anvisa.model.persistence.mongodb.saneante.product.SaneanteProductLabel;
@@ -22,6 +24,10 @@ import com.anvisa.model.persistence.mongodb.saneante.product.SaneanteStringListG
 import com.anvisa.model.persistence.mongodb.sequence.SequenceDaoImpl;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.Gson;
+import com.mongodb.MongoClient;
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoDatabase;
 
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -186,6 +192,21 @@ public class SynchronizeSaneanteProductMdb extends SynchronizeDataMdb implements
 	@Override
 	public void persist(ArrayList<BaseEntityMongoDB> itens, LoggerProcessing loggerProcessing) {
 
+		@SuppressWarnings("resource")
+		MongoClient mongoClient = new MongoClient("localhost");	
+		
+		//MongoCredential credential = MongoCredential.createPlainCredential("findinfo01", "findinfo01", "idkfa0101".toCharArray());
+		
+		MongoDatabase database = mongoClient.getDatabase("findinfo01");
+		
+		MongoCollection<Document> coll = database.getCollection("saneanteProduct");
+		
+		Gson gson = new Gson();
+		
+		
+		ArrayList<Document>  listSave = new ArrayList<Document>();
+		
+		int size = itens.size();
 		int cont = 0;
 		
 		int totalInserido   = 0;
@@ -221,7 +242,9 @@ public class SynchronizeSaneanteProductMdb extends SynchronizeDataMdb implements
 
 						baseEntity.setId(localSaneanteProduct.getId());
 						baseEntity.setUpdateDate(LocalDateTime.now());
-						seneanteProductRepository.save(baseEntity);
+						Document document = Document.parse(gson.toJson(baseEntity));
+						coll.updateOne(new Document("_id", localSaneanteProduct.getId()), document);
+						//listSave.add(document);
 						totalAtualizado++;
 					}
 
@@ -229,7 +252,10 @@ public class SynchronizeSaneanteProductMdb extends SynchronizeDataMdb implements
 					baseEntity.setId(this.sequence.getNextSequenceId(SEQ_KEY));
 					baseEntity.setSaneanteProductDetail(saneanteProductDetail);
 					baseEntity.setInsertDate(LocalDateTime.now());
-					seneanteProductRepository.save(baseEntity);
+					Document document = Document.parse(gson.toJson(baseEntity));
+					//listSave.add(document);
+					coll.insertOne(document);
+					cont++;
 					totalInserido++;
 
 				}
@@ -246,11 +272,29 @@ public class SynchronizeSaneanteProductMdb extends SynchronizeDataMdb implements
 				totalErro++;
 				
 			}
+			
+/*			try {
+				if (cont % 200 == 0 || cont == size) {
+					//seneanteProductRepository.saveAll(listSave);    
+					coll.insertMany(listSave);
+					listSave = new ArrayList<Document>();
+				}
+			} catch (Exception e) {
+				// TODO: handle exception
+				log.error(this.getClass().getName() + " Processo " + baseEntity.getProcesso() + " cnpj "
+						+ baseEntity.getCnpj() + " Codigo " + baseEntity.getCodigo() + " Registro "
+						+ baseEntity.getRegistro() + " Vencimento " + baseEntity.getDataVencimento());
+				
+				log.error(e.getMessage());
+				totalErro++;
+			}	
+*/			cont++;
 		}
 		
 		loggerProcessing.setTotalInserido(new Long(totalInserido));
 		loggerProcessing.setTotalAtualizado(new Long(totalAtualizado));
 		loggerProcessing.setTotalErro(new Long(totalErro));
 		loggerRepositoryMdb.save(loggerProcessing);
+		
 	}
 }

@@ -6,6 +6,8 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.apache.commons.logging.Log;
+import org.bson.Document;
+import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -23,6 +25,10 @@ import com.anvisa.model.persistence.mongodb.sequence.SequenceDaoImpl;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.google.gson.Gson;
+import com.mongodb.MongoClient;
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoDatabase;
 
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -199,6 +205,21 @@ public class SynchronizeCosmeticNotificationMdb extends SynchronizeDataMdb imple
 	@Override
 	public void persist(ArrayList<BaseEntityMongoDB> itens, LoggerProcessing loggerProcessing ) {
 		
+		@SuppressWarnings("resource")
+		MongoClient mongoClient = new MongoClient("localhost");	
+		
+		//MongoCredential credential = MongoCredential.createPlainCredential("findinfo01", "findinfo01", "idkfa0101".toCharArray());
+		
+		MongoDatabase database = mongoClient.getDatabase("findinfo01");
+		
+		MongoCollection<Document> coll = database.getCollection("cosmeticNotification");
+		
+		Gson gson = new Gson();
+		
+		
+		ArrayList<Document>  listSave = new ArrayList<Document>();
+		int size = itens.size();
+		int cont = 0;
 		int totalInserido   = 0;
 		int totalAtualizado = 0;
 		int totalErro       = 0;
@@ -237,17 +258,21 @@ public class SynchronizeCosmeticNotificationMdb extends SynchronizeDataMdb imple
 
 						// baseEntity.setId(localContentCosmeticNotification.getId());
 						baseEntity.setUpdateDate(LocalDateTime.now());
-						cosmeticNotificationRepository.save(baseEntity);
+						Document document = Document.parse(gson.toJson(baseEntity));
+						coll.updateOne(new Document("_id", new ObjectId(localContentCosmeticNotification.getId().toString().getBytes())), document);
 						totalAtualizado++;
 						
 					}
 
 				} else {
+					
 					baseEntity.setId(this.sequence.getNextSequenceId(SEQ_KEY));
 					baseEntity.setContentCosmeticNotificationDetail(contentCosmeticNotificationDetail);
 					baseEntity.setInsertDate(LocalDateTime.now());
-					cosmeticNotificationRepository.save(baseEntity);
-					totalInserido ++;
+					Document document = Document.parse(gson.toJson(baseEntity));
+					//listSave.add(document);
+					coll.insertOne(document);
+					totalInserido++;
 
 				}
 
@@ -258,7 +283,19 @@ public class SynchronizeCosmeticNotificationMdb extends SynchronizeDataMdb imple
 				log.error(e.getMessage());
 				totalErro++;
 			}
-
+			
+/*			try {
+				if (cont % 100 == 0 || cont == size) {
+					coll.insertMany(listSave);
+					listSave = new ArrayList<Document>();
+				}
+			} catch (Exception e) {
+				// TODO: handle exception
+				log.error(this.getClass().getName() + " Processo " + baseEntity.getProcesso());
+				log.error(e.getMessage());				
+				totalErro++;
+			}*/
+			cont++;
 		}
 		
 		loggerProcessing.setTotalInserido(new Long(totalInserido));

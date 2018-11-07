@@ -4,6 +4,10 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+import org.bson.BSON;
+import org.bson.Document;
+import org.bson.conversions.Bson;
+import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -15,12 +19,18 @@ import com.anvisa.model.persistence.mongodb.interceptor.synchronizedata.IntSynch
 import com.anvisa.model.persistence.mongodb.loggerprocessing.LoggerProcessing;
 import com.anvisa.model.persistence.mongodb.repository.FootRepositoryMdb;
 import com.anvisa.model.persistence.mongodb.repository.LoggerRepositoryMdb;
-import com.anvisa.model.persistence.mongodb.repository.SequenceRepositoryMdb;
 import com.anvisa.model.persistence.mongodb.repository.SynchronizeDataMdb;
 import com.anvisa.model.persistence.mongodb.sequence.SequenceDaoImpl;
 import com.anvisa.model.persistence.rest.Content;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.Gson;
+import com.mongodb.DB;
+import com.mongodb.DBCollection;
+import com.mongodb.MongoClient;
+import com.mongodb.MongoCredential;
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoDatabase;
 
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -143,6 +153,21 @@ public class SynchronizeFootMdb extends SynchronizeDataMdb implements IntSynchro
 	@Override
 	public void persist(ArrayList<BaseEntityMongoDB> itens, LoggerProcessing loggerProcessing) {
 		
+		@SuppressWarnings("resource")
+		MongoClient mongoClient = new MongoClient("localhost");	
+		
+		//MongoCredential credential = MongoCredential.createPlainCredential("findinfo01", "findinfo01", "idkfa0101".toCharArray());
+		
+		MongoDatabase database = mongoClient.getDatabase("findinfo01");
+		
+		MongoCollection<Document> coll = database.getCollection("foot");
+		
+		Gson gson = new Gson();
+		
+		
+		ArrayList<Document>  listSave = new ArrayList<Document>();
+		
+		
 		int totalInserido   = 0;
 		int totalAtualizado = 0;
 		int totalErro       = 0;
@@ -187,25 +212,51 @@ public class SynchronizeFootMdb extends SynchronizeDataMdb implements IntSynchro
 						detail.setId(localFoot.getContentFootDetail().getId());
 						baseEntity.setContentFootDetail(detail);
 						baseEntity.setUpdateDate(LocalDateTime.now());
-						footRepository.save(baseEntity);
+						Document document = Document.parse(gson.toJson(baseEntity));
+						coll.updateOne(new Document("_id", new ObjectId(localFoot.getId().toString().getBytes())), document);
+						//listSave.add(document);
 						totalAtualizado++;
 					}
 
 				} else {
+					
 					baseEntity.setId(this.sequence.getNextSequenceId(SEQ_KEY));
 					baseEntity.setInsertDate(LocalDateTime.now());
-					footRepository.save(baseEntity);
+					Document document = Document.parse(gson.toJson(baseEntity));
+					//listSave.add(document);
+					coll.insertOne(document);
 					totalInserido++;
 
 				}
 
 			} catch (Exception e) {
+				
 				// TODO: handle exception
 				log.error(this.getClass().getName() +" Processo "+baseEntity.getProcesso()+" cnpj "+ baseEntity.getCnpj()+" Codigo "
 						+baseEntity.getCodigo()+" Registro "+baseEntity.getRegistro()+" Vencimento "+baseEntity.getDataVencimento());
 				log.error(e.getMessage());
+				
 				totalErro++;
+				
 			}
+			
+			/*try {
+				
+//				if (cont % 10 == 0) {
+//				    //footRepository.saveAll(listSave);
+//					coll.insertMany(listSave);
+//				}
+				
+			} catch (Exception e) {
+				
+				// TODO: handle exception
+				log.error(this.getClass().getName() +" Processo "+baseEntity.getProcesso()+" cnpj "+ baseEntity.getCnpj()+" Codigo "
+						+baseEntity.getCodigo()+" Registro "+baseEntity.getRegistro()+" Vencimento "+baseEntity.getDataVencimento());
+				log.error(e.getMessage());
+				
+				totalErro++;
+				
+			}	*/
 			
 		}
 		
@@ -214,7 +265,7 @@ public class SynchronizeFootMdb extends SynchronizeDataMdb implements IntSynchro
 		loggerProcessing.setTotalAtualizado(new Long(totalAtualizado));
 		loggerProcessing.setTotalErro(new Long(totalErro));
 		loggerRepositoryMdb.save(loggerProcessing);
-
+		mongoClient.close();
 		
 
 	}

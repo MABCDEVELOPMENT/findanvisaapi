@@ -12,5 +12,5 @@ public interface LoggerRepositoryMdb extends MongoRepository<LoggerProcessing,Lo
 	
 	@Query("{'dataProcessamento' : ?0}")
 	public ContentFootMdb findByDataProcessamento(LocalDate dataVencimento);
-
+	
 }

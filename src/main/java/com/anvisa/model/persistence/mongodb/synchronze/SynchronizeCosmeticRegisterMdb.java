@@ -7,6 +7,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import org.bson.Document;
+import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -33,6 +35,10 @@ import com.anvisa.model.persistence.mongodb.sequence.SequenceDaoImpl;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.google.gson.Gson;
+import com.mongodb.MongoClient;
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoDatabase;
 
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -560,7 +566,21 @@ public class SynchronizeCosmeticRegisterMdb extends SynchronizeDataMdb implement
 	@Override
 	public void persist(ArrayList<BaseEntityMongoDB> itens, LoggerProcessing loggerProcessing) {
 
-				
+		@SuppressWarnings("resource")
+		MongoClient mongoClient = new MongoClient("localhost");	
+		
+		//MongoCredential credential = MongoCredential.createPlainCredential("findinfo01", "findinfo01", "idkfa0101".toCharArray());
+		
+		MongoDatabase database = mongoClient.getDatabase("findinfo01");
+		
+		MongoCollection<Document> coll = database.getCollection("cosmeticRegister");
+		
+		Gson gson = new Gson();
+		
+		
+		ArrayList<Document>  listSave = new ArrayList<Document>();
+		int size = itens.size();
+		int cont = 0;
 		int totalInserido   = 0;
 		int totalAtualizado = 0;
 		int totalErro       = 0;
@@ -577,12 +597,6 @@ public class SynchronizeCosmeticRegisterMdb extends SynchronizeDataMdb implement
 						baseEntity.getProcesso(), baseEntity.getExpedienteProcesso(), baseEntity.getCnpj());
 
 				boolean newFoot = (localCosmetic == null);
-
-				/*if (newFoot == false)
-					continue;*/
-
-				// ContentCosmeticRegisterDetail detail =
-				// baseEntity.getContentCosmeticRegisterDetail();
 
 				ContentCosmeticRegisterDetail detail = this.loadDetailData(baseEntity.getProcesso());
 				if (detail != null) {
@@ -611,14 +625,17 @@ public class SynchronizeCosmeticRegisterMdb extends SynchronizeDataMdb implement
 
 						baseEntity.setId(localCosmetic.getId());
 						baseEntity.setUpdateDate(LocalDateTime.now());
-						cosmeticRegisterRepository.save(baseEntity);
+						Document document = Document.parse(gson.toJson(baseEntity));
+						coll.updateOne(new Document("_id", new ObjectId(localCosmetic.getId().toString().getBytes())), document);
 						totalAtualizado++;
 					}
 
 				} else {
 					baseEntity.setId(this.sequence.getNextSequenceId(SEQ_KEY));
 					baseEntity.setInsertDate(LocalDateTime.now());
-					cosmeticRegisterRepository.save(baseEntity);
+					Document document = Document.parse(gson.toJson(baseEntity));
+					//listSave.add(document);
+					coll.insertOne(document);
 					totalInserido++;
 				}
 
@@ -630,7 +647,19 @@ public class SynchronizeCosmeticRegisterMdb extends SynchronizeDataMdb implement
 				
 				totalErro++;
 			}
-
+			
+/*			try {
+				if (cont % 100 == 0 || cont == size) {
+					coll.insertMany(listSave);
+					listSave = new ArrayList<Document>();
+				}
+			} catch (Exception e) {
+				// TODO: handle exception
+				log.error(this.getClass().getName() + " Processo " + baseEntity.getProcesso());
+				log.error(e.getMessage());				
+				totalErro++;
+			}	*/
+			cont++;
 		}
 
 		loggerProcessing.setTotalInserido(new Long(totalInserido));

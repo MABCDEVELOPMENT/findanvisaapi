@@ -73,8 +73,11 @@ public class SynchronizeDataMdb {
 			JsonNode rootNode = objectMapper.readTree(this.getGZIPString(response.body().byteStream()));
 			
 			Iterator<JsonNode> elementsContents = rootNode.path("content").iterator();
+			
 			log.info("SynchronizeData Total Registros "+rootNode.get("totalElements"), dateFormat.format(new Date()));
+			
 			int i = 0;
+			
 			while (elementsContents.hasNext()) {
 
 				JsonNode jsonNode = (JsonNode) elementsContents.next();
@@ -83,7 +86,7 @@ public class SynchronizeDataMdb {
 	
 				rootObject.add(BaseEntity);	
 
-				System.out.println(i++);
+				//System.out.println(i++);
 			}
 			response.close();
 			client = null;
