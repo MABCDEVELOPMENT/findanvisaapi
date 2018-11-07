@@ -297,4 +297,10 @@ public class SynchronizeSaneanteProductMdb extends SynchronizeDataMdb implements
 		loggerRepositoryMdb.save(loggerProcessing);
 		
 	}
+
+	@Override
+	public ArrayList<Document> loadDataDocument(String cnpj) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

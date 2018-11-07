@@ -13,6 +13,7 @@ import java.util.Iterator;
 import java.util.concurrent.TimeUnit;
 import java.util.zip.GZIPInputStream;
 
+import org.bson.Document;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +23,7 @@ import com.anvisa.model.persistence.mongodb.BaseEntityMongoDB;
 import com.anvisa.model.persistence.mongodb.interceptor.synchronizedata.IntSynchronizeMdb;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.Gson;
 
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -43,7 +45,20 @@ public class SynchronizeDataMdb {
 
 	public static final SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
 	
-	
+	public ArrayList<Document> loadDataDocument(IntSynchronizeMdb intSynchronize,String cnpj) {
+		
+		Gson gson = new Gson();
+		
+		ArrayList<Document>  documents = new ArrayList<Document>();
+		
+		ArrayList<BaseEntityMongoDB>  data = loadData(intSynchronize,cnpj);
+		for (BaseEntityMongoDB baseEntityMongoDB : data) {
+			Document document = Document.parse(gson.toJson(baseEntityMongoDB));
+			documents.add(document);
+		} 
+		
+		return documents;
+	}
 	
 	public ArrayList<BaseEntityMongoDB> loadData(IntSynchronizeMdb intSynchronize,String cnpj) {
 		// TODO Auto-generated method stub

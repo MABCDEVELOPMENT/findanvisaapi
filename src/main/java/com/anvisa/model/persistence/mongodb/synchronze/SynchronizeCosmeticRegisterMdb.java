@@ -668,4 +668,10 @@ public class SynchronizeCosmeticRegisterMdb extends SynchronizeDataMdb implement
 		this.loggerRepositoryMdb.save(loggerProcessing);
 	}
 
+	@Override
+	public ArrayList<Document> loadDataDocument(String cnpj) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }

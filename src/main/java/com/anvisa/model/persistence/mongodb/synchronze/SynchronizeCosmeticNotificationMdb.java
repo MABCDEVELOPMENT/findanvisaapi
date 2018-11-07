@@ -304,4 +304,10 @@ public class SynchronizeCosmeticNotificationMdb extends SynchronizeDataMdb imple
 		loggerRepositoryMdb.save(loggerProcessing);
 	}
 
+	@Override
+	public ArrayList<Document> loadDataDocument(String cnpj) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }

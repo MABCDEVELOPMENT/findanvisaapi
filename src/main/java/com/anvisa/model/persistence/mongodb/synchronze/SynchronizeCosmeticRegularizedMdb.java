@@ -333,4 +333,10 @@ public class SynchronizeCosmeticRegularizedMdb extends SynchronizeDataMdb implem
 
 	}
 
+	@Override
+	public ArrayList<Document> loadDataDocument(String cnpj) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }

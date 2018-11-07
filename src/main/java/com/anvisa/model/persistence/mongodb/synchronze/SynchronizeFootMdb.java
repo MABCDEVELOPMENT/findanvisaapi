@@ -4,9 +4,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-import org.bson.BSON;
 import org.bson.Document;
-import org.bson.conversions.Bson;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -25,10 +23,7 @@ import com.anvisa.model.persistence.rest.Content;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
-import com.mongodb.DB;
-import com.mongodb.DBCollection;
 import com.mongodb.MongoClient;
-import com.mongodb.MongoCredential;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 
@@ -84,8 +79,18 @@ public class SynchronizeFootMdb extends SynchronizeDataMdb implements IntSynchro
 
 		contentProduto.setDataRegistro(JsonToObject.getValueDate(jsonNode, "dataRegistro"));
 		contentProduto.setDataVencimento(JsonToObject.getValueDate(jsonNode, "dataVencimentoRegistro"));
+		try {
 
+			ContentFootDetailMdb contentFootDetailMdb = this.loadDetailData(contentProduto.getCnpj());
+			
+			contentProduto.setContentFootDetail(contentFootDetailMdb);
+
+		}catch (Exception e) {
+			// TODO: handle exception
+		}
+		
 		return contentProduto;
+		
 	}
 
 	public ContentFootDetailMdb parseDetailData(JsonNode jsonNode) {
@@ -268,6 +273,12 @@ public class SynchronizeFootMdb extends SynchronizeDataMdb implements IntSynchro
 		mongoClient.close();
 		
 
+	}
+
+	@Override
+	public ArrayList<Document> loadDataDocument(String cnpj) {
+		// TODO Auto-generated method stub
+		return super.loadDataDocument(this,cnpj);
 	}
 
 }

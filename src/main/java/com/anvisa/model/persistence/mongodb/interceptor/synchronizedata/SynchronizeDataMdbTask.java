@@ -1,12 +1,19 @@
 package com.anvisa.model.persistence.mongodb.interceptor.synchronizedata;
 
+import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
 import java.text.SimpleDateFormat;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.bson.Document;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +33,15 @@ import com.anvisa.model.persistence.mongodb.synchronze.SynchronizeProcessMdb;
 import com.anvisa.model.persistence.mongodb.synchronze.SynchronizeSaneanteNotificationMdb;
 import com.anvisa.model.persistence.mongodb.synchronze.SynchronizeSaneanteProductMdb;
 import com.anvisa.repository.generic.RegisterCNPJRepository;
+import com.google.gson.Gson;
+import com.mongodb.DB;
+import com.mongodb.DBCollection;
+import com.mongodb.DBObject;
+import com.mongodb.MongoClient;
+import com.mongodb.MongoException;
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoDatabase;
+import com.mongodb.util.JSON;
 
 @Component
 public class SynchronizeDataMdbTask implements Runnable {
@@ -52,6 +68,8 @@ public class SynchronizeDataMdbTask implements Runnable {
 
 	private static final SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
 
+	private MongoClient mongoClient;
+
 	@Scheduled(cron = "0 10 02 * * *")
 	public static void  synchronizeData() {
 			
@@ -62,10 +80,13 @@ public class SynchronizeDataMdbTask implements Runnable {
 	
 	@Override
 	public void run() {
-		boolean foot = false;
+		
+		Gson gson = new Gson();
+		
+		boolean foot = true;
 		boolean saneantNotification  = false;
 		boolean saneantProduct       = false;
-		boolean process = true;
+		boolean process = false;
 		boolean cosmeticRegister = false;
 		boolean cosmeticNotification = false;
 		boolean cosmeticRegularized  = true;
@@ -88,6 +109,17 @@ public class SynchronizeDataMdbTask implements Runnable {
 			registerCNPJs = registerCNPJRepository.findAll();
 
 			int cont = 0;
+			
+			FileWriter arq = null;
+			PrintWriter gravarArq = null;
+			try {
+				arq = new FileWriter("/home/findinfo/base_tempo/foot.txt");
+				gravarArq = new PrintWriter(arq);
+			} catch (IOException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+			
 
 			for (RegisterCNPJ registerCNPJ : registerCNPJs) {
 
@@ -96,16 +128,19 @@ public class SynchronizeDataMdbTask implements Runnable {
 
 				
 				
-				ArrayList<BaseEntityMongoDB> itens = intSynchronize[0].loadData(registerCNPJ.getCnpj());
+				ArrayList<Document> itens = intSynchronize[0].loadDataDocument(registerCNPJ.getCnpj());
 
 				log.info("SynchronizeData => Total " + itens.size(), dateFormat.format(new Date()));
 				
 				cont=cont+itens.size();
 				
 				if (itens != null && itens.size() > 0) {
-
-
-						LoggerProcessing loggerProcessing = new LoggerProcessing();
+					    
+					    String strList = gson.toJson(itens);
+					    
+					    gravarArq.write(strList);
+						
+						/*LoggerProcessing loggerProcessing = new LoggerProcessing();
 
 						loggerProcessing.setId(sequence.getNextSequenceId(LoggerProcessing.KEY_SEQ));
 						loggerProcessing.setCnpj(registerCNPJ);
@@ -120,12 +155,36 @@ public class SynchronizeDataMdbTask implements Runnable {
 							intSynchronize[0].persist(itens, loggerProcessing);
 						} catch (Exception e) {
 								// TODO: handle exception
+						}*/
+					    
+					    try {
+							gravarArq.flush();
+							arq.flush();
+						} catch (IOException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
 						}
 
 				}
 			}
+			
+			try {
+				gravarArq.close();
+				arq.close();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+			mongoClient = new MongoClient("mongo71-farm68.kinghost.net");	
+			
+			MongoDatabase database = mongoClient.getDatabase("findinfo01");
+			
+			SynchronizeDataMdbTask.importJSONFileToDBUsingJavaDriver("\\home\\findinfo\\base_tempo\\foot.txt", database,"footBack");
+		    
 
 			log.info("SynchronizeData => End Foot Total "+cont, dateFormat.format(new Date()));
+			
 
 		}
 		
@@ -406,6 +465,45 @@ public class SynchronizeDataMdbTask implements Runnable {
 		}
 	}
 
+	public static void importJSONFileToDBUsingJavaDriver(String pathToFile, MongoDatabase database, String collectionName) {
+	    // open file
+	    FileInputStream fstream = null;
+	    try {
+	        fstream = new FileInputStream(pathToFile);
+	    } catch (FileNotFoundException e) {
+	        e.printStackTrace();
+	        System.out.println("file not exist, exiting");
+	        return;
+	    }
+	    BufferedReader br = new BufferedReader(new InputStreamReader(fstream));
+
+	    // read it line by line
+	    String strLine;
+	    MongoCollection<Document> coll = database.getCollection(collectionName);
+	    
+	    try {
+	        while ((strLine = br.readLine()) != null) {
+	            // convert line by line to BSON
+	        	Gson gson = new Gson();
+	            Document bson =  gson.fromJson(strLine,Document.class);
+	            // insert BSONs to database
+	            try {
+	            	coll.insertOne(bson);
+	            }
+	            catch (MongoException e) {
+	              // duplicate key
+	              e.printStackTrace();
+	            }
+
+
+	        }
+	        br.close();
+	    } catch (IOException e) {
+	        e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+	    }
+
+
+	}
 	
 
 	

@@ -346,4 +346,10 @@ public class SynchronizeSaneanteNotificationMdb extends SynchronizeDataMdb imple
 		mongoClient.close();
 	}
 
+	@Override
+	public ArrayList<Document> loadDataDocument(String cnpj) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }
