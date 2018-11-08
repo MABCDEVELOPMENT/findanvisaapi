@@ -84,6 +84,12 @@ public class SynchronizeCosmeticRegularizedMdb extends SynchronizeDataMdb implem
 
 		contentCosmeticRegularized.setVencimento(JsonToObject.getValueDate(jsonNode, "data"));
 
+		ContentCosmeticRegularizedDetail contentCosmeticRegularizedDetail = this.loadDetailData(contentCosmeticRegularized.getProcesso());
+		
+		if (contentCosmeticRegularizedDetail!=null) {
+			contentCosmeticRegularized.setContentCosmeticRegularizedDetail(contentCosmeticRegularizedDetail);
+		}
+		
 		return contentCosmeticRegularized;
 	}
 
@@ -334,9 +340,9 @@ public class SynchronizeCosmeticRegularizedMdb extends SynchronizeDataMdb implem
 	}
 
 	@Override
-	public ArrayList<Document> loadDataDocument(String cnpj) {
+	public ArrayList<Document> loadDataDocument(String processo) {
 		// TODO Auto-generated method stub
-		return null;
+		return super.loadDataDocument(this, processo);
 	}
 
 }

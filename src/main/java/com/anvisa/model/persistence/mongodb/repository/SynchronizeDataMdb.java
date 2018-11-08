@@ -45,13 +45,13 @@ public class SynchronizeDataMdb {
 
 	public static final SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
 	
-	public ArrayList<Document> loadDataDocument(IntSynchronizeMdb intSynchronize,String cnpj) {
+	public ArrayList<Document> loadDataDocument(IntSynchronizeMdb intSynchronize,String processo) {
 		
 		Gson gson = new Gson();
 		
 		ArrayList<Document>  documents = new ArrayList<Document>();
 		
-		ArrayList<BaseEntityMongoDB>  data = loadData(intSynchronize,cnpj);
+		ArrayList<BaseEntityMongoDB>  data = loadData(intSynchronize,processo);
 		for (BaseEntityMongoDB baseEntityMongoDB : data) {
 			Document document = Document.parse(gson.toJson(baseEntityMongoDB));
 			documents.add(document);

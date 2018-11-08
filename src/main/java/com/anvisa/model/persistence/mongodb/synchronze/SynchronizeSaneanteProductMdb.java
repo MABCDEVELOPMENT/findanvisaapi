@@ -104,7 +104,15 @@ public class SynchronizeSaneanteProductMdb extends SynchronizeDataMdb implements
 		 * saneanteProduct.getDataVencimento(); if (data!=null) { LocalDate
 		 * dataAlteracao = LocalDate.of(ano, data.getMonthValue(),
 		 * data.getDayOfMonth()); saneanteProduct.setDataAlteracao(dataAlteracao); } }
+		 * 
 		 */
+		
+		SaneanteProductDetail saneanteProductDetail = this.loadDetailData(saneanteProduct.getProcesso());
+		
+		if (saneanteProductDetail!=null) {
+			saneanteProduct.setSaneanteProductDetail(saneanteProductDetail);
+		}
+		
 		return saneanteProduct;
 	}
 
@@ -299,8 +307,8 @@ public class SynchronizeSaneanteProductMdb extends SynchronizeDataMdb implements
 	}
 
 	@Override
-	public ArrayList<Document> loadDataDocument(String cnpj) {
+	public ArrayList<Document> loadDataDocument(String processo) {
 		// TODO Auto-generated method stub
-		return null;
+		return super.loadDataDocument(this, processo);
 	}
 }

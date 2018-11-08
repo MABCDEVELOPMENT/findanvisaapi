@@ -1,9 +1,11 @@
 package com.anvisa.model.persistence.mongodb.repository;
 
+import java.math.BigInteger;
+
 import com.anvisa.model.persistence.mongodb.sequence.SequenceException;
 
 public interface SequenceRepositoryMdb  {
 
-	long getNextSequenceId(String key) throws SequenceException;
+	BigInteger getNextSequenceId(String key) throws SequenceException;
 
 }

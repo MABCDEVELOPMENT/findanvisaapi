@@ -2,7 +2,9 @@ package com.anvisa.model.persistence.mongodb;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.math.BigInteger;
 import java.time.LocalDateTime;
+import java.util.Set;
 
 import javax.persistence.PrePersist;
 import javax.persistence.PreUpdate;
@@ -16,6 +18,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mongodb.BasicDBObject;
+import com.mongodb.DBObject;
 import com.mongodb.MongoClient;
 
 
@@ -24,7 +27,7 @@ public abstract class BaseEntityMongoDB implements Serializable {
     private static final long serialVersionUID = 1L;  
   
     @Id  
-    private Long id;  
+    private BigInteger id;  
   
  
 	private boolean active;
@@ -47,11 +50,11 @@ public abstract class BaseEntityMongoDB implements Serializable {
 	//@ManyToOne
 	//private User ownerUser;
 
-	public Long getId() {
+	public BigInteger getId() {
 		return id;
 	}
 
-	public void setId(Long id) {
+	public void setId(BigInteger id) {
 		this.id = id;
 	}
 

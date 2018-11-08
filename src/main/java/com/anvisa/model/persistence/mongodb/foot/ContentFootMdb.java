@@ -1,10 +1,14 @@
 package com.anvisa.model.persistence.mongodb.foot;
 
+import java.math.BigInteger;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import javax.persistence.Transient;
 
+import org.bson.BSONObject;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import com.anvisa.model.persistence.mongodb.BaseEntityMongoDB;
@@ -168,7 +172,7 @@ public class ContentFootMdb extends BaseEntityMongoDB {
 	}
 
 	@Override
-	public Long getId() {
+	public BigInteger getId() {
 		// TODO Auto-generated method stub
 		return super.getId();
 	}
@@ -369,6 +373,8 @@ public class ContentFootMdb extends BaseEntityMongoDB {
 			System.out.println(this.getClass().getName()+" CNPJ "+this.getCnpj()+" Processo "+this.getProcesso()+" ERRO DE DATAS");
 		}
 	}
+
+		
 
 }
 

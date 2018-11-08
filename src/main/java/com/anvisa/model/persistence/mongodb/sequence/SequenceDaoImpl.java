@@ -1,5 +1,7 @@
 package com.anvisa.model.persistence.mongodb.sequence;
 
+import java.math.BigInteger;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.FindAndModifyOptions;
 import org.springframework.data.mongodb.core.MongoOperations;
@@ -17,7 +19,7 @@ public class SequenceDaoImpl implements SequenceRepositoryMdb {
 	private MongoOperations mongoOperation;
 	
 	@Override
-	public long getNextSequenceId(String key) throws SequenceException {
+	public BigInteger getNextSequenceId(String key) throws SequenceException {
 		// TODO Auto-generated method stub
 			
 		  //get sequence id

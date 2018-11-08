@@ -110,7 +110,14 @@ public class SynchronizeCosmeticRegisterMdb extends SynchronizeDataMdb implement
 		contentCosmeticRegister.setVencimento(JsonToObject.getValueDate(jsonNode, "vencimento", "vencimento"));
 
 		contentCosmeticRegister.setDataRegistro(JsonToObject.getValueDate(jsonNode, "publicacao"));
+		
+		ContentCosmeticRegisterDetail contentCosmeticRegisterDetail = this.loadDetailData(contentCosmeticRegister.getProcesso());
 
+		if (contentCosmeticRegisterDetail!=null) {
+			
+			contentCosmeticRegister.setContentCosmeticRegisterDetail(contentCosmeticRegisterDetail);
+		}
+		
 		return contentCosmeticRegister;
 	}
 
@@ -669,9 +676,9 @@ public class SynchronizeCosmeticRegisterMdb extends SynchronizeDataMdb implement
 	}
 
 	@Override
-	public ArrayList<Document> loadDataDocument(String cnpj) {
+	public ArrayList<Document> loadDataDocument(String processo) {
 		// TODO Auto-generated method stub
-		return null;
+		return super.loadDataDocument(this, processo);
 	}
 
 }

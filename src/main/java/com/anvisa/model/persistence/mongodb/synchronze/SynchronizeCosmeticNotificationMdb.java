@@ -95,6 +95,12 @@ public class SynchronizeCosmeticNotificationMdb extends SynchronizeDataMdb imple
 		contentCosmeticNotification.setSituacao(JsonToObject.getValue(jsonNode, "situacao", "situacao"));
 
 		contentCosmeticNotification.setVencimento(JsonToObject.getValueDate(jsonNode, "vencimento", "vencimento"));
+		
+		ContentCosmeticNotificationDetail contentCosmeticNotificationDetail = this.loadDetailData(contentCosmeticNotification.getProcesso());
+				
+		if (contentCosmeticNotificationDetail!=null) {
+			contentCosmeticNotification.setContentCosmeticNotificationDetail(contentCosmeticNotificationDetail);
+		}
 
 		return contentCosmeticNotification;
 
@@ -305,9 +311,9 @@ public class SynchronizeCosmeticNotificationMdb extends SynchronizeDataMdb imple
 	}
 
 	@Override
-	public ArrayList<Document> loadDataDocument(String cnpj) {
+	public ArrayList<Document> loadDataDocument(String processo) {
 		// TODO Auto-generated method stub
-		return null;
+		return super.loadDataDocument(this, processo);
 	}
 
 }

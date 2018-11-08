@@ -1,5 +1,6 @@
 package com.anvisa.model.persistence.mongodb.cosmetic.register;
 
+import java.math.BigInteger;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -209,7 +210,7 @@ public class ContentCosmeticRegister extends BaseEntityMongoDB {
 		this.process = process;
 	}
 	@Override
-	public Long getId() {
+	public BigInteger getId() {
 		// TODO Auto-generated method stub
 		return super.getId();
 	}

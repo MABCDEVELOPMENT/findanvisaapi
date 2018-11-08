@@ -94,9 +94,15 @@ public class SynchronizeSaneanteNotificationMdb extends SynchronizeDataMdb imple
 		saneanteNotification.setSituacao(JsonToObject.getValue(jsonNode, "situacao", "situacao"));
 
 		saneanteNotification.setVencimento(JsonToObject.getValueDate(jsonNode, "vencimento", "vencimento"));
+		
+		SaneanteNotificationDetail saneanteNotificationDetail = this.loadDetailData(saneanteNotification.getProcesso());
+		
+		if (saneanteNotificationDetail!=null) {
+			saneanteNotification.setSaneanteNotificationDetail(saneanteNotificationDetail);
+		}
 
 		return saneanteNotification;
-
+ 
 	}
 
 	public SaneanteNotificationDetail parseDetailData(JsonNode jsonNode) {
@@ -346,10 +352,12 @@ public class SynchronizeSaneanteNotificationMdb extends SynchronizeDataMdb imple
 		mongoClient.close();
 	}
 
+	
 	@Override
-	public ArrayList<Document> loadDataDocument(String cnpj) {
+	public ArrayList<Document> loadDataDocument(String processo) {
 		// TODO Auto-generated method stub
-		return null;
+		return super.loadDataDocument(this,processo);
 	}
+
 
 }

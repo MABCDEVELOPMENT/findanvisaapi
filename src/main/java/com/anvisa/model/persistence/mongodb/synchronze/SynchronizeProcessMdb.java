@@ -82,6 +82,12 @@ public class SynchronizeProcessMdb extends SynchronizeDataMdb implements IntSync
 		Processo processo = JsonToObject.getProcesso(jsonNode);
 		process.setProcesso(processo.getNumero());
 
+		ProcessDetail processDetail = this.loadDetailData(processo.getNumero());
+		
+		if (processDetail!=null) {
+			process.setProcessDetail(processDetail);
+		}
+		
 		return process;
 
 	}
@@ -319,9 +325,9 @@ public class SynchronizeProcessMdb extends SynchronizeDataMdb implements IntSync
 	}
 
 	@Override
-	public ArrayList<Document> loadDataDocument(String cnpj) {
+	public ArrayList<Document> loadDataDocument(String processo) {
 		// TODO Auto-generated method stub
-		return null;
+		return super.loadDataDocument(this, processo);
 	}
 
 }

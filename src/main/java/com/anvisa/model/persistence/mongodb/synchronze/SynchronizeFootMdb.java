@@ -42,6 +42,8 @@ public class SynchronizeFootMdb extends SynchronizeDataMdb implements IntSynchro
 	
 	@Autowired
 	private static LoggerRepositoryMdb loggerRepositoryMdb;
+	
+
 
 	@Autowired
 	public void setService(FootRepositoryMdb footRepository, SequenceDaoImpl sequence, LoggerRepositoryMdb loggerRepositoryMdb) {
@@ -81,7 +83,7 @@ public class SynchronizeFootMdb extends SynchronizeDataMdb implements IntSynchro
 		contentProduto.setDataVencimento(JsonToObject.getValueDate(jsonNode, "dataVencimentoRegistro"));
 		try {
 
-			ContentFootDetailMdb contentFootDetailMdb = this.loadDetailData(contentProduto.getCnpj());
+			ContentFootDetailMdb contentFootDetailMdb = this.loadDetailData(contentProduto.getProcesso());
 			
 			contentProduto.setContentFootDetail(contentFootDetailMdb);
 
