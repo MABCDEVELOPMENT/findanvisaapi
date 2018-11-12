@@ -52,7 +52,7 @@ public class FindDataFootMdb {
 			
 			Process process = processRepository.findByProcesso(contentFoot.getProcesso(), contentFoot.getCnpj());
 			if (process==null) {
-				ArrayList<BaseEntityMongoDB> processos =  synchronizeProcess.loadData(contentFoot.getCnpj()+"&filter[processo]="+contentFoot.getProcesso(),1);
+	/*			ArrayList<BaseEntityMongoDB> processos =  synchronizeProcess.loadData(contentFoot.getCnpj()+"&filter[processo]="+contentFoot.getProcesso(),1);
 				
 				if(processos.size()>0) {
 					Process newProcess = (Process) processos.get(0);
@@ -62,7 +62,7 @@ public class FindDataFootMdb {
 				    //synchronizeProcess.persist(processo);
 					contentFoot.lodaProcess(newProcess);
 				   break;
-				}
+				}*/
 				
 			} else {
 				   

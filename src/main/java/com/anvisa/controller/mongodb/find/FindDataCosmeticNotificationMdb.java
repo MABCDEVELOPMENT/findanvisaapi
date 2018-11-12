@@ -52,7 +52,7 @@ public class FindDataCosmeticNotificationMdb {
 			Process process = processRepository.findByProcesso(contentCosmeticNotification.getProcesso(),
 					contentCosmeticNotification.getCnpj());
 			if (process == null) {
-				ArrayList<BaseEntityMongoDB> processos = synchronizeProcess.loadData(contentCosmeticNotification.getCnpj()
+/*				ArrayList<BaseEntityMongoDB> processos = synchronizeProcess.loadData(contentCosmeticNotification.getCnpj()
 						+ "&filter[processo]=" + contentCosmeticNotification.getProcesso(), 1);
 
 				if (processos.size() > 0) {
@@ -61,7 +61,7 @@ public class FindDataCosmeticNotificationMdb {
 					processo.add(processos.get(0));
 					synchronizeProcess.persist(processo,null);
 					contentCosmeticNotification.lodaProcess(newProcess);
-				}
+				}*/
 
 			} else {
 

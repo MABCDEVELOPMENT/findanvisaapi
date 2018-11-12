@@ -18,4 +18,8 @@ public interface RegisterCNPJRepository extends JpaRepository<RegisterCNPJ, Long
 	
 	@Query("select u from RegisterCNPJ u where u.active=true and u.cnpj =:cnpj")
 	public ArrayList<RegisterCNPJ> findCnpj(@Param("cnpj") String cnpj);
+	
+	@Query("select u from RegisterCNPJ u where u.id >= 25")
+	public ArrayList<RegisterCNPJ> findForId(@Param("id") int id);
+
 }

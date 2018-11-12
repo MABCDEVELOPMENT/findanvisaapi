@@ -63,7 +63,7 @@ public class SynchronizeCosmeticRegularizedMdb extends SynchronizeDataMdb implem
 
 		SEQ_KEY = "cometic_regularized";
 
-		URL = "https://consultas.anvisa.gov.br/api/consulta/cosmeticos/regularizados?count=10000&page=1&filter[cnpj]=";
+		URL = "https://consultas.anvisa.gov.br/api/consulta/cosmeticos/regularizados?count=1000&page=1&filter[cnpj]=";
 
 		URL_DETAIL = "https://consultas.anvisa.gov.br/api/consulta/cosmeticos/regularizados/";
 
@@ -87,7 +87,9 @@ public class SynchronizeCosmeticRegularizedMdb extends SynchronizeDataMdb implem
 		ContentCosmeticRegularizedDetail contentCosmeticRegularizedDetail = this.loadDetailData(contentCosmeticRegularized.getProcesso());
 		
 		if (contentCosmeticRegularizedDetail!=null) {
+			
 			contentCosmeticRegularized.setContentCosmeticRegularizedDetail(contentCosmeticRegularizedDetail);
+			
 		}
 		
 		return contentCosmeticRegularized;
@@ -225,12 +227,16 @@ public class SynchronizeCosmeticRegularizedMdb extends SynchronizeDataMdb implem
 				return null;
 			}
 
-			JsonNode rootNode = objectMapper.readTree(this.getGZIPString(response.body().byteStream()));
+			if (response.body()!=null) {
+				
+				JsonNode rootNode = objectMapper.readTree(this.getGZIPString(response.body().byteStream()));
+	
+				if (rootNode != null) {
+	
+					rootObject = this.parseDetailData(rootNode);
+				}
+			}	
 
-			if (rootNode != null) {
-
-				rootObject = this.parseDetailData(rootNode);
-			}
 			response.close();
 			client = null;
 			return rootObject;

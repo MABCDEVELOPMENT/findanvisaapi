@@ -143,7 +143,7 @@ public class SynchronizeProcessMdb extends SynchronizeDataMdb implements IntSync
 
 		} catch (Exception e) {
 			// TODO: handle exception
-			e.printStackTrace();
+			log.error(e.getMessage());
 		}
 
 		return null;

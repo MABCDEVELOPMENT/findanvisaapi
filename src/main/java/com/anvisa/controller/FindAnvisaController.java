@@ -153,6 +153,11 @@ public class FindAnvisaController {
 		return areas;
 	}
 
-	
+	@RequestMapping(value = "/startImport/{id}", method = RequestMethod.POST, produces = "application/json")
+	public void start(@PathVariable int id) {
+		//SynchronizeDataMdbTask task = SynchronizeDataMdbTask((id=0),(id=1),(id=2),(id=3),(id=4),(id=5),(id=6));
+		
+	}
+
 
 }

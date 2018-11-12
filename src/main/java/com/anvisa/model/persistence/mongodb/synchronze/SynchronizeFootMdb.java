@@ -150,8 +150,9 @@ public class SynchronizeFootMdb extends SynchronizeDataMdb implements IntSynchro
 			return rootObject;
 
 		} catch (Exception e) {
-			// TODO: handle exception
-			e.printStackTrace();
+
+			log.error(e.getMessage());
+			
 		}
 
 		return null;

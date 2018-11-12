@@ -63,6 +63,7 @@ public class FindAnvisaApplication extends SpringBootServletInitializer implemen
 	} 
 	    
 
+	@SuppressWarnings("static-access")
 	public static void main(String[] args) throws IOException {
 		
 		File dir = new File(
@@ -77,7 +78,14 @@ public class FindAnvisaApplication extends SpringBootServletInitializer implemen
 		
 		System.out.println(IMAGE_DIR);
 		//SynchronizeDataTask.synchronizeData();
-		SynchronizeDataMdbTask.synchronizeData();
+		SynchronizeDataMdbTask synchronizeDataMdbTask = new SynchronizeDataMdbTask (false,
+		false,
+		false,
+		false,
+		false,
+		true,
+		true);
+		synchronizeDataMdbTask.synchronizeData();
 		
 	}
 }

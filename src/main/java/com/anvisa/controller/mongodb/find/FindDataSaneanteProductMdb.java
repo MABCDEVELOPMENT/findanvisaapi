@@ -55,7 +55,7 @@ public class FindDataSaneanteProductMdb {
 			Process process = processRepository.findByProcesso(saneanteProduct.getProcesso(),
 					queryRecordParameter.getCnpj());
 			if (process == null) {
-				ArrayList<BaseEntityMongoDB> processos = synchronizeProcess
+/*				ArrayList<BaseEntityMongoDB> processos = synchronizeProcess
 						.loadData(saneanteProduct.getCnpj() + "&filter[processo]="
 								+ saneanteProduct.getProcesso(),1);
 
@@ -66,7 +66,7 @@ public class FindDataSaneanteProductMdb {
 				    //synchronizeProcess.persist(processo);
 					saneanteProduct.lodaProcess(newProcess);
 					break;
-				}
+				}*/
 
 			} else {
 

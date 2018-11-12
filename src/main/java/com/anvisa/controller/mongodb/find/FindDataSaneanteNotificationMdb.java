@@ -62,7 +62,7 @@ public class FindDataSaneanteNotificationMdb {
 			Process process = processRepository.findByProcesso(saneanteNotification.getProcesso(),
 					queryRecordParameter.getCnpj());
 			if (process == null) {
-				ArrayList<BaseEntityMongoDB> processos = synchronizeProcess.loadData(saneanteNotification.getCnpj()
+				/*ArrayList<BaseEntityMongoDB> processos = synchronizeProcess.loadData(saneanteNotification.getCnpj()
 						+ "&filter[processo]=" + saneanteNotification.getProcesso(),1);
 				
 				if (processos.size() > 0) {
@@ -72,7 +72,7 @@ public class FindDataSaneanteNotificationMdb {
 				    //synchronizeProcess.persist(processo);
 					saneanteNotification.lodaProcess(newProcess);
 					break;
-				}
+				}*/
 
 			} else {
 

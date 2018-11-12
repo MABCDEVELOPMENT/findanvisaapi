@@ -63,7 +63,7 @@ public class SynchronizeCosmeticNotificationMdb extends SynchronizeDataMdb imple
 
 		SEQ_KEY = "cosmetic_notification";
 
-		URL = "https://consultas.anvisa.gov.br/api/consulta/cosmeticos/notificados?count=10000&page=1&filter[cnpj]=";
+		URL = "https://consultas.anvisa.gov.br/api/consulta/cosmeticos/notificados?count=1000&page=1&filter[cnpj]=";
 
 		URL_DETAIL = "https://consultas.anvisa.gov.br/api/consulta/cosmeticos/notificados/";
 
@@ -189,13 +189,15 @@ public class SynchronizeCosmeticNotificationMdb extends SynchronizeDataMdb imple
 				client = null;
 				return null;
 			}
-
-			JsonNode rootNode = objectMapper.readTree(this.getGZIPString(response.body().byteStream()));
-
-			if (rootNode != null) {
-
-				rootObject = this.parseDetailData(rootNode);
-			}
+			if (response.body()!=null) {
+				
+				JsonNode rootNode = objectMapper.readTree(this.getGZIPString(response.body().byteStream()));
+	
+				if (rootNode != null) {
+	
+					rootObject = this.parseDetailData(rootNode);
+				}
+			}	
 			response.close();
 			client = null;
 			return rootObject;
