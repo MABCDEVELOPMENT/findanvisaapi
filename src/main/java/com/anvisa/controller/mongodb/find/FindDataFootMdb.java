@@ -31,14 +31,14 @@ public class FindDataFootMdb {
 	@Autowired
 	private static ProcessRepositoryMdb processRepository;
 	
-	@Autowired
+/*	@Autowired
 	public void setService(FootRepositoryMdb footRepository,
 						   ProcessRepositoryMdb processRepository,
 						   MongoTemplate mongoTemplate) {
 		this.footRepository = footRepository;
 		this.processRepository = processRepository;
 		this.mongoTemplate = mongoTemplate;
-	}
+	}*/
 	
 	public static List<ContentFootMdb> find(QueryRecordParameter queryRecordParameter){
 		

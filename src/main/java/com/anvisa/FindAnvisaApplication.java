@@ -19,15 +19,14 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.resource.VersionResourceResolver;
 
 import com.anvisa.interceptor.ScheduledTasks;
-import com.anvisa.model.persistence.mongodb.interceptor.synchronizedata.SynchronizeDataMdbTask;
 import com.fasterxml.jackson.databind.util.ISO8601DateFormat;
 
 @SpringBootApplication
 @EnableScheduling
 @EnableAutoConfiguration
 @EnableWebMvc
-@EntityScan(basePackages = {"com.anvisa.model.persistence"})
-@EnableJpaRepositories("com.anvisa.repository")
+@EntityScan(basePackages = {"com.anvisa.model.persistence","com.anvisa.model.persistence.mongodb"})
+@EnableJpaRepositories(basePackages= {"com.anvisa.repository","com.anvisa.model.persistence.mongodb.repository"})
 public class FindAnvisaApplication extends SpringBootServletInitializer implements WebMvcConfigurer {
 	
 	
@@ -78,14 +77,14 @@ public class FindAnvisaApplication extends SpringBootServletInitializer implemen
 		
 		System.out.println(IMAGE_DIR);
 		//SynchronizeDataTask.synchronizeData();
-		SynchronizeDataMdbTask synchronizeDataMdbTask = new SynchronizeDataMdbTask (false,
+		/*SynchronizeDataMdbTask synchronizeDataMdbTask = new SynchronizeDataMdbTask (false,
 		false,
 		false,
 		false,
 		false,
-		true,
-		true);
-		synchronizeDataMdbTask.synchronizeData();
+		false,
+		false);*/
+		//synchronizeDataMdbTask.synchronizeData();
 		
 	}
 }

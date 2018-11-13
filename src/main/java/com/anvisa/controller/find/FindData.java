@@ -40,7 +40,7 @@ public class FindData {
 		} else if (queryRecordParameter.getCategory() == CATEGORY_COSMETIC && queryRecordParameter.getOption() == COSMETIC_OPTION_NOTIFICATION) {
 			rootObject.getContent().addAll(FindDataCosmeticNotificationMdb.find(queryRecordParameter));
 		} else if (queryRecordParameter.getCategory() == CATEGORY_COSMETIC && queryRecordParameter.getOption() == COSMETIC_OPTION_REGULARIZED) {
-			rootObject.getContent().addAll(FindDataCosmeticRegularizedMdb.find(queryRecordParameter));		
+			rootObject.getContent().addAll(new FindDataCosmeticRegularizedMdb().find(queryRecordParameter));		
 		} else if (queryRecordParameter.getCategory() == CATEGORY_SANEANTE && queryRecordParameter.getOption() == SANEANTE_OPTION_PRODUCT) {
 			rootObject.getContent().addAll(FindDataSaneanteProductMdb.find(queryRecordParameter));		
 		} else if (queryRecordParameter.getCategory() == CATEGORY_SANEANTE && queryRecordParameter.getOption() == SANEANTE_OPTION_NOTIFICATION) {

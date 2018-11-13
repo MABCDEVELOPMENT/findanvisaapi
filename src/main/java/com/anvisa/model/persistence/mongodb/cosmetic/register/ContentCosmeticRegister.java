@@ -7,6 +7,7 @@ import java.util.List;
 import javax.persistence.Transient;
 
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.Field;
 
 import com.anvisa.model.persistence.mongodb.BaseEntityMongoDB;
 import com.anvisa.model.persistence.mongodb.cosmetic.register.petition.CosmeticRegisterPetition;
@@ -26,64 +27,65 @@ public class ContentCosmeticRegister extends BaseEntityMongoDB {
 	 */
 	private static final long serialVersionUID = 1L;
 	
-	@JsonAlias(value = "assunto")
+	@Field(value = "assunto")
 	String assunto; 
 	
 
-	@JsonAlias(value = "expedientePeticao")
+	@Field(value = "expedientePeticao")
     String expedientePeticao;
 	
-	@JsonAlias(value = "transacao")
+	@Field(value = "transacao")
     String transacao;
 	
 
-	@JsonAlias(value = "processo")
+	@Field(value = "processo")
     String processo;
 	
 
-	@JsonAlias(value = "expedienteProcesso")
+	@Field(value = "expedienteProcesso")
     String expedienteProcesso;
 
-	@JsonAlias(value = "produto")
+	@Field(value = "produto")
     String produto;
 	
 
-	@JsonAlias(value = "cnpj")	
+	@Field(value = "cnpj")	
     String cnpj;
 	
 
-	@JsonAlias(value = "razaoSocial")		
+	@Field(value = "razaoSocial")		
     String razaoSocial;
 	
 
-	@JsonAlias(value = "situacao")		
+	@Field(value = "situacao")		
     String situacao;
 	
-	@JsonAlias(value = "vencimento")	
+	@Field(value = "vencimento")	
 	@JsonFormat(pattern="dd/MM/yyyy")
     LocalDate vencimento;
 
 
-	@JsonAlias(value = "statusVencimento")	
+	@Field(value = "statusVencimento")	
     String statusVencimento;
 	
 
-	@JsonAlias(value = "empresa")		
+	@Field(value = "empresa")		
     String empresa;
     
+	@Field(value = "contentCosmeticRegisterDetail")
     ContentCosmeticRegisterDetail contentCosmeticRegisterDetail;
     
 
-	@JsonAlias(value = "dataAlteracao")	
+	@Field(value = "dataAlteracao")	
 	@JsonFormat(pattern="dd/MM/yyyy")	
 	LocalDate dataAlteracao;
 	
 
-	@JsonAlias(value = "dataRegistro")
+	@Field(value = "dataRegistro")
 	@JsonFormat(pattern="dd/MM/yyyy")
 	LocalDate dataRegistro;
 	
-	@JsonAlias(value = "qtdRegistro")	
+	@Field(value = "qtdRegistro")	
 	int qtdRegistro;
 	
 	@Transient
@@ -209,11 +211,7 @@ public class ContentCosmeticRegister extends BaseEntityMongoDB {
 	public void setProcess(Process process) {
 		this.process = process;
 	}
-	@Override
-	public BigInteger getId() {
-		// TODO Auto-generated method stub
-		return super.getId();
-	}
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;

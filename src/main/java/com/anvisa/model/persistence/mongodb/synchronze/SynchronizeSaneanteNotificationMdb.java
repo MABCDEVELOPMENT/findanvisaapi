@@ -303,7 +303,7 @@ public class SynchronizeSaneanteNotificationMdb extends SynchronizeDataMdb imple
 					if (!localSaneanteNotification.equals(baseEntity)) {
 
 						baseEntity.setId(localSaneanteNotification.getId());
-						baseEntity.setUpdateDate(LocalDateTime.now());
+						baseEntity.setUpdateDate(LocalDate.now());
 						//listSave.add(baseEntity);
 						Document document = Document.parse(gson.toJson(baseEntity));
 						coll.updateOne(new Document("_id", new ObjectId(localSaneanteNotification.getId().toString().getBytes())), document);
@@ -311,9 +311,9 @@ public class SynchronizeSaneanteNotificationMdb extends SynchronizeDataMdb imple
 					}
 
 				} else {
-					baseEntity.setId(this.sequence.getNextSequenceId(SEQ_KEY));
+					//baseEntity.setId(this.sequence.getNextSequenceId(SEQ_KEY));
 					baseEntity.setSaneanteNotificationDetail(saneanteNotificationDetail);
-					baseEntity.setInsertDate(LocalDateTime.now());
+					baseEntity.setInsertDate(LocalDate.now());
 					Document document = Document.parse(gson.toJson(baseEntity));
 					//listSave.add(document);
 					coll.insertOne(document);

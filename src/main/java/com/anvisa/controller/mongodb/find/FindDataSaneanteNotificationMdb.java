@@ -31,7 +31,7 @@ public class FindDataSaneanteNotificationMdb {
 	@Autowired
 	private static ProcessRepositoryMdb processRepository;
 	
-	@Autowired
+/*	@Autowired
 	public void setService(SaneanteNotificationRepositoryMdb saneanteNotificationRepository,
 						   ProcessRepositoryMdb processRepository,
 						   MongoTemplate mongoTemplate) {
@@ -40,7 +40,7 @@ public class FindDataSaneanteNotificationMdb {
 		this.processRepository = processRepository;
 		this.mongoTemplate = mongoTemplate;
 		
-	}
+	}*/
 	
 	public static List<SaneanteNotification> find(QueryRecordParameter queryRecordParameter) {
 		

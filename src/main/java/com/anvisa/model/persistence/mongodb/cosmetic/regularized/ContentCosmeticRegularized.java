@@ -5,57 +5,79 @@ import java.util.List;
 
 import javax.persistence.Transient;
 
+import org.bson.types.ObjectId;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.PersistenceConstructor;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.Field;
 
 import com.anvisa.model.persistence.mongodb.BaseEntityMongoDB;
 import com.anvisa.model.persistence.mongodb.process.Process;
 import com.anvisa.model.persistence.mongodb.process.ProcessDetail;
 import com.anvisa.model.persistence.mongodb.process.ProcessPetition;
-import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 
 @Document(collection = "cosmeticRegularized")
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class ContentCosmeticRegularized extends BaseEntityMongoDB {
 	
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
 	
-	
-
-	@JsonAlias(value = "processo")
+	@Field(value = "processo")
     String processo;
 	
-	@JsonAlias(value = "product")
+	@Field(value = "product")
     String produto;
 	
-	@JsonAlias(value = "tipo")
+	@Field(value = "tipo")
     String tipo; 
 
-	@JsonAlias(value = "situacao")
+	@Field(value = "situacao")
     String situacao;
 	
-	@JsonAlias(value = "vencimento")
+	@Field(value = "vencimento")
     LocalDate vencimento;
 	
-	@JsonAlias(value = "dataAlteracao")	
+	@Field(value = "dataAlteracao")	
 	@JsonFormat(pattern="dd/MM/yyyy")	
 	LocalDate dataAlteracao;
 	
-	@JsonAlias(value = "dataRegistro")
+	@Field(value = "dataRegistro")
 	@JsonFormat(pattern="dd/MM/yyyy")
 	LocalDate dataRegistro;
 	
-	@JsonAlias(value = "qtdRegistro")	
+	@Field(value = "qtdRegistro")	
 	int qtdRegistro;
 	
+	@Field(value = "contentCosmeticRegularizedDetail")	
 	ContentCosmeticRegularizedDetail contentCosmeticRegularizedDetail;
 
 	@Transient
 	Process process;
 	
+    public ContentCosmeticRegularized() {
+		// TODO Auto-generated constructor stub
+	}
+	
+	
+	@PersistenceConstructor
+	public ContentCosmeticRegularized(String processo, String produto, String tipo, String situacao,
+			LocalDate vencimento, LocalDate dataAlteracao, LocalDate dataRegistro, int qtdRegistro,
+			ContentCosmeticRegularizedDetail contentCosmeticRegularizedDetail, Process process) {
+		super();
+		this.processo = processo;
+		this.produto = produto;
+		this.tipo = tipo;
+		this.situacao = situacao;
+		this.vencimento = vencimento;
+		this.dataAlteracao = dataAlteracao;
+		this.dataRegistro = dataRegistro;
+		this.qtdRegistro = qtdRegistro;
+		this.contentCosmeticRegularizedDetail = contentCosmeticRegularizedDetail;
+		this.process = process;
+	}
+
 	public String getProcesso() {
 		return processo;
 	}

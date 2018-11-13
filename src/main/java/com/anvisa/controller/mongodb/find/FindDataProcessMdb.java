@@ -24,12 +24,12 @@ public class FindDataProcessMdb {
 	@Inject
 	private static MongoTemplate mongoTemplate;
 	
-	@Autowired
+/*	@Autowired
 	public void setService(ProcessRepositoryMdb processRepository,
 						   MongoTemplate mongoTemplate) {
 		this.processRepository = processRepository;
 		this.mongoTemplate = mongoTemplate; 
-	}
+	}*/
 	
 	public static List<Process> find(QueryRecordProcessParameter queryRecordParameter){
 		

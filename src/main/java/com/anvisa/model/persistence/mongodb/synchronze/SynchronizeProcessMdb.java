@@ -1,5 +1,6 @@
 package com.anvisa.model.persistence.mongodb.synchronze;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
@@ -200,7 +201,7 @@ public class SynchronizeProcessMdb extends SynchronizeDataMdb implements IntSync
 					if (!localProcess.equals(baseEntity)) {
 
 						baseEntity.setId(localProcess.getId());
-						baseEntity.setUpdateDate(LocalDateTime.now());
+						baseEntity.setUpdateDate(LocalDate.now());
 						try {
 							Document document = Document.parse(gson.toJson(baseEntity));
 							coll.updateOne(new Document("_id", localProcess.getId()), document);
@@ -219,10 +220,10 @@ public class SynchronizeProcessMdb extends SynchronizeDataMdb implements IntSync
 					}
 
 				} else {
-					baseEntity.setId(this.sequence.getNextSequenceId(SEQ_KEY));
+					//baseEntity.setId(this.sequence.getNextSequenceId(SEQ_KEY));
 					baseEntity.setProcessDetail(processDetail);
 					try {
-						baseEntity.setInsertDate(LocalDateTime.now());
+						baseEntity.setInsertDate(LocalDate.now());
 						Document document = Document.parse(gson.toJson(baseEntity));
 						listSave.add(document);
 						totalInserido++;

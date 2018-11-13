@@ -1,5 +1,6 @@
 package com.anvisa.model.persistence.mongodb.synchronze;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -249,7 +250,7 @@ public class SynchronizeSaneanteProductMdb extends SynchronizeDataMdb implements
 					if (!localSaneanteProduct.equals(baseEntity)) {
 
 						baseEntity.setId(localSaneanteProduct.getId());
-						baseEntity.setUpdateDate(LocalDateTime.now());
+						baseEntity.setUpdateDate(LocalDate.now());
 						Document document = Document.parse(gson.toJson(baseEntity));
 						coll.updateOne(new Document("_id", localSaneanteProduct.getId()), document);
 						//listSave.add(document);
@@ -257,9 +258,9 @@ public class SynchronizeSaneanteProductMdb extends SynchronizeDataMdb implements
 					}
 
 				} else {
-					baseEntity.setId(this.sequence.getNextSequenceId(SEQ_KEY));
+					//baseEntity.setId(this.sequence.getNextSequenceId(SEQ_KEY));
 					baseEntity.setSaneanteProductDetail(saneanteProductDetail);
-					baseEntity.setInsertDate(LocalDateTime.now());
+					baseEntity.setInsertDate(LocalDate.now());
 					Document document = Document.parse(gson.toJson(baseEntity));
 					//listSave.add(document);
 					coll.insertOne(document);

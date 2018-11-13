@@ -1,16 +1,10 @@
 package com.anvisa.config;
 
-import java.io.File;
 import java.util.Collections;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.web.servlet.config.annotation.EnableWebMvc;
-import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
-import com.anvisa.FindAnvisaApplication;
 import com.google.common.base.Predicates;
 
 import springfox.documentation.builders.PathSelectors;
@@ -37,5 +31,8 @@ public class SwaggerConfig  {
 				new Contact("NEConsult", "www.neconsult.com.br", "suport@neconsult.com.br"), "License of API",
 				"API license URL", Collections.emptyList());
 	}
+	
+	
+	
 
 }

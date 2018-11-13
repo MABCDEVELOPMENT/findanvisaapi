@@ -171,12 +171,6 @@ public class ContentFootMdb extends BaseEntityMongoDB {
 		this.statusVencimento = statusVencimento;
 	}
 
-	@Override
-	public BigInteger getId() {
-		// TODO Auto-generated method stub
-		return super.getId();
-	}
-
 	public LocalDate getDataAlteracao() {
 		return dataAlteracao;
 	}

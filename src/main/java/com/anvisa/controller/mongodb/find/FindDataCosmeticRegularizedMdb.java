@@ -12,6 +12,7 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Component;
 
 import com.anvisa.model.persistence.mongodb.cosmetic.regularized.ContentCosmeticRegularized;
+import com.anvisa.model.persistence.mongodb.foot.ContentFootMdb;
 import com.anvisa.model.persistence.mongodb.process.Process;
 import com.anvisa.model.persistence.mongodb.repository.CosmeticRegularizedRepositoryMdb;
 import com.anvisa.model.persistence.mongodb.repository.ProcessRepositoryMdb;
@@ -21,25 +22,20 @@ import com.anvisa.rest.QueryRecordParameter;
 @Component
 public class FindDataCosmeticRegularizedMdb {
 	
-	@Autowired
-	private static CosmeticRegularizedRepositoryMdb cosmeticRegularizedRepository;
-	
-	@Inject
-	private static MongoTemplate mongoTemplate;
+
+	private final MongoTemplate mongoTemplate;
 	
 	@Autowired
-	private static ProcessRepositoryMdb processRepository;
+	private  ProcessRepositoryMdb processRepository;
 	
-	@Autowired
-	public void setService(CosmeticRegularizedRepositoryMdb cosmeticRegularizedRepository,
-													ProcessRepositoryMdb processRepository,
+    @Autowired
+	public void setService(ProcessRepositoryMdb processRepository,
 													MongoTemplate mongoTemplate) {
-		this.cosmeticRegularizedRepository = cosmeticRegularizedRepository;
 		this.processRepository = processRepository;
 		this.mongoTemplate = mongoTemplate;
 	}
 	
-	public static List<ContentCosmeticRegularized> find(QueryRecordParameter queryRecordParameter) {
+	public List<ContentCosmeticRegularized> find(QueryRecordParameter queryRecordParameter) {
 
 		List<ContentCosmeticRegularized> contentCosmeticRegularizedsReturn = new ArrayList<ContentCosmeticRegularized>();
 
@@ -75,12 +71,13 @@ public class FindDataCosmeticRegularizedMdb {
 
 	}
 	
-	public static List<ContentCosmeticRegularized> filter(QueryRecordParameter queryRecordParameter) {
-
+	public List<ContentCosmeticRegularized> filter(QueryRecordParameter queryRecordParameter) {
+		
+			
 		Query dynamicQuery = new Query();
 
 		if (queryRecordParameter.getCnpj() != null && !queryRecordParameter.getCnpj().isEmpty()) {
-			Criteria nameCriteria = Criteria.where("contentCosmeticRegularizedDetail.cnpj")
+			Criteria nameCriteria = Criteria.where("cnpj")
 					.is(queryRecordParameter.getCnpj());
 			dynamicQuery.addCriteria(nameCriteria);
 		}
@@ -101,7 +98,23 @@ public class FindDataCosmeticRegularizedMdb {
 			dynamicQuery.addCriteria(nameCriteria);
 		}
 		
-		 List<ContentCosmeticRegularized> result = mongoTemplate.find(dynamicQuery, ContentCosmeticRegularized.class, "cosmeticRegularized");
+		
+		 List<ContentCosmeticRegularized> result = this.mongoTemplate.find(dynamicQuery, ContentCosmeticRegularized.class, "cosmeticRegularized");
+		 
+		 /*List<ContentCosmeticRegularized> result =  new ArrayList<ContentCosmeticRegularized>();
+		 
+		 for (Document doc : resultDocs) {
+			 Gson gson = new Gson();
+			 ObjectMapper mapper = new ObjectMapper();
+			 String json = gson.toJson(doc);
+			 try {
+				ContentCosmeticRegularized contentCosmeticRegularized = mapper.reader(ContentCosmeticRegularized.class).readValue(json);
+				result.add(contentCosmeticRegularized);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		 }*/
 	        
 		return result;
 

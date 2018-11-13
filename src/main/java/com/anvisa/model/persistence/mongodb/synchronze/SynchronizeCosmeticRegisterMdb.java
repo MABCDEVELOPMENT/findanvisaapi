@@ -1,5 +1,6 @@
 package com.anvisa.model.persistence.mongodb.synchronze;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
@@ -630,16 +631,16 @@ public class SynchronizeCosmeticRegisterMdb extends SynchronizeDataMdb implement
 
 					if (!localCosmetic.equals(baseEntity)) {
 
-						baseEntity.setId(localCosmetic.getId());
-						baseEntity.setUpdateDate(LocalDateTime.now());
+						//baseEntity.setId(localCosmetic.getId());
+						baseEntity.setUpdateDate(LocalDate.now());
 						Document document = Document.parse(gson.toJson(baseEntity));
 						coll.updateOne(new Document("_id", new ObjectId(localCosmetic.getId().toString().getBytes())), document);
 						totalAtualizado++;
 					}
 
 				} else {
-					baseEntity.setId(this.sequence.getNextSequenceId(SEQ_KEY));
-					baseEntity.setInsertDate(LocalDateTime.now());
+					//baseEntity.setId(this.sequence.getNextSequenceId(SEQ_KEY));
+					baseEntity.setInsertDate(LocalDate.now());
 					Document document = Document.parse(gson.toJson(baseEntity));
 					//listSave.add(document);
 					coll.insertOne(document);

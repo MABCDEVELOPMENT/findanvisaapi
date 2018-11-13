@@ -30,14 +30,14 @@ public class FindDataCosmeticRegisterMdb {
 	@Autowired
 	private static ProcessRepositoryMdb processRepository;
 
-	@Autowired
+/*	@Autowired
 	public void setService(CosmeticRegisterRepositoryMdb cosmeticRegisterRepository,
 			 			    MongoTemplate mongoTemplate,
 							ProcessRepositoryMdb processRepository) {
 		this.cosmeticRegisterRepository = cosmeticRegisterRepository;
 		this.processRepository = processRepository;
 		this.mongoTemplate = mongoTemplate;
-	}
+	}*/
 
 	public static List<ContentCosmeticRegister> find(QueryRecordParameter queryRecordParameter) {
 

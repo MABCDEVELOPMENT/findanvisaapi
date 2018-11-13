@@ -30,12 +30,12 @@ public class FindDataSaneanteProductMdb {
 	@Autowired
 	private static ProcessRepositoryMdb processRepository;
 
-	@Autowired
+/*	@Autowired
 	public void setService(SaneanteProductRepositoryMdb saneanteProductRepository, ProcessRepositoryMdb processRepository,MongoTemplate mongoTemplate) {
 		this.saneanteProductRepository = saneanteProductRepository;
 		this.processRepository = processRepository;
 		this.mongoTemplate = mongoTemplate;
-	}
+	}*/
 
 	public static List<SaneanteProduct> find(QueryRecordParameter queryRecordParameter) {
 

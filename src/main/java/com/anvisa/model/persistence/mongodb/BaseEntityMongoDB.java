@@ -1,60 +1,54 @@
 package com.anvisa.model.persistence.mongodb;
 
-import java.io.IOException;
-import java.io.Serializable;
-import java.math.BigInteger;
-import java.time.LocalDateTime;
-import java.util.Set;
+import java.time.LocalDate;
 
 import javax.persistence.PrePersist;
 import javax.persistence.PreUpdate;
 
+import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Field;
 import org.springframework.format.annotation.DateTimeFormat;
 
-import com.anvisa.core.json.JsonToObject;
 import com.anvisa.model.persistence.User;
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.mongodb.BasicDBObject;
-import com.mongodb.DBObject;
-import com.mongodb.MongoClient;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
-
-public abstract class BaseEntityMongoDB implements Serializable {  
+@JsonIgnoreProperties(ignoreUnknown = true)
+public abstract class BaseEntityMongoDB {  
 	  
-    private static final long serialVersionUID = 1L;  
   
-    @Id  
-    private BigInteger id;  
+    @Id
+    private ObjectId id;  
   
- 
+    @Field(value = "active")
 	private boolean active;
 
-	
+    @Field(value = "insertUser")	
 	private User insertUser;
 	
 
 	@DateTimeFormat(iso = DateTimeFormat.ISO.TIME)
 	@JsonFormat(pattern = "dd/MM/yyyy HH:mm:ss")
-	private LocalDateTime insertDate;
+	@Field(value = "insertDate")
+	private LocalDate insertDate;
 
 	//@ManyToOne
 	//private User updateUser;
 	
 	@DateTimeFormat(iso = DateTimeFormat.ISO.TIME)
 	@JsonFormat(pattern = "dd/MM/yyyy HH:mm:ss")
-	private LocalDateTime updateDate;
+	@Field(value = "updateDate")
+	private LocalDate updateDate;
 
 	//@ManyToOne
 	//private User ownerUser;
 
-	public BigInteger getId() {
+	public ObjectId getId() {
 		return id;
 	}
 
-	public void setId(BigInteger id) {
+	public void setId(ObjectId id) {
 		this.id = id;
 	}
 
@@ -74,11 +68,11 @@ public abstract class BaseEntityMongoDB implements Serializable {
 		this.insertUser = insertUser;
 	}
 
-	public LocalDateTime getInsertDate() {
+	public LocalDate getInsertDate() {
 		return insertDate;
 	}
 
-	public void setInsertDate(LocalDateTime insertDate) {
+	public void setInsertDate(LocalDate insertDate) {
 		this.insertDate = insertDate;
 	}
 
@@ -90,11 +84,11 @@ public abstract class BaseEntityMongoDB implements Serializable {
 //		this.updateUser = updateUser;
 //	}
 
-	public LocalDateTime getUpdateDate() {
+	public LocalDate getUpdateDate() {
 		return updateDate==null?insertDate:updateDate;
 	}
 
-	public void setUpdateDate(LocalDateTime updateDate) {
+	public void setUpdateDate(LocalDate updateDate) {
 		this.updateDate = updateDate;
 	}
 
@@ -109,12 +103,12 @@ public abstract class BaseEntityMongoDB implements Serializable {
 	@PrePersist
 	void onCreate() {
 
-		this.setInsertDate(LocalDateTime.now());
+		this.setInsertDate(LocalDate.now());
 	}
 	
 	@PreUpdate
 	void onPersist() {
-		this.setUpdateDate(LocalDateTime.now());
+		this.setUpdateDate(LocalDate.now());
 	}
     
 

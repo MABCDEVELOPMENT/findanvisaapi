@@ -31,13 +31,13 @@ public class FindDataCosmeticNotificationMdb {
 	@Autowired
 	private static ProcessRepositoryMdb processRepository;
 
-	@Autowired
+/*	@Autowired
 	public void setService(CosmeticNotificationRepositoryMdb cosmeticNotificationRepository,
 			MongoTemplate mongoTemplate, ProcessRepositoryMdb processRepository) {
 		this.cosmeticNotificationRepository = cosmeticNotificationRepository;
 		this.processRepository = processRepository;
 		this.mongoTemplate = mongoTemplate;
-	}
+	}*/
 
 	public static List<ContentCosmeticNotification> find(QueryRecordParameter queryRecordParameter) {
 
