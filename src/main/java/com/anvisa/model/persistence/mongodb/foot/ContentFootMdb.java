@@ -1,20 +1,16 @@
 package com.anvisa.model.persistence.mongodb.foot;
 
-import java.math.BigInteger;
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 import javax.persistence.Transient;
 
-import org.bson.BSONObject;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import com.anvisa.model.persistence.mongodb.BaseEntityMongoDB;
+import com.anvisa.model.persistence.mongodb.process.Process;
 import com.anvisa.model.persistence.mongodb.process.ProcessDetail;
 import com.anvisa.model.persistence.mongodb.process.ProcessPetition;
-import com.anvisa.model.persistence.mongodb.process.Process;
 import com.anvisa.model.persistence.rest.Content;
 import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -67,7 +63,6 @@ public class ContentFootMdb extends BaseEntityMongoDB {
 
 	ContentFootDetailMdb contentFootDetail;
 	
-	@Transient
 	Process process;
 	
 	

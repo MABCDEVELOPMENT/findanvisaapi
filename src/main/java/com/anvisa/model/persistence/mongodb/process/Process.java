@@ -10,15 +10,19 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
+import org.springframework.data.annotation.PersistenceConstructor;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.Field;
 
 import com.anvisa.model.persistence.BaseEntity;
 import com.anvisa.model.persistence.mongodb.BaseEntityMongoDB;
 import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 
 @Document(collection = "process")
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class Process extends BaseEntityMongoDB {
 
 	/**
@@ -26,37 +30,55 @@ public class Process extends BaseEntityMongoDB {
 	 */
 	private static final long serialVersionUID = 1L;
 
-	@JsonAlias(value = "ordem")
+	@Field(value = "ordem")
 	int ordem;
 	
-	@JsonAlias(value = "cnpj")
+	@Field(value = "cnpj")
 	String cnpj;
 	
-	@JsonAlias(value = "razaoSocial")
+	@Field(value = "razaoSocial")
 	String razaoSocial;
 	
 
-	@JsonAlias(value = "processo")
+	@Field(value = "processo")
 	String processo;
 	
-	@JsonAlias(value = "assunto")
+	@Field(value = "assunto")
 	String assunto;
 	
-	@JsonAlias(value = "processDetail")
+	@Field(value = "processDetail")
 	ProcessDetail processDetail;
 	
-	@JsonAlias(value = "dataAlteracao")	
+	@Field(value = "dataAlteracao")	
 	@JsonFormat(pattern="dd/MM/yyyy")	
 	LocalDate dataAlteracao;
 	
-	@JsonAlias(value = "dataRegistro")
+	@Field(value = "dataRegistro")
 	@JsonFormat(pattern="dd/MM/yyyy")
 	LocalDate dataRegistro;
 	
-	@JsonAlias(value = "qtdRegistro")	
+	@Field(value = "qtdRegistro")	
 	int qtdRegistro;
 
+	public Process() {
+		// TODO Auto-generated constructor stub
+	}
 	
+	@PersistenceConstructor
+	public Process(int ordem, String cnpj, String razaoSocial, String processo, String assunto,
+			ProcessDetail processDetail, LocalDate dataAlteracao, LocalDate dataRegistro, int qtdRegistro) {
+		super();
+		this.ordem = ordem;
+		this.cnpj = cnpj;
+		this.razaoSocial = razaoSocial;
+		this.processo = processo;
+		this.assunto = assunto;
+		this.processDetail = processDetail;
+		this.dataAlteracao = dataAlteracao;
+		this.dataRegistro = dataRegistro;
+		this.qtdRegistro = qtdRegistro;
+	}
+
 	public int getOrdem() {
 		return ordem;
 	}

@@ -5,8 +5,14 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import org.bson.BsonDocument;
+import org.bson.Document;
+import org.bson.codecs.configuration.CodecRegistry;
+import org.bson.conversions.Bson;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.aggregation.ComparisonOperators.Eq;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Component;
@@ -18,24 +24,39 @@ import com.anvisa.model.persistence.mongodb.repository.CosmeticRegularizedReposi
 import com.anvisa.model.persistence.mongodb.repository.ProcessRepositoryMdb;
 import com.anvisa.model.persistence.mongodb.synchronze.SynchronizeProcessMdb;
 import com.anvisa.rest.QueryRecordParameter;
+import com.google.gson.Gson;
+import com.mongodb.MongoClient;
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoCursor;
+import com.mongodb.client.MongoDatabase;
+
+import com.mongodb.client.model.Filters;
 
 @Component
-public class FindDataCosmeticRegularizedMdb {
+public class FindDataCosmeticRegularizedMdb  {
 	
-
-	private final MongoTemplate mongoTemplate;
+	@Inject
+	private static MongoTemplate mongoTemplate;
 	
 	@Autowired
-	private  ProcessRepositoryMdb processRepository;
+	private static  ProcessRepositoryMdb processRepository;
+	
+	 
+	private static MongoDatabase database;
 	
     @Autowired
 	public void setService(ProcessRepositoryMdb processRepository,
 													MongoTemplate mongoTemplate) {
+    	
+		
 		this.processRepository = processRepository;
+		
 		this.mongoTemplate = mongoTemplate;
+		
+		
 	}
 	
-	public List<ContentCosmeticRegularized> find(QueryRecordParameter queryRecordParameter) {
+	public static List<ContentCosmeticRegularized> find(QueryRecordParameter queryRecordParameter) {
 
 		List<ContentCosmeticRegularized> contentCosmeticRegularizedsReturn = new ArrayList<ContentCosmeticRegularized>();
 
@@ -71,25 +92,32 @@ public class FindDataCosmeticRegularizedMdb {
 
 	}
 	
-	public List<ContentCosmeticRegularized> filter(QueryRecordParameter queryRecordParameter) {
+	public static List<ContentCosmeticRegularized> filter(QueryRecordParameter queryRecordParameter) {
 		
 			
 		Query dynamicQuery = new Query();
+		
 
 		if (queryRecordParameter.getCnpj() != null && !queryRecordParameter.getCnpj().isEmpty()) {
-			Criteria nameCriteria = Criteria.where("cnpj")
+ 		    Criteria nameCriteria = Criteria.where("contentCosmeticRegularizedDetail.cnpj")
 					.is(queryRecordParameter.getCnpj());
 			dynamicQuery.addCriteria(nameCriteria);
+
+			
 		}
 
 		if (queryRecordParameter.getNumberProcess() != null && !queryRecordParameter.getNumberProcess().isEmpty()) {
 			Criteria nameCriteria = Criteria.where("processo").is(queryRecordParameter.getNumberProcess());
 			dynamicQuery.addCriteria(nameCriteria);
+			
+
 		}
 
 		if (queryRecordParameter.getProductName() != null && !queryRecordParameter.getProductName().isEmpty()) {
 			Criteria nameCriteria = Criteria.where("produto").regex(queryRecordParameter.getProductName());
 			dynamicQuery.addCriteria(nameCriteria);
+			
+
 		}
 
 		if (queryRecordParameter.getRegisterNumber() != null && !queryRecordParameter.getRegisterNumber().isEmpty()) {
@@ -99,26 +127,16 @@ public class FindDataCosmeticRegularizedMdb {
 		}
 		
 		
-		 List<ContentCosmeticRegularized> result = this.mongoTemplate.find(dynamicQuery, ContentCosmeticRegularized.class, "cosmeticRegularized");
+		 List<ContentCosmeticRegularized> resultdocs = mongoTemplate.find(dynamicQuery, ContentCosmeticRegularized.class, "cosmeticRegularized");
 		 
-		 /*List<ContentCosmeticRegularized> result =  new ArrayList<ContentCosmeticRegularized>();
 		 
-		 for (Document doc : resultDocs) {
-			 Gson gson = new Gson();
-			 ObjectMapper mapper = new ObjectMapper();
-			 String json = gson.toJson(doc);
-			 try {
-				ContentCosmeticRegularized contentCosmeticRegularized = mapper.reader(ContentCosmeticRegularized.class).readValue(json);
-				result.add(contentCosmeticRegularized);
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		 }*/
-	        
-		return result;
 
-	}	
+	        
+		return resultdocs;
+
+	}
+
+
 
 }
 

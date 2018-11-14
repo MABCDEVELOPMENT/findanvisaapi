@@ -1,31 +1,47 @@
 package com.anvisa.model.persistence.mongodb.cosmetic.regularized;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import org.springframework.data.annotation.PersistenceConstructor;
+import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.Field;
 
-import com.anvisa.model.persistence.BaseEntity;
-import com.fasterxml.jackson.annotation.JsonAlias;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
+@Document
 public class CosmeticRegularizedDetailCharacterizationVigente {
 
-	@JsonAlias(value = "registro")
+	@Field(value = "registro")
 	String registro;
 	
-	@JsonAlias(value = "processo")
+	@Field(value = "processo")
     String processo;
 	
-	@JsonAlias(value = "grupo")
+	@Field(value = "grupo")
     String grupo;
 	
-	@JsonAlias(value = "produto")
+	@Field(value = "produto")
     String produto;
 
-	@JsonAlias(value = "formaFisica")
+	@Field(value = "formaFisica")
     String formaFisica;
 	
-	@JsonAlias(value = "grupoDescartaveis")
+	@Field(value = "grupoDescartaveis")
     String grupoDescartaveis;
+
+	public CosmeticRegularizedDetailCharacterizationVigente() {
+		// TODO Auto-generated constructor stub
+	}
+	@PersistenceConstructor
+	public CosmeticRegularizedDetailCharacterizationVigente(String registro, String processo, String grupo,
+			String produto, String formaFisica, String grupoDescartaveis) {
+		super();
+		this.registro = registro;
+		this.processo = processo;
+		this.grupo = grupo;
+		this.produto = produto;
+		this.formaFisica = formaFisica;
+		this.grupoDescartaveis = grupoDescartaveis;
+	}
 
 	public String getRegistro() {
 		return registro;

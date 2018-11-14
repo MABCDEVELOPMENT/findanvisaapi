@@ -3,49 +3,82 @@ package com.anvisa.model.persistence.mongodb.cosmetic.regularized;
 import java.time.LocalDate;
 import java.util.List;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
 
-import com.anvisa.model.persistence.BaseEntity;
-import com.fasterxml.jackson.annotation.JsonAlias;
+import org.springframework.data.annotation.PersistenceConstructor;
+import org.springframework.data.annotation.TypeAlias;
+import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.Field;
+
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
+@TypeAlias("contentCosmeticRegularizedDetail")
+@Document
 public class ContentCosmeticRegularizedDetail {
 	
-	@JsonAlias(value = "cnpj")
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	@Field(value = "cnpj")
 	String cnpj;
 	
-	@JsonAlias(value = "processo")
+	@Field(value = "processo")
 	String processo;
 	
-	@JsonAlias(value = "product")
+	@Field(value = "product")
 	String produto;
 	
-	@JsonAlias(value = "tipo")
+	@Field(value = "tipo")
 	String tipo;
 	
-	@JsonAlias(value = "situacao")
+	@Field(value = "situacao")
 	String situacao;
 	
-	@JsonAlias(value = "data")
+	@Field(value = "data")
 	@JsonFormat(pattern = "dd/MM/yyyy")
 	LocalDate data;
 	
+	@Field(value = "caracterizacaoVigente")
 	CosmeticRegularizedDetailCharacterizationVigente caracterizacaoVigente;
 	
+	@Field(value = "empresaDetentora")
 	CosmeticRegularizedDetailHoldingCompany empresaDetentora;
 	
-	@JsonAlias(value = "destinacoes")
+	@Field(value = "destinacoes")
 	String destinacoes;
 	
+	@Field(value = "locaisNacionais")
 	CosmeticRegularizedDetailLocalNational locaisNacionais;
 	
+	@Field(value = "apresentacoes")
 	List<CosmeticRegularizedDatailPresentation> apresentacoes;
+	
+	public ContentCosmeticRegularizedDetail() {
+		// TODO Auto-generated constructor stub
+	}
+	
+	@PersistenceConstructor
+	public ContentCosmeticRegularizedDetail(String cnpj, String processo, String produto, String tipo, String situacao,
+			LocalDate data, CosmeticRegularizedDetailCharacterizationVigente caracterizacaoVigente,
+			CosmeticRegularizedDetailHoldingCompany empresaDetentora, String destinacoes,
+			CosmeticRegularizedDetailLocalNational locaisNacionais,
+			List<CosmeticRegularizedDatailPresentation> apresentacoes) {
+		super();
+		this.cnpj = cnpj;
+		this.processo = processo;
+		this.produto = produto;
+		this.tipo = tipo;
+		this.situacao = situacao;
+		this.data = data;
+		this.caracterizacaoVigente = caracterizacaoVigente;
+		this.empresaDetentora = empresaDetentora;
+		this.destinacoes = destinacoes;
+		this.locaisNacionais = locaisNacionais;
+		this.apresentacoes = apresentacoes;
+	}
 
 	public String getCnpj() {
 		return cnpj;

@@ -1,34 +1,55 @@
 package com.anvisa.model.persistence.mongodb.cosmetic.regularized;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import org.springframework.data.annotation.PersistenceConstructor;
+import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.Field;
 
-import com.anvisa.model.persistence.BaseEntity;
-import com.fasterxml.jackson.annotation.JsonAlias;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
+@Document
 public class CosmeticRegularizedDetailHoldingCompany  {
 	
-	@JsonAlias(value = "cnpj")
+	@Field(value = "cnpj")
 	String cnpj;
 
-	@JsonAlias(value = "razaoSocial")
+	@Field(value = "razaoSocial")
 	String razaoSocial;
 
-	@JsonAlias(value = "autorizacao")
+	@Field(value = "autorizacao")
 	String autorizacao;
 
-	@JsonAlias(value = "uf")
+	@Field(value = "uf")
 	String uf;
 
-	@JsonAlias(value = "cidade")
+	@Field(value = "cidade")
 	String cidade;
 	
-	@JsonAlias(value = "codigoMunicipio")
+	@Field(value = "codigoMunicipio")
 	String codigoMunicipio;
 	
-	@JsonAlias(value = "pais")
+	@Field(value = "pais")
 	String pais;
+
+	public CosmeticRegularizedDetailHoldingCompany() {
+		// TODO Auto-generated constructor stub
+	}
+	
+	
+	@PersistenceConstructor
+	public CosmeticRegularizedDetailHoldingCompany(String cnpj, String razaoSocial, String autorizacao, String uf,
+			String cidade, String codigoMunicipio, String pais) {
+		super();
+		this.cnpj = cnpj;
+		this.razaoSocial = razaoSocial;
+		this.autorizacao = autorizacao;
+		this.uf = uf;
+		this.cidade = cidade;
+		this.codigoMunicipio = codigoMunicipio;
+		this.pais = pais;
+	}
+
+
 
 	public String getCnpj() {
 		return cnpj;

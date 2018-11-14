@@ -1,31 +1,50 @@
 package com.anvisa.model.persistence.mongodb.cosmetic.regularized;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import org.springframework.data.annotation.PersistenceConstructor;
+import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.Field;
 
-import com.anvisa.model.persistence.BaseEntity;
-import com.fasterxml.jackson.annotation.JsonAlias;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
+@Document
 public class CosmeticRegularizedDatailPresentation {
 	
-	@JsonAlias(value = "periodoValidade")
+	@Field(value = "periodoValidade")
 	String periodoValidade;
 	
-	@JsonAlias(value = "tipoValidade")
+	@Field(value = "tipoValidade")
     String tipoValidade;
 	
-	@JsonAlias(value = "restricaoUso")
+	@Field(value = "restricaoUso")
     String restricaoUso;
 
-	@JsonAlias(value = "cuidadoConservacao")	
+	@Field(value = "cuidadoConservacao")	
     String cuidadoConservacao;
 	
-	@JsonAlias(value = "embalagemPrimaria")	
+	@Field(value = "embalagemPrimaria")	
     String embalagemPrimaria;
 	
-	@JsonAlias(value = "embalagemPrimaria")	
+	@Field(value = "embalagemSecundaria")	
     String embalagemSecundaria;
+	
+	public CosmeticRegularizedDatailPresentation() {
+		// TODO Auto-generated constructor stub
+	}
+	
+	@PersistenceConstructor
+	public CosmeticRegularizedDatailPresentation(String periodoValidade, String tipoValidade, String restricaoUso,
+			String cuidadoConservacao, String embalagemPrimaria, String embalagemSecundaria) {
+		super();
+		this.periodoValidade = periodoValidade;
+		this.tipoValidade = tipoValidade;
+		this.restricaoUso = restricaoUso;
+		this.cuidadoConservacao = cuidadoConservacao;
+		this.embalagemPrimaria = embalagemPrimaria;
+		this.embalagemSecundaria = embalagemSecundaria;
+	}
+
+
 
 	public String getPeriodoValidade() {
 		return periodoValidade;

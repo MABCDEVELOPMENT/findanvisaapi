@@ -6,8 +6,10 @@ import java.io.IOException;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.data.mongo.MongoDataAutoConfiguration;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.boot.autoconfigure.jackson.Jackson2ObjectMapperBuilderCustomizer;
+import org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
@@ -19,9 +21,11 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.resource.VersionResourceResolver;
 
 import com.anvisa.interceptor.ScheduledTasks;
+import com.anvisa.model.persistence.mongodb.interceptor.synchronizedata.SynchronizeDataMdbTask;
 import com.fasterxml.jackson.databind.util.ISO8601DateFormat;
 
 @SpringBootApplication
+//@SpringBootApplication(exclude = {MongoAutoConfiguration.class, MongoDataAutoConfiguration.class})
 @EnableScheduling
 @EnableAutoConfiguration
 @EnableWebMvc
@@ -77,14 +81,14 @@ public class FindAnvisaApplication extends SpringBootServletInitializer implemen
 		
 		System.out.println(IMAGE_DIR);
 		//SynchronizeDataTask.synchronizeData();
-		/*SynchronizeDataMdbTask synchronizeDataMdbTask = new SynchronizeDataMdbTask (false,
+		SynchronizeDataMdbTask synchronizeDataMdbTask = new SynchronizeDataMdbTask (true,
 		false,
 		false,
 		false,
 		false,
 		false,
-		false);*/
-		//synchronizeDataMdbTask.synchronizeData();
+		true);
+		synchronizeDataMdbTask.synchronizeData();
 		
 	}
 }

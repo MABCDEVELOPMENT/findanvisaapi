@@ -1,13 +1,11 @@
 package com.anvisa.controller;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
-import org.springframework.data.repository.CrudRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -124,7 +122,7 @@ public class UserController {
 
 			StringBuffer sb = new StringBuffer();
 			
-			sb.append("Prezado Administrado,\n");
+			sb.append("Prezado Administrador,\n");
 			sb.append("Foi efetuado um novo registro de usuário no sistema FINDANVISA, favor efetuar a ativação do");
 			sb.append("mesmo conforme dados abaixo:");
 			sb.append("\n");

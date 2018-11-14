@@ -100,7 +100,7 @@ public class SynchronizeDataMdb {
 				BaseEntityMongoDB BaseEntity = intSynchronize.parseData(jsonNode);
 	
 				rootObject.add(BaseEntity);	
-
+				i++;
 				//System.out.println(i++);
 			}
 			response.close();
