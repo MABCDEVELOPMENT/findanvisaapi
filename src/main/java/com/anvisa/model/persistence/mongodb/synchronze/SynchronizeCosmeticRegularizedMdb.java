@@ -244,7 +244,7 @@ public class SynchronizeCosmeticRegularizedMdb extends SynchronizeDataMdb implem
 
 		} catch (Exception e) {
 			// TODO: handle exception
-			e.printStackTrace();
+			
 		}
 
 		return null;

@@ -34,13 +34,13 @@ public class FindDataLogMdb {
 	@Autowired
 	private static LoggerRepositoryMdb loggerProcessingRepositoryMdb;
 
-/*	@Autowired
+    @Autowired
 	public void setService(LoggerRepositoryMdb loggerProcessingRepositoryMdb,
 			MongoTemplate mongoTemplate, ProcessRepositoryMdb processRepository) {
 		this.cosmeticNotificationRepository = cosmeticNotificationRepository;
 		this.loggerProcessingRepositoryMdb = loggerProcessingRepositoryMdb;
 		this.mongoTemplate = mongoTemplate;
-	}*/
+	}
 
 	public static List<LoggerProcessing> find(QueryRecordLogParameter queryRecordParameter) {
 

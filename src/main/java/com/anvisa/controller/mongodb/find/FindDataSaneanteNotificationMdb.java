@@ -31,7 +31,7 @@ public class FindDataSaneanteNotificationMdb {
 	@Autowired
 	private static ProcessRepositoryMdb processRepository;
 	
-/*	@Autowired
+    @Autowired
 	public void setService(SaneanteNotificationRepositoryMdb saneanteNotificationRepository,
 						   ProcessRepositoryMdb processRepository,
 						   MongoTemplate mongoTemplate) {
@@ -40,7 +40,7 @@ public class FindDataSaneanteNotificationMdb {
 		this.processRepository = processRepository;
 		this.mongoTemplate = mongoTemplate;
 		
-	}*/
+	}
 	
 	public static List<SaneanteNotification> find(QueryRecordParameter queryRecordParameter) {
 		
@@ -59,7 +59,7 @@ public class FindDataSaneanteNotificationMdb {
 
 		for (SaneanteNotification saneanteNotification : saneanteNotifications) {
 
-			Process process = processRepository.findByProcesso(saneanteNotification.getProcesso(),
+			ArrayList<Process> process = processRepository.findByProcesso(saneanteNotification.getProcesso(),
 					queryRecordParameter.getCnpj());
 			if (process == null) {
 				/*ArrayList<BaseEntityMongoDB> processos = synchronizeProcess.loadData(saneanteNotification.getCnpj()
@@ -75,8 +75,11 @@ public class FindDataSaneanteNotificationMdb {
 				}*/
 
 			} else {
-
-				saneanteNotification.lodaProcess(process);
+				try {
+					saneanteNotification.lodaProcess(process.get(0));
+				} catch (Exception e) {
+					// TODO: handle exception
+				}
 			}
 			saneanteNotificationsReturn.add(saneanteNotification);
 		}

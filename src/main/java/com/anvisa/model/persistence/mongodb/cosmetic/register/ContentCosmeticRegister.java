@@ -1,6 +1,5 @@
 package com.anvisa.model.persistence.mongodb.cosmetic.register;
 
-import java.math.BigInteger;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -14,7 +13,6 @@ import com.anvisa.model.persistence.mongodb.cosmetic.register.petition.CosmeticR
 import com.anvisa.model.persistence.mongodb.process.Process;
 import com.anvisa.model.persistence.mongodb.process.ProcessDetail;
 import com.anvisa.model.persistence.mongodb.process.ProcessPetition;
-import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 
@@ -165,22 +163,10 @@ public class ContentCosmeticRegister extends BaseEntityMongoDB {
 		this.empresa = empresa;
 	}
 	public LocalDate getDataAlteracao() {
-		LocalDate localDate = null;
-		List<CosmeticRegisterPetition> petitions =  this.getContentCosmeticRegisterDetail().getPeticoes();
-		for (CosmeticRegisterPetition cosmeticRegisterPetition : petitions) {
-			if(cosmeticRegisterPetition.getPublicacao()!=null) {
-			   localDate = cosmeticRegisterPetition.getPublicacao();
-			}
-		}
-		
-		if(localDate==null && (this.dataAlteracao!=null && this.dataRegistro!=null)) {
+		if(this.dataAlteracao!=null && this.dataRegistro!=null) {
 			if (this.dataAlteracao.isBefore(this.dataRegistro)) {
 				return this.dataRegistro;
 			}
-		} else {
-			if (localDate!=null) {
-			   dataAlteracao = localDate;
-			}   
 		}
 		return dataAlteracao;
 	}

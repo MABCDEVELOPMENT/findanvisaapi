@@ -66,7 +66,7 @@ public class FindDataCosmeticRegularizedMdb  {
 
 		for (ContentCosmeticRegularized contentCosmeticRegularized : contentCosmeticRegularizeds) {
 
-			Process process = processRepository.findByProcesso(contentCosmeticRegularized.getProcesso(),
+			ArrayList<Process> process = processRepository.findByProcesso(contentCosmeticRegularized.getProcesso(),
 					queryRecordParameter.getCnpj());
 			if (process == null) {
 //				ArrayList<BaseEntity> processos = synchronizeProcess.loadData(contentCosmeticRegularized.getContentCosmeticRegularizedDetail().getCnpj()
@@ -81,9 +81,12 @@ public class FindDataCosmeticRegularizedMdb  {
 //					break;
 //				}
 			} else {
-
-				contentCosmeticRegularized.setProcess(process);
-				contentCosmeticRegularized.lodaProcess(process);
+				try {
+					contentCosmeticRegularized.setProcess(process.get(0));
+					contentCosmeticRegularized.lodaProcess(process.get(0));
+				} catch (Exception e) {
+					// TODO: handle exception
+				}	
 			}
 			contentCosmeticRegularizedsReturn.add(contentCosmeticRegularized);
 		}

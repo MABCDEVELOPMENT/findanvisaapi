@@ -31,13 +31,13 @@ public class FindDataCosmeticNotificationMdb {
 	@Autowired
 	private static ProcessRepositoryMdb processRepository;
 
-/*	@Autowired
+	@Autowired
 	public void setService(CosmeticNotificationRepositoryMdb cosmeticNotificationRepository,
 			MongoTemplate mongoTemplate, ProcessRepositoryMdb processRepository) {
 		this.cosmeticNotificationRepository = cosmeticNotificationRepository;
 		this.processRepository = processRepository;
 		this.mongoTemplate = mongoTemplate;
-	}*/
+	}
 
 	public static List<ContentCosmeticNotification> find(QueryRecordParameter queryRecordParameter) {
 
@@ -49,24 +49,27 @@ public class FindDataCosmeticNotificationMdb {
 
 		for (ContentCosmeticNotification contentCosmeticNotification : contentCosmeticNotifications) {
 
-			Process process = processRepository.findByProcesso(contentCosmeticNotification.getProcesso(),
+			ArrayList<Process> process = processRepository.findByProcesso(contentCosmeticNotification.getProcesso(),
 					contentCosmeticNotification.getCnpj());
 			if (process == null) {
-/*				ArrayList<BaseEntityMongoDB> processos = synchronizeProcess.loadData(contentCosmeticNotification.getCnpj()
-						+ "&filter[processo]=" + contentCosmeticNotification.getProcesso(), 1);
-
-				if (processos.size() > 0) {
-					Process newProcess = (Process) processos.get(0);
-					ArrayList<BaseEntityMongoDB> processo = new ArrayList<BaseEntityMongoDB>();
-					processo.add(processos.get(0));
-					synchronizeProcess.persist(processo,null);
-					contentCosmeticNotification.lodaProcess(newProcess);
-				}*/
+				/*
+				 * ArrayList<BaseEntityMongoDB> processos =
+				 * synchronizeProcess.loadData(contentCosmeticNotification.getCnpj() +
+				 * "&filter[processo]=" + contentCosmeticNotification.getProcesso(), 1);
+				 * 
+				 * if (processos.size() > 0) { Process newProcess = (Process) processos.get(0);
+				 * ArrayList<BaseEntityMongoDB> processo = new ArrayList<BaseEntityMongoDB>();
+				 * processo.add(processos.get(0)); synchronizeProcess.persist(processo,null);
+				 * contentCosmeticNotification.lodaProcess(newProcess); }
+				 */
 
 			} else {
-
-				contentCosmeticNotification.setProcess(process);
-				contentCosmeticNotification.lodaProcess(process);
+				try {
+					contentCosmeticNotification.setProcess(process.get(0));
+					contentCosmeticNotification.lodaProcess(process.get(0));
+				} catch (Exception e) {
+					// TODO: handle exception
+				}
 			}
 			contentCosmeticNotificationsReturn.add(contentCosmeticNotification);
 		}

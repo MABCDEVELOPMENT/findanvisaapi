@@ -243,7 +243,7 @@ public class SynchronizeSaneanteNotificationMdb extends SynchronizeDataMdb imple
 
 		} catch (Exception e) {
 			// TODO: handle exception
-			e.printStackTrace();
+			//e.printStackTrace();
 		}
 
 		return null;

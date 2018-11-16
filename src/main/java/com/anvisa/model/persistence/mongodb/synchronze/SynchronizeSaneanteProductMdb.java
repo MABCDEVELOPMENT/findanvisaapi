@@ -192,7 +192,7 @@ public class SynchronizeSaneanteProductMdb extends SynchronizeDataMdb implements
 
 		} catch (Exception e) {
 			// TODO: handle exception
-			e.printStackTrace();
+			//e.printStackTrace();
 		}
 
 		return null;

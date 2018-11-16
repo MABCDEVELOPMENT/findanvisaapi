@@ -18,24 +18,26 @@ import com.anvisa.model.persistence.mongodb.repository.SaneanteProductRepository
 import com.anvisa.model.persistence.mongodb.saneante.product.SaneanteProduct;
 import com.anvisa.model.persistence.mongodb.synchronze.SynchronizeProcessMdb;
 import com.anvisa.rest.QueryRecordParameter;
+
 @Component
 public class FindDataSaneanteProductMdb {
 
 	@Autowired
 	private static SaneanteProductRepositoryMdb saneanteProductRepository;
-	
+
 	@Inject
 	private static MongoTemplate mongoTemplate;
 
 	@Autowired
 	private static ProcessRepositoryMdb processRepository;
 
-/*	@Autowired
-	public void setService(SaneanteProductRepositoryMdb saneanteProductRepository, ProcessRepositoryMdb processRepository,MongoTemplate mongoTemplate) {
+	@Autowired
+	public void setService(SaneanteProductRepositoryMdb saneanteProductRepository,
+			ProcessRepositoryMdb processRepository, MongoTemplate mongoTemplate) {
 		this.saneanteProductRepository = saneanteProductRepository;
 		this.processRepository = processRepository;
 		this.mongoTemplate = mongoTemplate;
-	}*/
+	}
 
 	public static List<SaneanteProduct> find(QueryRecordParameter queryRecordParameter) {
 
@@ -52,25 +54,27 @@ public class FindDataSaneanteProductMdb {
 
 		for (SaneanteProduct saneanteProduct : saneanteProducts) {
 
-			Process process = processRepository.findByProcesso(saneanteProduct.getProcesso(),
+			ArrayList<Process> process = processRepository.findByProcesso(saneanteProduct.getProcesso(),
 					queryRecordParameter.getCnpj());
 			if (process == null) {
-/*				ArrayList<BaseEntityMongoDB> processos = synchronizeProcess
-						.loadData(saneanteProduct.getCnpj() + "&filter[processo]="
-								+ saneanteProduct.getProcesso(),1);
-
-				if (processos.size() > 0) {
-					Process newProcess = (Process) processos.get(0);
-					ArrayList<BaseEntityMongoDB> processo = new ArrayList<BaseEntityMongoDB>();
-					processo.add(processos.get(0));
-				    //synchronizeProcess.persist(processo);
-					saneanteProduct.lodaProcess(newProcess);
-					break;
-				}*/
+				/*
+				 * ArrayList<BaseEntityMongoDB> processos = synchronizeProcess
+				 * .loadData(saneanteProduct.getCnpj() + "&filter[processo]=" +
+				 * saneanteProduct.getProcesso(),1);
+				 * 
+				 * if (processos.size() > 0) { Process newProcess = (Process) processos.get(0);
+				 * ArrayList<BaseEntityMongoDB> processo = new ArrayList<BaseEntityMongoDB>();
+				 * processo.add(processos.get(0)); //synchronizeProcess.persist(processo);
+				 * saneanteProduct.lodaProcess(newProcess); break; }
+				 */
 
 			} else {
-
-				saneanteProduct.lodaProcess(process);
+				try {
+					// saneanteProduct.setProcess(process.get(0));
+					saneanteProduct.lodaProcess(process.get(0));
+				} catch (Exception e) {
+					// TODO: handle exception
+				}
 			}
 			saneanteProductsReturn.add(saneanteProduct);
 		}
@@ -80,8 +84,7 @@ public class FindDataSaneanteProductMdb {
 	}
 
 	public static List<SaneanteProduct> filter(QueryRecordParameter queryRecordParameter) {
-		
-		
+
 		Query dynamicQuery = new Query();
 
 		if (queryRecordParameter.getCnpj() != null && !queryRecordParameter.getCnpj().isEmpty()) {
@@ -137,8 +140,7 @@ public class FindDataSaneanteProductMdb {
 			dynamicQuery.addCriteria(nameCriteria);
 		}
 
-		List<SaneanteProduct> result = mongoTemplate.find(dynamicQuery, SaneanteProduct.class,
-				"saneanteProduct");
+		List<SaneanteProduct> result = mongoTemplate.find(dynamicQuery, SaneanteProduct.class, "saneanteProduct");
 
 		return result;
 

@@ -433,7 +433,7 @@ public class SynchronizeCosmeticRegisterMdb extends SynchronizeDataMdb implement
 
 				rootObject.add(baseEntity);
 
-				System.out.println(i++);
+				//System.out.println(i++);
 
 			}
 			response.close();
@@ -565,7 +565,7 @@ public class SynchronizeCosmeticRegisterMdb extends SynchronizeDataMdb implement
 
 		} catch (Exception e) {
 			// TODO: handle exception
-			e.printStackTrace();
+			//e.printStackTrace();
 		}
 
 		return null;

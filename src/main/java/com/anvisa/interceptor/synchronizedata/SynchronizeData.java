@@ -73,7 +73,7 @@ public class SynchronizeData {
 	
 				rootObject.add(BaseEntity);	
 
-				System.out.println(i++);
+				//System.out.println(i++);
 			}
 			response.close();
 			client = null;

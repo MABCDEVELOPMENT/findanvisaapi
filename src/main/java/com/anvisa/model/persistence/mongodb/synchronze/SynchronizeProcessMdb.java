@@ -181,8 +181,14 @@ public class SynchronizeProcessMdb extends SynchronizeDataMdb implements IntSync
 				
 				log.info("Synchronize "+this.getClass().getName()+" "+baseEntity.getProcesso() + " - " + baseEntity.getCnpj());
 				
-				Process localProcess = processRepository.findByProcesso(baseEntity.getProcesso(), baseEntity.getCnpj());
-
+				ArrayList<Process> localProcesss = processRepository.findByProcesso(baseEntity.getProcesso(), baseEntity.getCnpj());
+				
+				Process localProcess = null;
+				
+				if (localProcesss!=null) {
+					localProcess = localProcesss.get(0);
+				}
+				
 				boolean newNotification = (localProcess == null);
 
 /*				if (newNotification == false)

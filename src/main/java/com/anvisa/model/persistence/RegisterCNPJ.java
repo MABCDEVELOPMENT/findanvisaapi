@@ -1,11 +1,14 @@
 package com.anvisa.model.persistence;
 
+import java.util.ArrayList;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.OrderBy;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import com.anvisa.model.persistence.mongodb.BaseEntityMongoDB;
 import com.fasterxml.jackson.annotation.JsonAlias;
 
 @Entity
@@ -43,6 +46,8 @@ public class RegisterCNPJ extends BaseEntity  {
 	@Transient
 	private boolean saneante;
 
+	@Transient
+	ArrayList<BaseEntityMongoDB> itensImport;
 	
 	public String getCnpj() {
 		return cnpj;
@@ -98,6 +103,14 @@ public class RegisterCNPJ extends BaseEntity  {
 
 	public void setSaneante(boolean saneante) {
 		this.saneante = saneante;
+	}
+
+	public ArrayList<BaseEntityMongoDB> getItensImport() {
+		return itensImport;
+	}
+
+	public void setItensImport(ArrayList<BaseEntityMongoDB> itensImport) {
+		this.itensImport = itensImport;
 	}
 
 	public void loadCategory() {

@@ -89,7 +89,7 @@ public class SynchronizeDataMdb {
 			
 			Iterator<JsonNode> elementsContents = rootNode.path("content").iterator();
 			
-			log.info("SynchronizeData Total Registros "+rootNode.get("totalElements"), dateFormat.format(new Date()));
+			//log.info("SynchronizeData Total Registros "+rootNode.get("totalElements"), dateFormat.format(new Date()));
 			
 			int i = 0;
 			
@@ -109,7 +109,7 @@ public class SynchronizeDataMdb {
 			
 	   } catch (Exception e) {
 		// TODO: handle exception
-		   e.printStackTrace();
+		   //e.printStackTrace();
 	   }
 		
 		return null;

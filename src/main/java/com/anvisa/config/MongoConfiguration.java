@@ -1,5 +1,7 @@
 package com.anvisa.config;
 
+
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -10,6 +12,9 @@ import com.mongodb.MongoClient;
 import com.mongodb.MongoClientOptions;
 import com.mongodb.MongoClientURI;
 
+import ch.qos.logback.classic.Level;
+import ch.qos.logback.classic.LoggerContext;
+
 /**
  * Mongo Client Configuration.
  * 
@@ -18,7 +23,7 @@ import com.mongodb.MongoClientURI;
 @Configuration
 public class MongoConfiguration extends AbstractMongoConfiguration {
 
-	private static Logger LOG = LoggerFactory.getLogger(MongoConfiguration.class);
+	private Logger LOG = LoggerFactory.getLogger(MongoConfiguration.class.getName());
 
 	@Value("${spring.data.mongodb.host}")
 	private String mongosUri;
@@ -39,7 +44,7 @@ public class MongoConfiguration extends AbstractMongoConfiguration {
 	 * 
 	 * Mongo driver default is 10,000. Retain the same value but allow for overrding if required.
 	 */
-	@Value("${mongodb.max.connection.timeout:10000}")
+	@Value("${mongodb.max.connection.timeout:20000}")
 	private Integer maxConnectionTimeout;			
 	
 	/**
@@ -47,7 +52,7 @@ public class MongoConfiguration extends AbstractMongoConfiguration {
 	 * 
 	 *  Mongo driver default is 0. Overriding this to 100.
 	 */
-	@Value("${mongodb.min.connections.per.host:50}")
+	@Value("${mongodb.min.connections.per.host:100}")
 	private Integer minConnectionsPerHost;			
 	
 	/**
@@ -57,7 +62,7 @@ public class MongoConfiguration extends AbstractMongoConfiguration {
 	 * 
 	 * Mongo driver default is 100. Keep the same value. Placeholder here in case we want to override.
 	 */
-	@Value("${mongodb.max.connections.per.host:100}")
+	@Value("${mongodb.max.connections.per.host:300}")
 	private Integer maxConnectionsPerHost;		  	  
 	
 	/**
@@ -84,6 +89,7 @@ public class MongoConfiguration extends AbstractMongoConfiguration {
 	 															 
 		MongoClientURI mongoUri = new MongoClientURI(mongosUri, builder);
 		MongoClient mongo = new MongoClient(mongoUri);
+		((LoggerContext) LoggerFactory.getILoggerFactory()).getLogger("org.mongodb.driver").setLevel(Level.ERROR);
 		return mongo;
 	}
 	
