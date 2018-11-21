@@ -5,8 +5,15 @@ package com.anvisa.config;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.mongodb.MongoDbFactory;
 import org.springframework.data.mongodb.config.AbstractMongoConfiguration;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.convert.DefaultDbRefResolver;
+import org.springframework.data.mongodb.core.convert.DefaultMongoTypeMapper;
+import org.springframework.data.mongodb.core.convert.MappingMongoConverter;
+import org.springframework.data.mongodb.core.mapping.MongoMappingContext;
 
 import com.mongodb.MongoClient;
 import com.mongodb.MongoClientOptions;
@@ -23,7 +30,7 @@ import ch.qos.logback.classic.LoggerContext;
 @Configuration
 public class MongoConfiguration extends AbstractMongoConfiguration {
 
-	private Logger LOG = LoggerFactory.getLogger(MongoConfiguration.class.getName());
+	//private Logger LOG = LoggerFactory.getLogger(MongoConfiguration.class.getName());
 
 	@Value("${spring.data.mongodb.host}")
 	private String mongosUri;
@@ -81,7 +88,7 @@ public class MongoConfiguration extends AbstractMongoConfiguration {
 	@Override
 	public MongoClient mongoClient() {
 		// TODO Auto-generated method stub
-		LOG.info("Creating mongo client");
+		//LOG.info("Creating mongo client");
 	 	MongoClientOptions.Builder builder = MongoClientOptions.builder().maxConnectionIdleTime(maxConnectionIdleTime)
 	 															 .connectTimeout(maxConnectionTimeout)
 	 															 .minConnectionsPerHost(minConnectionsPerHost).connectionsPerHost(maxConnectionsPerHost)
@@ -92,5 +99,15 @@ public class MongoConfiguration extends AbstractMongoConfiguration {
 		((LoggerContext) LoggerFactory.getILoggerFactory()).getLogger("org.mongodb.driver").setLevel(Level.ERROR);
 		return mongo;
 	}
+	
+	@Bean
+    public MongoTemplate mongoTemplate() throws Exception {
+        MappingMongoConverter converter = new MappingMongoConverter(
+				new DefaultDbRefResolver(mongoDbFactory()), new MongoMappingContext());
+	    //CALL THIS MANULLY, so that all the default convertors will be registered!
+		converter.afterPropertiesSet();
+        MongoTemplate mongoTemplate = new MongoTemplate(mongoDbFactory(), converter);
+        return mongoTemplate;
+    }
 	
 }

@@ -1,6 +1,6 @@
 package com.anvisa.controller.mongodb.find;
 
-import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -11,12 +11,9 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Component;
 
-import com.anvisa.model.persistence.mongodb.BaseEntityMongoDB;
 import com.anvisa.model.persistence.mongodb.cosmetic.register.ContentCosmeticRegister;
-import com.anvisa.model.persistence.mongodb.process.Process;
 import com.anvisa.model.persistence.mongodb.repository.CosmeticRegisterRepositoryMdb;
 import com.anvisa.model.persistence.mongodb.repository.ProcessRepositoryMdb;
-import com.anvisa.model.persistence.mongodb.synchronze.SynchronizeProcessMdb;
 import com.anvisa.rest.QueryRecordParameter;
 
 @Component
@@ -41,18 +38,20 @@ public class FindDataCosmeticRegisterMdb {
 
 	public static List<ContentCosmeticRegister> find(QueryRecordParameter queryRecordParameter) {
 
-		List<ContentCosmeticRegister> contentCosmeticRegistersReturn = new ArrayList<ContentCosmeticRegister>();
 
 		List<ContentCosmeticRegister> contentCosmeticRegisters = filter(queryRecordParameter);
 
-		SynchronizeProcessMdb synchronizeProcess = new SynchronizeProcessMdb();
+		for (Iterator iterator = contentCosmeticRegisters.iterator(); iterator.hasNext();) {
+			ContentCosmeticRegister contentCosmeticRegister = (ContentCosmeticRegister) iterator.next();
+			contentCosmeticRegister.lodaProcess();
+		}
 
-		for (ContentCosmeticRegister contentCosmeticRegister : contentCosmeticRegisters) {
+		/*for (ContentCosmeticRegister contentCosmeticRegister : contentCosmeticRegisters) {
 
 			ArrayList<Process> process = processRepository.findByProcesso(contentCosmeticRegister.getProcesso(),
 					contentCosmeticRegister.getCnpj());
 			if (process == null) {
-				/*
+				
 				 * ArrayList<BaseEntityMongoDB> processos =
 				 * synchronizeProcess.loadData(contentCosmeticRegister.getCnpj() +
 				 * "&filter[processo]=" + contentCosmeticRegister.getProcesso(),1);
@@ -63,7 +62,7 @@ public class FindDataCosmeticRegisterMdb {
 				 * contentCosmeticRegister.lodaProcess(newProcess);
 				 * 
 				 * }
-				 */
+				 
 
 			} else {
 				try {
@@ -74,9 +73,9 @@ public class FindDataCosmeticRegisterMdb {
 				}
 			}
 			contentCosmeticRegistersReturn.add(contentCosmeticRegister);
-		}
+		}*/
 
-		return contentCosmeticRegistersReturn;
+		return contentCosmeticRegisters;
 
 	}
 

@@ -224,9 +224,10 @@ public class LoginController {
 		
 		StringBuffer bf = new StringBuffer();
 		bf.append(body);
+		bf.append("\n");
 		bf.append("http://findinfo.kinghost.net/findanvisa/#/redefine/"+userToken.getToken());
 		
-		scheduledEmail.setBody(body);
+		scheduledEmail.setBody(bf.toString());
 
 		//this.scheduledEmail.saveAndFlush(scheduledEmail);
 		

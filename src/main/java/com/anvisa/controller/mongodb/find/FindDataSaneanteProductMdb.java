@@ -1,6 +1,7 @@
 package com.anvisa.controller.mongodb.find;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -11,12 +12,9 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Component;
 
-import com.anvisa.model.persistence.mongodb.BaseEntityMongoDB;
-import com.anvisa.model.persistence.mongodb.process.Process;
 import com.anvisa.model.persistence.mongodb.repository.ProcessRepositoryMdb;
 import com.anvisa.model.persistence.mongodb.repository.SaneanteProductRepositoryMdb;
 import com.anvisa.model.persistence.mongodb.saneante.product.SaneanteProduct;
-import com.anvisa.model.persistence.mongodb.synchronze.SynchronizeProcessMdb;
 import com.anvisa.rest.QueryRecordParameter;
 
 @Component
@@ -49,15 +47,21 @@ public class FindDataSaneanteProductMdb {
 		}
 
 		List<SaneanteProduct> saneanteProducts = filter(queryRecordParameter);
+		
+		for (Iterator iterator = saneanteProducts.iterator(); iterator.hasNext();) {
+			SaneanteProduct saneanteProduct = (SaneanteProduct) iterator.next();
+			
+			saneanteProduct.lodaProcess();
+		}
 
-		SynchronizeProcessMdb synchronizeProcess = new SynchronizeProcessMdb();
+		/*SynchronizeProcessMdb synchronizeProcess = new SynchronizeProcessMdb();
 
 		for (SaneanteProduct saneanteProduct : saneanteProducts) {
 
 			ArrayList<Process> process = processRepository.findByProcesso(saneanteProduct.getProcesso(),
 					queryRecordParameter.getCnpj());
 			if (process == null) {
-				/*
+				
 				 * ArrayList<BaseEntityMongoDB> processos = synchronizeProcess
 				 * .loadData(saneanteProduct.getCnpj() + "&filter[processo]=" +
 				 * saneanteProduct.getProcesso(),1);
@@ -66,7 +70,7 @@ public class FindDataSaneanteProductMdb {
 				 * ArrayList<BaseEntityMongoDB> processo = new ArrayList<BaseEntityMongoDB>();
 				 * processo.add(processos.get(0)); //synchronizeProcess.persist(processo);
 				 * saneanteProduct.lodaProcess(newProcess); break; }
-				 */
+				 
 
 			} else {
 				try {
@@ -77,9 +81,9 @@ public class FindDataSaneanteProductMdb {
 				}
 			}
 			saneanteProductsReturn.add(saneanteProduct);
-		}
+		}*/
 
-		return saneanteProductsReturn;
+		return saneanteProducts;
 
 	}
 

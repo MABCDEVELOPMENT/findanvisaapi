@@ -66,6 +66,8 @@ public class SaneanteProduct extends BaseEntityMongoDB {
 	SaneanteProductDetail saneanteProductDetail;
 	
 
+	Process process;
+	
 	public int getCodigo() {
 		return codigo;
 	}
@@ -190,6 +192,14 @@ public class SaneanteProduct extends BaseEntityMongoDB {
 	}
 
 
+	public Process getProcess() {
+		return process;
+	}
+
+	public void setProcess(Process process) {
+		this.process = process;
+	}
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -270,11 +280,11 @@ public class SaneanteProduct extends BaseEntityMongoDB {
 		return true;
 	}
 
-	public void lodaProcess(Process process) {
+	public void lodaProcess() {
 		
 		this.setDataAlteracao(null);
 		
-		ProcessDetail detail = process.getProcessDetail();
+		ProcessDetail detail = this.process.getProcessDetail();
 		
 		List<ProcessPetition> peticoes = detail.getPeticoes();
 		

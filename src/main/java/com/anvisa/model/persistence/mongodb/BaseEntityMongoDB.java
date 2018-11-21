@@ -21,24 +21,24 @@ public abstract class BaseEntityMongoDB {
     @Id
     private ObjectId id;  
   
-    @Field(value = "active")
+    //@Field(value = "active")
 	private boolean active;
 
-    @Field(value = "insertUser")	
+    //@Field(value = "insertUser")	
 	private User insertUser;
 	
 
 	@DateTimeFormat(iso = DateTimeFormat.ISO.TIME)
-	@JsonFormat(pattern = "dd/MM/yyyy HH:mm:ss")
-	@Field(value = "insertDate")
+	//@JsonFormat(pattern = "dd/MM/yyyy HH:mm:ss")
+	//@Field(value = "insertDate")
 	private LocalDate insertDate;
 
 	//@ManyToOne
 	//private User updateUser;
 	
 	@DateTimeFormat(iso = DateTimeFormat.ISO.TIME)
-	@JsonFormat(pattern = "dd/MM/yyyy HH:mm:ss")
-	@Field(value = "updateDate")
+	//@JsonFormat(pattern = "dd/MM/yyyy HH:mm:ss")
+	//@Field(value = "updateDate")
 	private LocalDate updateDate;
 
 	//@ManyToOne

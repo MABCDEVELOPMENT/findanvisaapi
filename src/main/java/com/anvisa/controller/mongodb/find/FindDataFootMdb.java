@@ -1,6 +1,6 @@
 package com.anvisa.controller.mongodb.find;
 
-import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -11,12 +11,9 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Component;
 
-import com.anvisa.model.persistence.mongodb.BaseEntityMongoDB;
 import com.anvisa.model.persistence.mongodb.foot.ContentFootMdb;
-import com.anvisa.model.persistence.mongodb.process.Process;
 import com.anvisa.model.persistence.mongodb.repository.FootRepositoryMdb;
 import com.anvisa.model.persistence.mongodb.repository.ProcessRepositoryMdb;
-import com.anvisa.model.persistence.mongodb.synchronze.SynchronizeProcessMdb;
 import com.anvisa.rest.QueryRecordParameter;
 
 @Component
@@ -41,18 +38,21 @@ public class FindDataFootMdb {
 
 	public static List<ContentFootMdb> find(QueryRecordParameter queryRecordParameter) {
 
-		List<ContentFootMdb> contentFootsReturn = new ArrayList<ContentFootMdb>();
-
 		List<ContentFootMdb> contentFoots = filter(queryRecordParameter);
+		
+		for (Iterator iterator = contentFoots.iterator(); iterator.hasNext();) {
+			ContentFootMdb contentFootMdb = (ContentFootMdb) iterator.next();
+			contentFootMdb.lodaProcess();
+		}
 
-		SynchronizeProcessMdb synchronizeProcess = new SynchronizeProcessMdb();
+		/*SynchronizeProcessMdb synchronizeProcess = new SynchronizeProcessMdb();
 
 		for (ContentFootMdb contentFoot : contentFoots) {
 
 			ArrayList<Process> process = processRepository.findByProcesso(contentFoot.getProcesso(),
 					contentFoot.getCnpj());
 			if (process == null) {
-				/*
+				
 				 * ArrayList<BaseEntityMongoDB> processos =
 				 * synchronizeProcess.loadData(contentFoot.getCnpj()+"&filter[processo]="+
 				 * contentFoot.getProcesso(),1);
@@ -62,7 +62,7 @@ public class FindDataFootMdb {
 				 * newProcess.lodaDateProcess(); processo.add(processos.get(0));
 				 * //synchronizeProcess.persist(processo); contentFoot.lodaProcess(newProcess);
 				 * break; }
-				 */
+				 
 
 			} else {
 				try {
@@ -73,9 +73,9 @@ public class FindDataFootMdb {
 				}
 			}
 			contentFootsReturn.add(contentFoot);
-		}
+		}*/
 
-		return contentFootsReturn;
+		return contentFoots;
 
 	}
 

@@ -3,6 +3,8 @@ package com.anvisa.model.persistence.mongodb.saneante.notification;
 import java.time.LocalDate;
 import java.util.List;
 
+import org.bson.types.ObjectId;
+import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import com.anvisa.model.persistence.mongodb.BaseEntityMongoDB;
@@ -69,6 +71,7 @@ public class SaneanteNotification extends BaseEntityMongoDB {
 	@JsonAlias(value = "saneanteNotificationDetail")
 	SaneanteNotificationDetail saneanteNotificationDetail;
 	
+	Process process;
 
 	public String getAssunto() {
 		return assunto;
@@ -199,11 +202,19 @@ public class SaneanteNotification extends BaseEntityMongoDB {
 	}
 	
 
-	public void lodaProcess(Process process) {
+	public Process getProcess() {
+		return process;
+	}
+
+	public void setProcess(Process process) {
+		this.process = process;
+	}
+
+	public void lodaProcess() {
 		
 		this.setDataAlteracao(null);
 		
-		ProcessDetail detail = process.getProcessDetail();
+		ProcessDetail detail = this.process.getProcessDetail();
 		
 		List<ProcessPetition> peticoes = detail.getPeticoes();
 		

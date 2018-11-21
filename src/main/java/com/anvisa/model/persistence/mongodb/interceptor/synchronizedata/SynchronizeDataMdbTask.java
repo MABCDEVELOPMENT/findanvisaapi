@@ -18,6 +18,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import com.anvisa.model.persistence.RegisterCNPJ;
@@ -149,7 +150,7 @@ public class SynchronizeDataMdbTask implements Runnable {
 	boolean cosmeticNotification = false;
 	boolean cosmeticRegularized = false;
 
-	// @Scheduled(cron = "0 25 23 * * *")
+	@Scheduled(cron = "0 40 20 * * *")
 	public static void synchronizeData() {
 
 		Thread thread = new Thread(new SynchronizeDataMdbTask(), "SynchronizeDataMdbTask");
@@ -172,14 +173,14 @@ public class SynchronizeDataMdbTask implements Runnable {
 
 	public SynchronizeDataMdbTask() {
 		// TODO Auto-generated constructor stub
-		this.notProcess = true;
-		this.foot = false;
-		this.saneantNotification = false;
-		this.saneantProduct = false;
-		this.process = false;
-		this.cosmeticRegister = false;
-		this.cosmeticNotification = false;
-		this.cosmeticRegularized = false;
+		this.notProcess = false;
+		this.foot = true;
+		this.saneantNotification = true;
+		this.saneantProduct = true;
+		this.process = true;
+		this.cosmeticRegister = true;
+		this.cosmeticNotification = true;
+		this.cosmeticRegularized = true;
 	}
 
 	int totalCnpjFoot = 0;
@@ -216,7 +217,7 @@ public class SynchronizeDataMdbTask implements Runnable {
 				new SynchronizeSaneanteProductMdb(), new SynchronizeProcessMdb(), new SynchronizeCosmeticRegisterMdb(),
 				new SynchronizeCosmeticNotificationMdb(), new SynchronizeCosmeticRegularizedMdb() };
 		
-		List<RegisterCNPJ> registerCNPJs = registerCNPJRepository.findAll();
+		List<RegisterCNPJ> registerCNPJs = registerCNPJRepository.findCnpj("59748988000114");
 
 		for (RegisterCNPJ registerCNPJ : registerCNPJs) {
 
@@ -231,7 +232,7 @@ public class SynchronizeDataMdbTask implements Runnable {
 
 					mongoTemplate.insert(loggerProcessing);
 
-					if (foot) {
+					if (foot && registerCNPJ.getCategory() == 0) {
 
 						ArrayList<BaseEntityMongoDB> itens = new ArrayList<BaseEntityMongoDB>();
 
@@ -248,7 +249,7 @@ public class SynchronizeDataMdbTask implements Runnable {
 
 					}
 
-					if (saneantNotification) {
+					if (saneantNotification && registerCNPJ.getCategory() == 2) {
 
 						ArrayList<BaseEntityMongoDB> itens = new ArrayList<BaseEntityMongoDB>();
 
@@ -264,7 +265,7 @@ public class SynchronizeDataMdbTask implements Runnable {
 
 					}
 
-					if (saneantProduct) {
+					if (saneantProduct && registerCNPJ.getCategory() == 2) {
 
 						ArrayList<BaseEntityMongoDB> itens = new ArrayList<BaseEntityMongoDB>();
 
@@ -279,7 +280,7 @@ public class SynchronizeDataMdbTask implements Runnable {
 
 					}
 
-					if (process) {
+					if (process && registerCNPJ.getCategory() != 1) {
 
 						ArrayList<BaseEntityMongoDB> itens = new ArrayList<BaseEntityMongoDB>();
 
@@ -295,7 +296,7 @@ public class SynchronizeDataMdbTask implements Runnable {
 
 					}
 
-					if (cosmeticRegister) {
+					if (cosmeticRegister && registerCNPJ.getCategory() == 1) {
 
 						ArrayList<BaseEntityMongoDB> itens = new ArrayList<BaseEntityMongoDB>();
 
@@ -311,7 +312,7 @@ public class SynchronizeDataMdbTask implements Runnable {
 
 					}
 
-					if (cosmeticNotification) {
+					if (cosmeticNotification && registerCNPJ.getCategory() == 1) {
 
 						ArrayList<BaseEntityMongoDB> itens = new ArrayList<BaseEntityMongoDB>();
 
@@ -327,7 +328,7 @@ public class SynchronizeDataMdbTask implements Runnable {
 
 					}
 
-					if (cosmeticRegularized) {
+					if (cosmeticRegularized && registerCNPJ.getCategory() == 1) {
 
 						ArrayList<BaseEntityMongoDB> itens = new ArrayList<BaseEntityMongoDB>();
 

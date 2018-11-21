@@ -1,6 +1,6 @@
 package com.anvisa.controller.mongodb.find;
 
-import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -11,12 +11,9 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Component;
 
-import com.anvisa.model.persistence.mongodb.BaseEntityMongoDB;
 import com.anvisa.model.persistence.mongodb.cosmetic.notification.ContentCosmeticNotification;
-import com.anvisa.model.persistence.mongodb.process.Process;
 import com.anvisa.model.persistence.mongodb.repository.CosmeticNotificationRepositoryMdb;
 import com.anvisa.model.persistence.mongodb.repository.ProcessRepositoryMdb;
-import com.anvisa.model.persistence.mongodb.synchronze.SynchronizeProcessMdb;
 import com.anvisa.rest.QueryRecordParameter;
 
 @Component
@@ -41,18 +38,21 @@ public class FindDataCosmeticNotificationMdb {
 
 	public static List<ContentCosmeticNotification> find(QueryRecordParameter queryRecordParameter) {
 
-		List<ContentCosmeticNotification> contentCosmeticNotificationsReturn = new ArrayList<ContentCosmeticNotification>();
-
 		List<ContentCosmeticNotification> contentCosmeticNotifications = filter(queryRecordParameter);
+		
+		for (Iterator iterator = contentCosmeticNotifications.iterator(); iterator.hasNext();) {
+			ContentCosmeticNotification contentCosmeticNotification = (ContentCosmeticNotification) iterator.next();
+			contentCosmeticNotification.lodaProcess();
+		}
 
-		SynchronizeProcessMdb synchronizeProcess = new SynchronizeProcessMdb();
+		/*SynchronizeProcessMdb synchronizeProcess = new SynchronizeProcessMdb();
 
 		for (ContentCosmeticNotification contentCosmeticNotification : contentCosmeticNotifications) {
 
 			ArrayList<Process> process = processRepository.findByProcesso(contentCosmeticNotification.getProcesso(),
 					contentCosmeticNotification.getCnpj());
 			if (process == null) {
-				/*
+				
 				 * ArrayList<BaseEntityMongoDB> processos =
 				 * synchronizeProcess.loadData(contentCosmeticNotification.getCnpj() +
 				 * "&filter[processo]=" + contentCosmeticNotification.getProcesso(), 1);
@@ -61,7 +61,7 @@ public class FindDataCosmeticNotificationMdb {
 				 * ArrayList<BaseEntityMongoDB> processo = new ArrayList<BaseEntityMongoDB>();
 				 * processo.add(processos.get(0)); synchronizeProcess.persist(processo,null);
 				 * contentCosmeticNotification.lodaProcess(newProcess); }
-				 */
+				 
 
 			} else {
 				try {
@@ -73,8 +73,8 @@ public class FindDataCosmeticNotificationMdb {
 			}
 			contentCosmeticNotificationsReturn.add(contentCosmeticNotification);
 		}
-
-		return contentCosmeticNotificationsReturn;
+*/
+		return contentCosmeticNotifications;
 
 	}
 

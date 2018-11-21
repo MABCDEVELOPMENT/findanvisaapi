@@ -331,11 +331,11 @@ public class ContentCosmeticNotification extends BaseEntityMongoDB {
 		return true;
 	}
 	
-	public void lodaProcess(Process process) {
+	public void lodaProcess() {
 		
 		this.setDataAlteracao(null);
 		
-		ProcessDetail detail = process.getProcessDetail();
+		ProcessDetail detail = this.process.getProcessDetail();
 		
 		List<ProcessPetition> peticoes = detail.getPeticoes();
 		

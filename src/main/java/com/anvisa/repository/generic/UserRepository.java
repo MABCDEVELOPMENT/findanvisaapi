@@ -19,7 +19,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
 	@Query("select u from User u where u.email=:email")
 	public User findEmail(@Param("email") String email);
 
-	@Query("select u from User u where u.id=:id and u.active = true")
+	@Query("select u from User u where u.id=:id")
 	public User findId(@Param("id") Long id);
 	
 	@Query("select u from User u where u.password=null and (u.active = false or u.active = null)")

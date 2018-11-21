@@ -2,6 +2,7 @@ package com.anvisa.model.persistence.mongodb.process;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -10,6 +11,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
+import org.bson.types.ObjectId;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.annotation.PersistenceConstructor;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
@@ -25,60 +28,51 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Process extends BaseEntityMongoDB {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
 
-	@Field(value = "ordem")
 	int ordem;
 	
-	@Field(value = "cnpj")
 	String cnpj;
 	
-	@Field(value = "razaoSocial")
 	String razaoSocial;
 	
-
-	@Field(value = "processo")
+	
 	String processo;
 	
-	@Field(value = "assunto")
 	String assunto;
 	
-	@Field(value = "processDetail")
 	ProcessDetail processDetail;
 	
-	@Field(value = "dataAlteracao")	
 	@JsonFormat(pattern="dd/MM/yyyy")	
 	LocalDate dataAlteracao;
 	
-	@Field(value = "dataRegistro")
 	@JsonFormat(pattern="dd/MM/yyyy")
 	LocalDate dataRegistro;
 	
 	@Field(value = "qtdRegistro")	
 	int qtdRegistro;
 
-	public Process() {
+	/*public Process() {
 		// TODO Auto-generated constructor stub
 	}
 	
 	@PersistenceConstructor
-	public Process(int ordem, String cnpj, String razaoSocial, String processo, String assunto,
-			ProcessDetail processDetail, LocalDate dataAlteracao, LocalDate dataRegistro, int qtdRegistro) {
+	public Process(ObjectId id,int ordem, String cnpj, String razaoSocial, String processo, String assunto,
+			ProcessDetail processDetail, Optional<LocalDate> dataAlteracao, Optional<LocalDate> dataRegistro, int qtdRegistro) {
 		super();
+		this.setId(id);
 		this.ordem = ordem;
 		this.cnpj = cnpj;
 		this.razaoSocial = razaoSocial;
 		this.processo = processo;
 		this.assunto = assunto;
 		this.processDetail = processDetail;
-		this.dataAlteracao = dataAlteracao;
-		this.dataRegistro = dataRegistro;
+		if (dataAlteracao.isPresent())
+		this.dataAlteracao = dataAlteracao.get();
+		if (dataRegistro.isPresent())
+		this.dataRegistro = dataRegistro.get();
 		this.qtdRegistro = qtdRegistro;
 	}
-
+*/
 	public int getOrdem() {
 		return ordem;
 	}
@@ -240,8 +234,8 @@ public class Process extends BaseEntityMongoDB {
 		
 		for (ProcessPetition processPetition : peticoes) {
 			
-			if (this.getDataAlteracao() != null
-					&& processPetition.getDataPublicacao().isAfter(this.getDataAlteracao())) {
+			if (this.getDataAlteracao() != null && processPetition.getDataPublicacao()!=null
+					&&  processPetition.getDataPublicacao().isAfter(this.getDataAlteracao())) {
 				this.setDataAlteracao(processPetition.getDataPublicacao());
 			} else {
 				if (this.getDataAlteracao() == null)

@@ -1,36 +1,20 @@
 package com.anvisa.controller.mongodb.find;
 
-import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import javax.inject.Inject;
 
-import org.bson.BsonDocument;
-import org.bson.Document;
-import org.bson.codecs.configuration.CodecRegistry;
-import org.bson.conversions.Bson;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.data.mongodb.core.aggregation.ComparisonOperators.Eq;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Component;
 
 import com.anvisa.model.persistence.mongodb.cosmetic.regularized.ContentCosmeticRegularized;
-import com.anvisa.model.persistence.mongodb.foot.ContentFootMdb;
-import com.anvisa.model.persistence.mongodb.process.Process;
-import com.anvisa.model.persistence.mongodb.repository.CosmeticRegularizedRepositoryMdb;
 import com.anvisa.model.persistence.mongodb.repository.ProcessRepositoryMdb;
-import com.anvisa.model.persistence.mongodb.synchronze.SynchronizeProcessMdb;
 import com.anvisa.rest.QueryRecordParameter;
-import com.google.gson.Gson;
-import com.mongodb.MongoClient;
-import com.mongodb.client.MongoCollection;
-import com.mongodb.client.MongoCursor;
 import com.mongodb.client.MongoDatabase;
-
-import com.mongodb.client.model.Filters;
 
 @Component
 public class FindDataCosmeticRegularizedMdb  {
@@ -58,11 +42,16 @@ public class FindDataCosmeticRegularizedMdb  {
 	
 	public static List<ContentCosmeticRegularized> find(QueryRecordParameter queryRecordParameter) {
 
-		List<ContentCosmeticRegularized> contentCosmeticRegularizedsReturn = new ArrayList<ContentCosmeticRegularized>();
 
 		List<ContentCosmeticRegularized> contentCosmeticRegularizeds = filter(queryRecordParameter);
+		
+		for (Iterator iterator = contentCosmeticRegularizeds.iterator(); iterator.hasNext();) {
+			ContentCosmeticRegularized contentCosmeticRegularized = (ContentCosmeticRegularized) iterator.next();
+			contentCosmeticRegularized.lodaProcess();
+		}
+		
 
-		SynchronizeProcessMdb synchronizeProcess = new SynchronizeProcessMdb();
+		/*SynchronizeProcessMdb synchronizeProcess = new SynchronizeProcessMdb();
 
 		for (ContentCosmeticRegularized contentCosmeticRegularized : contentCosmeticRegularizeds) {
 
@@ -90,8 +79,8 @@ public class FindDataCosmeticRegularizedMdb  {
 			}
 			contentCosmeticRegularizedsReturn.add(contentCosmeticRegularized);
 		}
-
-		return contentCosmeticRegularizedsReturn;
+*/
+		return contentCosmeticRegularizeds;
 
 	}
 	

@@ -123,7 +123,8 @@ public class UserController {
 			StringBuffer sb = new StringBuffer();
 			
 			sb.append("Prezado Administrador,\n");
-			sb.append("Foi efetuado um novo registro de usuário no sistema FINDANVISA, favor efetuar a ativação do");
+			sb.append("\n");
+			sb.append("Foi efetuado um novo registro de usuário no sistema FINDANVISA, favor efetuar a ativação do\n");
 			sb.append("mesmo conforme dados abaixo:");
 			sb.append("\n");
 			sb.append("\n");
@@ -131,7 +132,7 @@ public class UserController {
 			sb.append(" Login "+user.getEmail()+"\n");
 			sb.append("\n");
 			sb.append("\n");
-			sb.append("Para liberar o acesso, entre no sistema através deste link:");
+			sb.append("Para liberar o acesso, entre no sistema através deste link:\n");
 			sb.append("http://findinfo.kinghost.net/findanvisa/#/userList");
 			
 			

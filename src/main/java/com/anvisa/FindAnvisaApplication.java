@@ -82,13 +82,13 @@ public class FindAnvisaApplication extends SpringBootServletInitializer implemen
 		System.out.println(IMAGE_DIR);
 		//SynchronizeDataTask.synchronizeData();
 		SynchronizeDataMdbTask synchronizeDataMdbTask = new SynchronizeDataMdbTask (true,
-		false,
-		false,
-		false,
-		false,
-		false,
+		true,
+		true,
+		true,
+		true,
+		true,
 		true);
-		synchronizeDataMdbTask.synchronizeData();
+		//synchronizeDataMdbTask.synchronizeData();
 		System.out.println("Final de Execurção synchronizeDataMdbTask.synchronizeData");
 	}
 }

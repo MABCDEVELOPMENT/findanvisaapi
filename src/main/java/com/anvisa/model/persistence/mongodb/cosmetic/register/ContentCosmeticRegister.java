@@ -312,11 +312,11 @@ public class ContentCosmeticRegister extends BaseEntityMongoDB {
 				+ ", contentCosmeticRegisterDetail=" + contentCosmeticRegisterDetail + "]";
 	}
 	
-	public void lodaProcess(Process process) {
+	public void lodaProcess() {
 		
 		this.setDataAlteracao(null);
 		
-		ProcessDetail detail = process.getProcessDetail();
+		ProcessDetail detail = this.process.getProcessDetail();
 		
 		List<ProcessPetition> peticoes = detail.getPeticoes();
 		

@@ -4,15 +4,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Entity;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
-
 import com.anvisa.core.json.JsonToObject;
-import com.anvisa.model.persistence.BaseEntity;
 import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
@@ -26,6 +18,16 @@ public class ProcessDetail {
 	ProcessDetailProcess processo;
 	
 	List<ProcessPetition> peticoes;
+	public ProcessDetail() {
+
+	}
+	public ProcessDetail(ProcessCompanyDetail empresa, ProcessDetailProcess processo, List<ProcessPetition> peticoes) {
+
+		this.empresa = empresa;
+		this.processo = processo;
+		this.peticoes = peticoes;
+		
+	}
 	
 	public ProcessCompanyDetail getEmpresa() {
 		return empresa;

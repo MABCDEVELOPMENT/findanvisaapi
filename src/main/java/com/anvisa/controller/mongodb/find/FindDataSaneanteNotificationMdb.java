@@ -1,6 +1,7 @@
 package com.anvisa.controller.mongodb.find;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -11,12 +12,9 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Component;
 
-import com.anvisa.model.persistence.mongodb.BaseEntityMongoDB;
-import com.anvisa.model.persistence.mongodb.process.Process;
 import com.anvisa.model.persistence.mongodb.repository.ProcessRepositoryMdb;
 import com.anvisa.model.persistence.mongodb.repository.SaneanteNotificationRepositoryMdb;
 import com.anvisa.model.persistence.mongodb.saneante.notification.SaneanteNotification;
-import com.anvisa.model.persistence.mongodb.synchronze.SynchronizeProcessMdb;
 import com.anvisa.rest.QueryRecordParameter;
 
 @Component
@@ -54,37 +52,13 @@ public class FindDataSaneanteNotificationMdb {
 		 }
 		
 		List<SaneanteNotification> saneanteNotifications = filter(queryRecordParameter);
-
-		SynchronizeProcessMdb synchronizeProcess = new SynchronizeProcessMdb();
-
-		for (SaneanteNotification saneanteNotification : saneanteNotifications) {
-
-			ArrayList<Process> process = processRepository.findByProcesso(saneanteNotification.getProcesso(),
-					queryRecordParameter.getCnpj());
-			if (process == null) {
-				/*ArrayList<BaseEntityMongoDB> processos = synchronizeProcess.loadData(saneanteNotification.getCnpj()
-						+ "&filter[processo]=" + saneanteNotification.getProcesso(),1);
-				
-				if (processos.size() > 0) {
-					Process newProcess = (Process) processos.get(0);
-					ArrayList<BaseEntityMongoDB> processo = new ArrayList<BaseEntityMongoDB>();
-					processo.add(processos.get(0));
-				    //synchronizeProcess.persist(processo);
-					saneanteNotification.lodaProcess(newProcess);
-					break;
-				}*/
-
-			} else {
-				try {
-					saneanteNotification.lodaProcess(process.get(0));
-				} catch (Exception e) {
-					// TODO: handle exception
-				}
-			}
-			saneanteNotificationsReturn.add(saneanteNotification);
+		
+		for (Iterator iterator = saneanteNotifications.iterator(); iterator.hasNext();) {
+			SaneanteNotification saneanteNotification = (SaneanteNotification) iterator.next();
+			saneanteNotification.lodaProcess();
 		}
 
-		return saneanteNotificationsReturn;
+		return saneanteNotifications;
 
 	}
 	
@@ -145,6 +119,9 @@ public class FindDataSaneanteNotificationMdb {
 			dynamicQuery.addCriteria(nameCriteria);
 		}
 
+/*		Criteria nameCriteria = Criteria.where("process.processo").is("processo");
+		dynamicQuery.addCriteria(nameCriteria);*/
+		
 		List<SaneanteNotification> result = mongoTemplate.find(dynamicQuery, SaneanteNotification.class,
 				"saneanteNotification");
 
