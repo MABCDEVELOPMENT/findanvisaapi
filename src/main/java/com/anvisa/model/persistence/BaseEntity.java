@@ -50,7 +50,6 @@ public abstract class BaseEntity implements Serializable {
 
 	//@ManyToOne
 	//private User ownerUser;
-
 	public Long getId() {
 		return id;
 	}

@@ -41,10 +41,10 @@ public class FindDataCosmeticRegisterMdb {
 
 		List<ContentCosmeticRegister> contentCosmeticRegisters = filter(queryRecordParameter);
 
-		for (Iterator iterator = contentCosmeticRegisters.iterator(); iterator.hasNext();) {
+/*		for (Iterator iterator = contentCosmeticRegisters.iterator(); iterator.hasNext();) {
 			ContentCosmeticRegister contentCosmeticRegister = (ContentCosmeticRegister) iterator.next();
 			contentCosmeticRegister.lodaProcess();
-		}
+		}*/
 
 		/*for (ContentCosmeticRegister contentCosmeticRegister : contentCosmeticRegisters) {
 

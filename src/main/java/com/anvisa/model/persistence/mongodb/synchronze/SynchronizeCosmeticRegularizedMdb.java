@@ -7,10 +7,12 @@ import java.util.Iterator;
 
 import org.bson.Document;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Component;
 
 import com.anvisa.core.json.JsonToObject;
 import com.anvisa.model.persistence.mongodb.BaseEntityMongoDB;
+import com.anvisa.model.persistence.mongodb.cosmetic.notification.ContentCosmeticNotification;
 import com.anvisa.model.persistence.mongodb.cosmetic.regularized.ContentCosmeticRegularized;
 import com.anvisa.model.persistence.mongodb.cosmetic.regularized.ContentCosmeticRegularizedDetail;
 import com.anvisa.model.persistence.mongodb.cosmetic.regularized.CosmeticRegularizedDatailPresentation;
@@ -18,6 +20,7 @@ import com.anvisa.model.persistence.mongodb.cosmetic.regularized.CosmeticRegular
 import com.anvisa.model.persistence.mongodb.cosmetic.regularized.CosmeticRegularizedDetailHoldingCompany;
 import com.anvisa.model.persistence.mongodb.cosmetic.regularized.CosmeticRegularizedDetailLocalNational;
 import com.anvisa.model.persistence.mongodb.interceptor.synchronizedata.IntSynchronizeMdb;
+import com.anvisa.model.persistence.mongodb.loggerprocessing.LogErroProcessig;
 import com.anvisa.model.persistence.mongodb.loggerprocessing.LoggerProcessing;
 import com.anvisa.model.persistence.mongodb.repository.CosmeticRegularizedRepositoryMdb;
 import com.anvisa.model.persistence.mongodb.repository.LoggerRepositoryMdb;
@@ -43,21 +46,21 @@ public class SynchronizeCosmeticRegularizedMdb extends SynchronizeDataMdb implem
 
 	@Autowired
 	private static CosmeticRegularizedRepositoryMdb cosmeticRegularizedRepository;
-	
+
 	@Autowired
 	private static LoggerRepositoryMdb loggerRepositoryMdb;
 
 	@Autowired
-	public void setService(CosmeticRegularizedRepositoryMdb cosmeticRegularizedRepository, 
-						   SequenceDaoImpl sequence, 	
-						   LoggerRepositoryMdb loggerRepositoryMdb) {
+	public void setService(CosmeticRegularizedRepositoryMdb cosmeticRegularizedRepository, SequenceDaoImpl sequence,
+			LoggerRepositoryMdb loggerRepositoryMdb, MongoTemplate mongoTemplate) {
 
 		this.cosmeticRegularizedRepository = cosmeticRegularizedRepository;
 
 		this.sequence = sequence;
-		
-		this.loggerRepositoryMdb = loggerRepositoryMdb; 
 
+		this.loggerRepositoryMdb = loggerRepositoryMdb;
+
+		this.mongoTemplate = mongoTemplate;
 	}
 
 	public SynchronizeCosmeticRegularizedMdb() {
@@ -71,7 +74,7 @@ public class SynchronizeCosmeticRegularizedMdb extends SynchronizeDataMdb implem
 	}
 
 	@Override
-	public ContentCosmeticRegularized parseData(JsonNode jsonNode) {
+	public ContentCosmeticRegularized parseData(String cnpj, JsonNode jsonNode) {
 		// TODO Auto-generated method stub
 		ContentCosmeticRegularized contentCosmeticRegularized = new ContentCosmeticRegularized();
 
@@ -85,14 +88,15 @@ public class SynchronizeCosmeticRegularizedMdb extends SynchronizeDataMdb implem
 
 		contentCosmeticRegularized.setVencimento(JsonToObject.getValueDate(jsonNode, "data"));
 
-		ContentCosmeticRegularizedDetail contentCosmeticRegularizedDetail = this.loadDetailData(contentCosmeticRegularized.getProcesso());
-		
-		if (contentCosmeticRegularizedDetail!=null) {
-			
+		ContentCosmeticRegularizedDetail contentCosmeticRegularizedDetail = this.loadDetailData(cnpj,
+				contentCosmeticRegularized.getProcesso());
+
+		if (contentCosmeticRegularizedDetail != null) {
+
 			contentCosmeticRegularized.setContentCosmeticRegularizedDetail(contentCosmeticRegularizedDetail);
-			
+
 		}
-		
+
 		return contentCosmeticRegularized;
 	}
 
@@ -205,7 +209,7 @@ public class SynchronizeCosmeticRegularizedMdb extends SynchronizeDataMdb implem
 		return super.loadData(this, cnpj);
 	}
 
-	public ContentCosmeticRegularizedDetail loadDetailData(String concat) {
+	public ContentCosmeticRegularizedDetail loadDetailData(String cnpj, String concat) {
 
 		ContentCosmeticRegularizedDetail rootObject = null;
 
@@ -225,69 +229,75 @@ public class SynchronizeCosmeticRegularizedMdb extends SynchronizeDataMdb implem
 			if (response.code() == 500) {
 				response.close();
 				client = null;
+				System.gc();
 				return null;
 			}
 
-			if (response.body()!=null) {
-				
-				JsonNode rootNode = objectMapper.readTree(this.getGZIPString(response.body().byteStream()));
-	
+			if (response.body() != null) {
+
+				JsonNode rootNode = objectMapper.readTree(this.getGZIPString(cnpj, response.body().byteStream()));
+
 				if (rootNode != null) {
-	
+
 					rootObject = this.parseDetailData(rootNode);
 				}
-			}	
+			}
 
 			response.close();
 			client = null;
+			System.gc();
 			return rootObject;
 
 		} catch (Exception e) {
 			// TODO: handle exception
-			
+			LogErroProcessig log = new LogErroProcessig(cnpj, concat, e.getMessage(),
+					ContentCosmeticRegularized.class.getName(), this.getClass().getName(), e,
+					LocalDateTime.now());
+			mongoTemplate.save(log);
+			System.gc();
 		}
 
 		return null;
 	}
 
-
 	@Override
-	public void persist(ArrayList<BaseEntityMongoDB> itens, LoggerProcessing loggerProcessing) {
-		
+	public void persist(String cnpj, ArrayList<BaseEntityMongoDB> itens, LoggerProcessing loggerProcessing) {
+
 		@SuppressWarnings("resource")
-		MongoClient mongoClient = new MongoClient("localhost");	
-		
-		//MongoCredential credential = MongoCredential.createPlainCredential("findinfo01", "findinfo01", "idkfa0101".toCharArray());
-		
+		MongoClient mongoClient = new MongoClient("localhost");
+
+		// MongoCredential credential =
+		// MongoCredential.createPlainCredential("findinfo01", "findinfo01",
+		// "idkfa0101".toCharArray());
+
 		MongoDatabase database = mongoClient.getDatabase("findinfo01");
-		
+
 		MongoCollection<Document> coll = database.getCollection("cosmeticRegularized");
-		
+
 		Gson gson = new Gson();
-		
-		
-		ArrayList<Document>  listSave = new ArrayList<Document>();
-		
+
+		ArrayList<Document> listSave = new ArrayList<Document>();
+
 		int cont = 0;
 		int size = itens.size();
-		int totalInserido   = 0;
+		int totalInserido = 0;
 		int totalAtualizado = 0;
-		int totalErro       = 0;
+		int totalErro = 0;
 
 		for (Iterator<BaseEntityMongoDB> iterator = itens.iterator(); iterator.hasNext();) {
 
 			ContentCosmeticRegularized baseEntity = (ContentCosmeticRegularized) iterator.next();
 			try {
-				
-				log.info("Synchronize "+this.getClass().getName()+" "+baseEntity.getProcesso());
-				
+
+				log.info("Synchronize " + this.getClass().getName() + " " + baseEntity.getProcesso());
+
 				ContentCosmeticRegularized localContentCosmeticRegularized = cosmeticRegularizedRepository
 						.findByProcesso(baseEntity.getProcesso());
 
 				boolean newRegularized = (localContentCosmeticRegularized == null);
 
 				ContentCosmeticRegularizedDetail contentCosmeticRegularizedDetail = (ContentCosmeticRegularizedDetail) this
-						.loadDetailData(baseEntity.getProcesso());
+						.loadDetailData(cnpj, baseEntity.getProcesso());
 
 				if (!newRegularized) {
 
@@ -301,18 +311,18 @@ public class SynchronizeCosmeticRegularizedMdb extends SynchronizeDataMdb implem
 					if (!localContentCosmeticRegularized.equals(baseEntity)) {
 
 						baseEntity.setId(localContentCosmeticRegularized.getId());
-						//baseEntity.setUpdateDate(LocalDate.now());
+						// baseEntity.setUpdateDate(LocalDate.now());
 						Document document = Document.parse(gson.toJson(baseEntity));
 						coll.updateOne(new Document("_id", localContentCosmeticRegularized.getId()), document);
 						totalAtualizado++;
 					}
 
 				} else {
-					//baseEntity.setId(this.sequence.getNextSequenceId(SEQ_KEY));
+					// baseEntity.setId(this.sequence.getNextSequenceId(SEQ_KEY));
 					baseEntity.setContentCosmeticRegularizedDetail(contentCosmeticRegularizedDetail);
-					//baseEntity.setInsertDate(LocalDate.now());
+					// baseEntity.setInsertDate(LocalDate.now());
 					Document document = Document.parse(gson.toJson(baseEntity));
-					//listSave.add(document);
+					// listSave.add(document);
 					coll.insertOne(document);
 					totalInserido++;
 
@@ -324,21 +334,16 @@ public class SynchronizeCosmeticRegularizedMdb extends SynchronizeDataMdb implem
 				log.error(e.getMessage());
 				totalErro++;
 			}
-			
-/*			try {
-				if (cont % 100 == 0 || cont == size) {
-					coll.insertMany(listSave);
-					listSave = new ArrayList<Document>();
-				}
-			} catch (Exception e) {
-				// TODO: handle exception
-				log.error(this.getClass().getName() + " Processo " + baseEntity.getProcesso());
-				log.error(e.getMessage());				
-				totalErro++;
-			}*/	
+
+			/*
+			 * try { if (cont % 100 == 0 || cont == size) { coll.insertMany(listSave);
+			 * listSave = new ArrayList<Document>(); } } catch (Exception e) { // TODO:
+			 * handle exception log.error(this.getClass().getName() + " Processo " +
+			 * baseEntity.getProcesso()); log.error(e.getMessage()); totalErro++; }
+			 */
 			cont++;
 		}
-		
+
 		loggerProcessing.setTotalInserido(new Long(totalInserido));
 		loggerProcessing.setTotalAtualizado(new Long(totalAtualizado));
 		loggerProcessing.setTotalErro(new Long(totalErro));

@@ -40,41 +40,6 @@ public class FindDataFootMdb {
 
 		List<ContentFootMdb> contentFoots = filter(queryRecordParameter);
 		
-		for (Iterator iterator = contentFoots.iterator(); iterator.hasNext();) {
-			ContentFootMdb contentFootMdb = (ContentFootMdb) iterator.next();
-			contentFootMdb.lodaProcess();
-		}
-
-		/*SynchronizeProcessMdb synchronizeProcess = new SynchronizeProcessMdb();
-
-		for (ContentFootMdb contentFoot : contentFoots) {
-
-			ArrayList<Process> process = processRepository.findByProcesso(contentFoot.getProcesso(),
-					contentFoot.getCnpj());
-			if (process == null) {
-				
-				 * ArrayList<BaseEntityMongoDB> processos =
-				 * synchronizeProcess.loadData(contentFoot.getCnpj()+"&filter[processo]="+
-				 * contentFoot.getProcesso(),1);
-				 * 
-				 * if(processos.size()>0) { Process newProcess = (Process) processos.get(0);
-				 * ArrayList<BaseEntityMongoDB> processo = new ArrayList<BaseEntityMongoDB>();
-				 * newProcess.lodaDateProcess(); processo.add(processos.get(0));
-				 * //synchronizeProcess.persist(processo); contentFoot.lodaProcess(newProcess);
-				 * break; }
-				 
-
-			} else {
-				try {
-					contentFoot.setProcess(process.get(0));
-					contentFoot.lodaProcess(process.get(0));
-				} catch (Exception e) {
-					// TODO: handle exception
-				}
-			}
-			contentFootsReturn.add(contentFoot);
-		}*/
-
 		return contentFoots;
 
 	}

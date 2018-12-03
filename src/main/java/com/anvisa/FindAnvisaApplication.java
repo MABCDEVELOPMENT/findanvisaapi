@@ -2,6 +2,7 @@ package com.anvisa;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -24,8 +25,8 @@ import com.anvisa.interceptor.ScheduledTasks;
 import com.anvisa.model.persistence.mongodb.interceptor.synchronizedata.SynchronizeDataMdbTask;
 import com.fasterxml.jackson.databind.util.ISO8601DateFormat;
 
-@SpringBootApplication
-//@SpringBootApplication(exclude = {MongoAutoConfiguration.class, MongoDataAutoConfiguration.class})
+
+@SpringBootApplication(exclude = {MongoAutoConfiguration.class, MongoDataAutoConfiguration.class})
 @EnableScheduling
 @EnableAutoConfiguration
 @EnableWebMvc
@@ -81,14 +82,34 @@ public class FindAnvisaApplication extends SpringBootServletInitializer implemen
 		
 		System.out.println(IMAGE_DIR);
 		//SynchronizeDataTask.synchronizeData();
-		SynchronizeDataMdbTask synchronizeDataMdbTask = new SynchronizeDataMdbTask (true,
+	/*	SynchronizeDataMdbTask synchronizeDataMdbTask = new SynchronizeDataMdbTask (true,
 		true,
 		true,
 		true,
 		true,
 		true,
-		true);
-		//synchronizeDataMdbTask.synchronizeData();
+		true);*/
+		ArrayList<String> cnpjs = new ArrayList<String>();
+		//cnpjs.add("02290277000121");
+	    //cnpjs.add("03470672000159");
+		//cnpjs.add("33306929000100"); 7000
+		//cnpjs.add("92697010000146");
+
+		//cnpjs.add("08160941000102");
+		//cnpjs.add("30153506000100");
+		//cnpjs.add("56992217000180");
+		cnpjs.add("15392876000106");
+		cnpjs.add("00190373000172");
+		cnpjs.add("03993167000199");
+		cnpjs.add("33306929000100");
+		
+	    if (cnpjs!=null) {
+			new SynchronizeDataMdbTask().synchronizeData(cnpjs);	
+		} else {
+			new SynchronizeDataMdbTask().synchronizeData(null);
+		}
+		
+		//SynchronizeDataMdbTask.loadDetailProcess();
 		System.out.println("Final de Execurção synchronizeDataMdbTask.synchronizeData");
 	}
 }

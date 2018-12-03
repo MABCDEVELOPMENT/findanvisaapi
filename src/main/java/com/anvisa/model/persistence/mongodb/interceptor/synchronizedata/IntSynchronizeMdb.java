@@ -16,9 +16,8 @@ public interface IntSynchronizeMdb {
 	
 	ArrayList<Document> loadDataDocument(String cnpj);
 		
-	BaseEntityMongoDB parseData(JsonNode node);
+	BaseEntityMongoDB parseData(String cnpj,JsonNode node);
 	
-	void persist(ArrayList<BaseEntityMongoDB> itens, LoggerProcessing loggerProcessing);
-
+	void persist(String cnpj, ArrayList<BaseEntityMongoDB> itens, LoggerProcessing loggerProcessing);
 	
 }

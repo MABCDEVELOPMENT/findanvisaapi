@@ -130,6 +130,8 @@ public class RegisterCNPJController {
 	@ApiOperation(value = "Delete a Register CNPJ")
 	@RequestMapping(value = "/delete/{id}", method = RequestMethod.DELETE)
 	public ResponseEntity<String> delete(@PathVariable Long id) {
+		RegisterCNPJ cnpj = registerRepository.findId(id);
+		userRegisterCNPJRepository.deleteCnpj(cnpj);
 		registerRepository.deleteById(id);
 		return new ResponseEntity<String>("User deleted successfully", HttpStatus.OK);
 	}

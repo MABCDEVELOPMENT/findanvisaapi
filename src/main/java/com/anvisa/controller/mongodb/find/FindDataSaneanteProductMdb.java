@@ -48,11 +48,11 @@ public class FindDataSaneanteProductMdb {
 
 		List<SaneanteProduct> saneanteProducts = filter(queryRecordParameter);
 		
-		for (Iterator iterator = saneanteProducts.iterator(); iterator.hasNext();) {
+/*		for (Iterator iterator = saneanteProducts.iterator(); iterator.hasNext();) {
 			SaneanteProduct saneanteProduct = (SaneanteProduct) iterator.next();
 			
 			saneanteProduct.lodaProcess();
-		}
+		}*/
 
 		/*SynchronizeProcessMdb synchronizeProcess = new SynchronizeProcessMdb();
 

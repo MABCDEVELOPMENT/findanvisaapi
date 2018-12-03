@@ -53,10 +53,10 @@ public class FindDataSaneanteNotificationMdb {
 		
 		List<SaneanteNotification> saneanteNotifications = filter(queryRecordParameter);
 		
-		for (Iterator iterator = saneanteNotifications.iterator(); iterator.hasNext();) {
+/*		for (Iterator iterator = saneanteNotifications.iterator(); iterator.hasNext();) {
 			SaneanteNotification saneanteNotification = (SaneanteNotification) iterator.next();
 			saneanteNotification.lodaProcess();
-		}
+		}*/
 
 		return saneanteNotifications;
 

@@ -8,11 +8,13 @@ import java.util.List;
 
 import org.bson.Document;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Component;
 
 import com.anvisa.core.json.JsonToObject;
 import com.anvisa.model.persistence.mongodb.BaseEntityMongoDB;
 import com.anvisa.model.persistence.mongodb.interceptor.synchronizedata.IntSynchronizeMdb;
+import com.anvisa.model.persistence.mongodb.loggerprocessing.LogErroProcessig;
 import com.anvisa.model.persistence.mongodb.loggerprocessing.LoggerProcessing;
 import com.anvisa.model.persistence.mongodb.repository.LoggerRepositoryMdb;
 import com.anvisa.model.persistence.mongodb.repository.SaneanteProductRepositoryMdb;
@@ -42,20 +44,21 @@ public class SynchronizeSaneanteProductMdb extends SynchronizeDataMdb implements
 
 	@Autowired
 	private static SaneanteProductRepositoryMdb seneanteProductRepository;
-	
+
 	@Autowired
 	private static LoggerRepositoryMdb loggerRepositoryMdb;
 
 	@Autowired
-	public void setService(SaneanteProductRepositoryMdb seneanteProductRepository, 
-			SequenceDaoImpl sequence,
-			LoggerRepositoryMdb loggerRepositoryMdb) {
+	public void setService(SaneanteProductRepositoryMdb seneanteProductRepository, SequenceDaoImpl sequence,
+			LoggerRepositoryMdb loggerRepositoryMdb, MongoTemplate mongoTemplate) {
 
 		this.seneanteProductRepository = seneanteProductRepository;
 
 		this.sequence = sequence;
-		
+
 		this.loggerRepositoryMdb = loggerRepositoryMdb;
+
+		this.mongoTemplate = mongoTemplate;
 
 	}
 
@@ -69,7 +72,7 @@ public class SynchronizeSaneanteProductMdb extends SynchronizeDataMdb implements
 
 	}
 
-	public SaneanteProduct parseData(JsonNode jsonNode) {
+	public SaneanteProduct parseData(String cnpj, JsonNode jsonNode) {
 		// TODO Auto-generated method stub
 		SaneanteProduct saneanteProduct = new SaneanteProduct();
 
@@ -107,13 +110,13 @@ public class SynchronizeSaneanteProductMdb extends SynchronizeDataMdb implements
 		 * data.getDayOfMonth()); saneanteProduct.setDataAlteracao(dataAlteracao); } }
 		 * 
 		 */
-		
-		SaneanteProductDetail saneanteProductDetail = this.loadDetailData(saneanteProduct.getProcesso());
-		
-		if (saneanteProductDetail!=null) {
+
+		SaneanteProductDetail saneanteProductDetail = this.loadDetailData(cnpj, saneanteProduct.getProcesso());
+
+		if (saneanteProductDetail != null) {
 			saneanteProduct.setSaneanteProductDetail(saneanteProductDetail);
 		}
-		
+
 		return saneanteProduct;
 	}
 
@@ -157,7 +160,7 @@ public class SynchronizeSaneanteProductMdb extends SynchronizeDataMdb implements
 		return super.loadData(this, cnpj);
 	}
 
-	public SaneanteProductDetail loadDetailData(String concat) {
+	public SaneanteProductDetail loadDetailData(String cnpj, String concat) {
 
 		SaneanteProductDetail rootObject = null;
 
@@ -177,10 +180,11 @@ public class SynchronizeSaneanteProductMdb extends SynchronizeDataMdb implements
 			if (response.code() == 500) {
 				response.close();
 				client = null;
+				System.gc();
 				return null;
 			}
 
-			JsonNode rootNode = objectMapper.readTree(this.getGZIPString(response.body().byteStream()));
+			JsonNode rootNode = objectMapper.readTree(this.getGZIPString(cnpj, response.body().byteStream()));
 
 			if (rootNode != null) {
 
@@ -188,55 +192,62 @@ public class SynchronizeSaneanteProductMdb extends SynchronizeDataMdb implements
 			}
 			response.close();
 			client = null;
+			System.gc();
 			return rootObject;
 
 		} catch (Exception e) {
 			// TODO: handle exception
-			//e.printStackTrace();
+			// e.printStackTrace();
+			LogErroProcessig log = new LogErroProcessig(cnpj, concat, e.getMessage(), SaneanteProduct.class.getName(),
+					this.getClass().getName(), e, LocalDateTime.now());
+			mongoTemplate.save(log);
+			System.gc();
 		}
 
 		return null;
 	}
 
 	@Override
-	public void persist(ArrayList<BaseEntityMongoDB> itens, LoggerProcessing loggerProcessing) {
+	public void persist(String cnpj, ArrayList<BaseEntityMongoDB> itens, LoggerProcessing loggerProcessing) {
 
 		@SuppressWarnings("resource")
-		MongoClient mongoClient = new MongoClient("localhost");	
-		
-		//MongoCredential credential = MongoCredential.createPlainCredential("findinfo01", "findinfo01", "idkfa0101".toCharArray());
-		
+		MongoClient mongoClient = new MongoClient("localhost");
+
+		// MongoCredential credential =
+		// MongoCredential.createPlainCredential("findinfo01", "findinfo01",
+		// "idkfa0101".toCharArray());
+
 		MongoDatabase database = mongoClient.getDatabase("findinfo01");
-		
+
 		MongoCollection<Document> coll = database.getCollection("saneanteProduct");
-		
+
 		Gson gson = new Gson();
-		
-		
-		ArrayList<Document>  listSave = new ArrayList<Document>();
-		
+
+		ArrayList<Document> listSave = new ArrayList<Document>();
+
 		int size = itens.size();
 		int cont = 0;
-		
-		int totalInserido   = 0;
+
+		int totalInserido = 0;
 		int totalAtualizado = 0;
-		int totalErro       = 0;
+		int totalErro = 0;
 
 		for (Iterator<BaseEntityMongoDB> iterator = itens.iterator(); iterator.hasNext();) {
 
 			SaneanteProduct baseEntity = (SaneanteProduct) iterator.next();
 			try {
-				
-				log.info("Synchronize "+this.getClass().getName()+" "+baseEntity.getProcesso() + " - " + baseEntity.getCnpj());
-				
+
+				log.info("Synchronize " + this.getClass().getName() + " " + baseEntity.getProcesso() + " - "
+						+ baseEntity.getCnpj());
+
 				SaneanteProduct localSaneanteProduct = seneanteProductRepository.findByProcesso(
 						baseEntity.getProcesso(), baseEntity.getCnpj(), baseEntity.getCodigo(),
 						baseEntity.getRegistro(), baseEntity.getDataVencimento());
 
 				boolean newRegularized = (localSaneanteProduct == null);
 
-				SaneanteProductDetail saneanteProductDetail = (SaneanteProductDetail) this
-						.loadDetailData(baseEntity.getProcesso());
+				SaneanteProductDetail saneanteProductDetail = (SaneanteProductDetail) this.loadDetailData(cnpj,
+						baseEntity.getProcesso());
 
 				if (!newRegularized) {
 
@@ -253,16 +264,16 @@ public class SynchronizeSaneanteProductMdb extends SynchronizeDataMdb implements
 						baseEntity.setUpdateDate(LocalDate.now());
 						Document document = Document.parse(gson.toJson(baseEntity));
 						coll.updateOne(new Document("_id", localSaneanteProduct.getId()), document);
-						//listSave.add(document);
+						// listSave.add(document);
 						totalAtualizado++;
 					}
 
 				} else {
-					//baseEntity.setId(this.sequence.getNextSequenceId(SEQ_KEY));
+					// baseEntity.setId(this.sequence.getNextSequenceId(SEQ_KEY));
 					baseEntity.setSaneanteProductDetail(saneanteProductDetail);
 					baseEntity.setInsertDate(LocalDate.now());
 					Document document = Document.parse(gson.toJson(baseEntity));
-					//listSave.add(document);
+					// listSave.add(document);
 					coll.insertOne(document);
 					cont++;
 					totalInserido++;
@@ -271,40 +282,39 @@ public class SynchronizeSaneanteProductMdb extends SynchronizeDataMdb implements
 
 			} catch (Exception e) {
 				// TODO: handle exception
-				
+
 				log.error(this.getClass().getName() + " Processo " + baseEntity.getProcesso() + " cnpj "
 						+ baseEntity.getCnpj() + " Codigo " + baseEntity.getCodigo() + " Registro "
 						+ baseEntity.getRegistro() + " Vencimento " + baseEntity.getDataVencimento());
-				
 				log.error(e.getMessage());
-				
+
+				LogErroProcessig log = new LogErroProcessig(cnpj, baseEntity.getProcesso(), e.getMessage(),
+						SaneanteProduct.class.getName(), this.getClass().getName(), e,
+						LocalDateTime.now());
+				mongoTemplate.save(log);
+
 				totalErro++;
-				
+
 			}
-			
-/*			try {
-				if (cont % 200 == 0 || cont == size) {
-					//seneanteProductRepository.saveAll(listSave);    
-					coll.insertMany(listSave);
-					listSave = new ArrayList<Document>();
-				}
-			} catch (Exception e) {
-				// TODO: handle exception
-				log.error(this.getClass().getName() + " Processo " + baseEntity.getProcesso() + " cnpj "
-						+ baseEntity.getCnpj() + " Codigo " + baseEntity.getCodigo() + " Registro "
-						+ baseEntity.getRegistro() + " Vencimento " + baseEntity.getDataVencimento());
-				
-				log.error(e.getMessage());
-				totalErro++;
-			}	
-*/			cont++;
+
+			/*
+			 * try { if (cont % 200 == 0 || cont == size) {
+			 * //seneanteProductRepository.saveAll(listSave); coll.insertMany(listSave);
+			 * listSave = new ArrayList<Document>(); } } catch (Exception e) { // TODO:
+			 * handle exception log.error(this.getClass().getName() + " Processo " +
+			 * baseEntity.getProcesso() + " cnpj " + baseEntity.getCnpj() + " Codigo " +
+			 * baseEntity.getCodigo() + " Registro " + baseEntity.getRegistro() +
+			 * " Vencimento " + baseEntity.getDataVencimento());
+			 * 
+			 * log.error(e.getMessage()); totalErro++; }
+			 */ cont++;
 		}
-		
+
 		loggerProcessing.setTotalInserido(new Long(totalInserido));
 		loggerProcessing.setTotalAtualizado(new Long(totalAtualizado));
 		loggerProcessing.setTotalErro(new Long(totalErro));
 		loggerRepositoryMdb.save(loggerProcessing);
-		
+
 	}
 
 	@Override

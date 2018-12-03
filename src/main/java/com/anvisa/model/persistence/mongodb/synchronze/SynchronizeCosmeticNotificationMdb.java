@@ -10,6 +10,7 @@ import org.apache.commons.logging.Log;
 import org.bson.Document;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Component;
 
 import com.anvisa.core.json.JsonToObject;
@@ -17,7 +18,9 @@ import com.anvisa.model.persistence.mongodb.BaseEntityMongoDB;
 import com.anvisa.model.persistence.mongodb.cosmetic.notification.ContentCosmeticNotification;
 import com.anvisa.model.persistence.mongodb.cosmetic.notification.ContentCosmeticNotificationDetail;
 import com.anvisa.model.persistence.mongodb.cosmetic.notification.CosmeticNotificationPresentation;
+import com.anvisa.model.persistence.mongodb.cosmetic.register.ContentCosmeticRegister;
 import com.anvisa.model.persistence.mongodb.interceptor.synchronizedata.IntSynchronizeMdb;
+import com.anvisa.model.persistence.mongodb.loggerprocessing.LogErroProcessig;
 import com.anvisa.model.persistence.mongodb.loggerprocessing.LoggerProcessing;
 import com.anvisa.model.persistence.mongodb.repository.CosmeticNotificationRepositoryMdb;
 import com.anvisa.model.persistence.mongodb.repository.LoggerRepositoryMdb;
@@ -43,20 +46,21 @@ public class SynchronizeCosmeticNotificationMdb extends SynchronizeDataMdb imple
 
 	@Autowired
 	private static CosmeticNotificationRepositoryMdb cosmeticNotificationRepository;
-	
+
 	@Autowired
 	private static LoggerRepositoryMdb loggerRepositoryMdb;
 
 	@Autowired
-	public void setService(CosmeticNotificationRepositoryMdb cosmeticNotificationRepository, SequenceDaoImpl sequence, 	@Autowired
-			LoggerRepositoryMdb loggerRepositoryMdb) {
+	public void setService(CosmeticNotificationRepositoryMdb cosmeticNotificationRepository, SequenceDaoImpl sequence,
+			@Autowired LoggerRepositoryMdb loggerRepositoryMdb, MongoTemplate montoTemplate) {
 
 		this.cosmeticNotificationRepository = cosmeticNotificationRepository;
 
 		this.sequence = sequence;
-		
+
 		this.loggerRepositoryMdb = loggerRepositoryMdb;
-		
+
+		this.mongoTemplate = mongoTemplate;
 
 	}
 
@@ -71,7 +75,7 @@ public class SynchronizeCosmeticNotificationMdb extends SynchronizeDataMdb imple
 	}
 
 	@Override
-	public BaseEntityMongoDB parseData(JsonNode jsonNode) {
+	public BaseEntityMongoDB parseData(String cnpj, JsonNode jsonNode) {
 		// TODO Auto-generated method stub
 		ContentCosmeticNotification contentCosmeticNotification = new ContentCosmeticNotification();
 
@@ -96,10 +100,11 @@ public class SynchronizeCosmeticNotificationMdb extends SynchronizeDataMdb imple
 		contentCosmeticNotification.setSituacao(JsonToObject.getValue(jsonNode, "situacao", "situacao"));
 
 		contentCosmeticNotification.setVencimento(JsonToObject.getValueDate(jsonNode, "vencimento", "vencimento"));
-		
-		ContentCosmeticNotificationDetail contentCosmeticNotificationDetail = this.loadDetailData(contentCosmeticNotification.getProcesso());
-				
-		if (contentCosmeticNotificationDetail!=null) {
+
+		ContentCosmeticNotificationDetail contentCosmeticNotificationDetail = this.loadDetailData(cnpj,
+				contentCosmeticNotification.getProcesso());
+
+		if (contentCosmeticNotificationDetail != null) {
 			contentCosmeticNotification.setContentCosmeticNotificationDetail(contentCosmeticNotificationDetail);
 		}
 
@@ -168,7 +173,7 @@ public class SynchronizeCosmeticNotificationMdb extends SynchronizeDataMdb imple
 		return super.loadData(this, cnpj);
 	}
 
-	public ContentCosmeticNotificationDetail loadDetailData(String concat) {
+	public ContentCosmeticNotificationDetail loadDetailData(String cnpj, String concat) {
 
 		ContentCosmeticNotificationDetail rootObject = null;
 
@@ -188,70 +193,80 @@ public class SynchronizeCosmeticNotificationMdb extends SynchronizeDataMdb imple
 			if (response.code() == 500) {
 				response.close();
 				client = null;
+				System.gc();
 				return null;
 			}
-			if (response.body()!=null) {
-				
-				JsonNode rootNode = objectMapper.readTree(this.getGZIPString(response.body().byteStream()));
-	
+			if (response.body() != null) {
+
+				JsonNode rootNode = objectMapper.readTree(this.getGZIPString(cnpj, response.body().byteStream()));
+
 				if (rootNode != null) {
-	
+
 					rootObject = this.parseDetailData(rootNode);
 				}
-			}	
+			}
 			response.close();
 			client = null;
+			System.gc();
 			return rootObject;
 
 		} catch (Exception e) {
 			// TODO: handle exception
-			//e.printStackTrace();
+			// e.printStackTrace();
+			LogErroProcessig log = new LogErroProcessig(cnpj, concat, e.getMessage(),
+					ContentCosmeticNotification.class.getName(), this.getClass().getName(),
+					e, LocalDateTime.now());
+			mongoTemplate.save(log);
+			System.gc();
 		}
 
 		return null;
 	}
 
 	@Override
-	public void persist(ArrayList<BaseEntityMongoDB> itens, LoggerProcessing loggerProcessing ) {
-		
+	public void persist(String cnpj, ArrayList<BaseEntityMongoDB> itens, LoggerProcessing loggerProcessing) {
+
 		@SuppressWarnings("resource")
-		MongoClient mongoClient = new MongoClient("localhost");	
-		
-		//MongoCredential credential = MongoCredential.createPlainCredential("findinfo01", "findinfo01", "idkfa0101".toCharArray());
-		
+		MongoClient mongoClient = new MongoClient("localhost");
+
+		// MongoCredential credential =
+		// MongoCredential.createPlainCredential("findinfo01", "findinfo01",
+		// "idkfa0101".toCharArray());
+
 		MongoDatabase database = mongoClient.getDatabase("findinfo01");
-		
+
 		MongoCollection<Document> coll = database.getCollection("cosmeticNotification");
-		
+
 		Gson gson = new Gson();
-		
-		
-		ArrayList<Document>  listSave = new ArrayList<Document>();
+
+		ArrayList<Document> listSave = new ArrayList<Document>();
 		int size = itens.size();
 		int cont = 0;
-		int totalInserido   = 0;
+		int totalInserido = 0;
 		int totalAtualizado = 0;
-		int totalErro       = 0;
-		
+		int totalErro = 0;
+
 		for (Iterator<BaseEntityMongoDB> iterator = itens.iterator(); iterator.hasNext();) {
 
 			ContentCosmeticNotification baseEntity = (ContentCosmeticNotification) iterator.next();
 
 			try {
 
-				log.info("Synchronize "+this.getClass().getName()+" "+baseEntity.getProcesso() + " - " + baseEntity.getCnpj());
-				
+				log.info("Synchronize " + this.getClass().getName() + " " + baseEntity.getProcesso() + " - "
+						+ baseEntity.getCnpj());
+
 				ContentCosmeticNotification localContentCosmeticNotification = cosmeticNotificationRepository
 						.findByProcesso(baseEntity.getProcesso(), baseEntity.getCnpj(),
 								baseEntity.getExpedienteProcesso());
 
 				boolean newNotification = (localContentCosmeticNotification == null);
 
-				/*if (newNotification == false)
-					continue;*/
+				/*
+				 * if (newNotification == false) continue;
+				 */
 
 				ContentCosmeticNotificationDetail contentCosmeticNotificationDetail = (ContentCosmeticNotificationDetail) this
-						.loadDetailData(baseEntity.getProcesso());
+						.loadDetailData(baseEntity.getCnpj(), baseEntity.getProcesso());
 
 				if (!newNotification) {
 
@@ -268,18 +283,21 @@ public class SynchronizeCosmeticNotificationMdb extends SynchronizeDataMdb imple
 						// baseEntity.setId(localContentCosmeticNotification.getId());
 						baseEntity.setUpdateDate(LocalDate.now());
 						Document document = Document.parse(gson.toJson(baseEntity));
-						coll.updateOne(new Document("_id", new ObjectId(localContentCosmeticNotification.getId().toString().getBytes())), document);
+						coll.updateOne(
+								new Document("_id",
+										new ObjectId(localContentCosmeticNotification.getId().toString().getBytes())),
+								document);
 						totalAtualizado++;
-						
+
 					}
 
 				} else {
-					
-					//baseEntity.setId(this.sequence.getNextSequenceId(SEQ_KEY));
+
+					// baseEntity.setId(this.sequence.getNextSequenceId(SEQ_KEY));
 					baseEntity.setContentCosmeticNotificationDetail(contentCosmeticNotificationDetail);
 					baseEntity.setInsertDate(LocalDate.now());
 					Document document = Document.parse(gson.toJson(baseEntity));
-					//listSave.add(document);
+					// listSave.add(document);
 					coll.insertOne(document);
 					totalInserido++;
 
@@ -290,23 +308,24 @@ public class SynchronizeCosmeticNotificationMdb extends SynchronizeDataMdb imple
 				log.error(this.getClass().getName() + " Cnpj " + baseEntity.getCnpj() + " Processo "
 						+ baseEntity.getProcesso() + " ExpedienteProcesso " + baseEntity.getExpedienteProcesso());
 				log.error(e.getMessage());
+
+				LogErroProcessig log = new LogErroProcessig(baseEntity.getCnpj(), baseEntity.getProcesso(),
+						e.getMessage(), ContentCosmeticNotification.class.getName(), this.getClass().getName(),
+						e, LocalDateTime.now());
+				mongoTemplate.save(log);
+
 				totalErro++;
 			}
-			
-/*			try {
-				if (cont % 100 == 0 || cont == size) {
-					coll.insertMany(listSave);
-					listSave = new ArrayList<Document>();
-				}
-			} catch (Exception e) {
-				// TODO: handle exception
-				log.error(this.getClass().getName() + " Processo " + baseEntity.getProcesso());
-				log.error(e.getMessage());				
-				totalErro++;
-			}*/
+
+			/*
+			 * try { if (cont % 100 == 0 || cont == size) { coll.insertMany(listSave);
+			 * listSave = new ArrayList<Document>(); } } catch (Exception e) { // TODO:
+			 * handle exception log.error(this.getClass().getName() + " Processo " +
+			 * baseEntity.getProcesso()); log.error(e.getMessage()); totalErro++; }
+			 */
 			cont++;
 		}
-		
+
 		loggerProcessing.setTotalInserido(new Long(totalInserido));
 		loggerProcessing.setTotalAtualizado(new Long(totalAtualizado));
 		loggerProcessing.setTotalErro(new Long(totalErro));

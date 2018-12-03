@@ -37,13 +37,13 @@ public class FindDataProcessMdb {
 	
 		List<Process> contentProcessos = filter(queryRecordParameter);
 		
-		for (Process process : contentProcessos) {
+/*		for (Process process : contentProcessos) {
 			process.lodaDateProcess();
 			contentProcessReturn.add(process);
 		}
+		*/
 		
-		
-		return contentProcessReturn;
+		return contentProcessos;
 		
 	}
 	

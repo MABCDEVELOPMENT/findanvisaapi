@@ -10,4 +10,5 @@ public interface CosmeticRegisterRepositoryMdb extends MongoRepository<ContentCo
 	@Query("{'processo' : ?0, 'expedienteProcesso': ?1, 'cnpj':?2}")
 	public ContentCosmeticRegister findByProcesso(String processo,String expedienteProcesso ,String cnpj);
 
+
 }

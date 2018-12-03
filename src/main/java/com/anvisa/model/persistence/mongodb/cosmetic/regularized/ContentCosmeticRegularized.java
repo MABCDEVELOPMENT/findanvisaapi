@@ -248,7 +248,7 @@ public class ContentCosmeticRegularized extends BaseEntityMongoDB {
 	}
 	
 	public void lodaProcess() {
-		
+		if (this.process!=null) {
 		this.setDataAlteracao(null);
 		
 		ProcessDetail detail = this.process.getProcessDetail();
@@ -289,6 +289,7 @@ public class ContentCosmeticRegularized extends BaseEntityMongoDB {
 			}
 			
 		}
+		}	
 	}	
 
 

@@ -313,7 +313,7 @@ public class ContentCosmeticRegister extends BaseEntityMongoDB {
 	}
 	
 	public void lodaProcess() {
-		
+		if (this.process!=null) {
 		this.setDataAlteracao(null);
 		
 		ProcessDetail detail = this.process.getProcessDetail();
@@ -349,6 +349,6 @@ public class ContentCosmeticRegister extends BaseEntityMongoDB {
 			System.out.println(this.getClass().getName()+" CNPJ "+this.getCnpj()+" Processo "+this.getProcesso()+" ERRO DE DATAS");
 		}
 	}
-	
+	}
 
 }

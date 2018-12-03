@@ -14,10 +14,8 @@ import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.anvisa.model.persistence.mongodb.process.Process;
 
-
 @Document(collection = "cosmeticNotification")
 public class ContentCosmeticNotification extends BaseEntityMongoDB {
-
 
 	/**
 	 * 
@@ -61,19 +59,19 @@ public class ContentCosmeticNotification extends BaseEntityMongoDB {
 	@JsonAlias(value = "empresa")
 	String empresa;
 
-	@JsonAlias(value = "dataAlteracao")	
-	@JsonFormat(pattern="dd/MM/yyyy")	
+	@JsonAlias(value = "dataAlteracao")
+	@JsonFormat(pattern = "dd/MM/yyyy")
 	LocalDate dataAlteracao;
-	
+
 	@JsonAlias(value = "dataRegistro")
-	@JsonFormat(pattern="dd/MM/yyyy")
+	@JsonFormat(pattern = "dd/MM/yyyy")
 	LocalDate dataRegistro;
 
-	@JsonAlias(value = "qtdRegistro")	
+	@JsonAlias(value = "qtdRegistro")
 	int qtdRegistro;
 
 	ContentCosmeticNotificationDetail contentCosmeticNotificationDetail;
-	
+
 	@Transient
 	Process process;
 
@@ -174,7 +172,7 @@ public class ContentCosmeticNotification extends BaseEntityMongoDB {
 	}
 
 	public LocalDate getDataAlteracao() {
-		if(this.dataAlteracao!=null && this.dataRegistro!=null) {
+		if (this.dataAlteracao != null && this.dataRegistro != null) {
 			if (this.dataAlteracao.isBefore(this.dataRegistro)) {
 				return this.dataRegistro;
 			}
@@ -206,7 +204,8 @@ public class ContentCosmeticNotification extends BaseEntityMongoDB {
 		return contentCosmeticNotificationDetail;
 	}
 
-	public void setContentCosmeticNotificationDetail(ContentCosmeticNotificationDetail contentCosmeticNotificationDetail) {
+	public void setContentCosmeticNotificationDetail(
+			ContentCosmeticNotificationDetail contentCosmeticNotificationDetail) {
 		this.contentCosmeticNotificationDetail = contentCosmeticNotificationDetail;
 	}
 
@@ -326,13 +325,13 @@ public class ContentCosmeticNotification extends BaseEntityMongoDB {
 				return false;
 		} else if (!dataRegistro.equals(other.dataRegistro))
 			return false;
-		if (qtdRegistro!=other.qtdRegistro)
+		if (qtdRegistro != other.qtdRegistro)
 			return false;
 		return true;
 	}
-	
+
 	public void lodaProcess() {
-		
+		if (this.process!=null) {
 		this.setDataAlteracao(null);
 		
 		ProcessDetail detail = this.process.getProcessDetail();
@@ -368,5 +367,5 @@ public class ContentCosmeticNotification extends BaseEntityMongoDB {
 			System.out.println(this.getClass().getName()+" CNPJ "+this.getCnpj()+" Processo "+this.getProcesso()+" ERRO DE DATAS");
 		}
 	}
-
+	}
 }

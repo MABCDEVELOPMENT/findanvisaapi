@@ -49,6 +49,13 @@ public class RegisterCNPJ extends BaseEntity  {
 	@Transient
 	ArrayList<BaseEntityMongoDB> itensImport;
 	
+	
+	@Override
+	public Long getId() {
+		// TODO Auto-generated method stub
+		return super.getId();
+	}
+	
 	public String getCnpj() {
 		return cnpj;
 	}

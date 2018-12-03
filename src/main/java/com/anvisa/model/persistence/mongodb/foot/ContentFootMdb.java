@@ -6,6 +6,7 @@ import java.util.List;
 import javax.persistence.Transient;
 
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.Field;
 
 import com.anvisa.model.persistence.mongodb.BaseEntityMongoDB;
 import com.anvisa.model.persistence.mongodb.process.Process;
@@ -14,8 +15,10 @@ import com.anvisa.model.persistence.mongodb.process.ProcessPetition;
 import com.anvisa.model.persistence.rest.Content;
 import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.google.code.morphia.annotations.Entity;
 
 @Document(collection="foot")
+@Entity
 public class ContentFootMdb extends BaseEntityMongoDB {
 
 	/**
@@ -51,12 +54,15 @@ public class ContentFootMdb extends BaseEntityMongoDB {
 	String statusVencimento;
 	
 	@JsonFormat(pattern="dd/MM/yyyy")
+	@Field
 	LocalDate dataVencimento;
 	
 	@JsonFormat(pattern="dd/MM/yyyy")	
+	@Field
 	LocalDate dataAlteracao;
 	
 	@JsonFormat(pattern="dd/MM/yyyy")
+	@Field
 	LocalDate dataRegistro;
 	
 	int qtdRegistro;

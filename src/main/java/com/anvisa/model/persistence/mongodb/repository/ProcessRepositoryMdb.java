@@ -11,5 +11,8 @@ public interface ProcessRepositoryMdb extends MongoRepository<Process, Long> {
 		
 		@Query("{'processo' : ?0, 'cnpj': ?1}")
 		public ArrayList<Process> findByProcesso(String processo, String cnpj);
+		
+		@Query("{'processDetail' : { '$exists': false }}")
+		public ArrayList<Process> findDetailIsNull();
 	
 }

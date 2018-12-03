@@ -1,19 +1,23 @@
 package com.anvisa.model.persistence.mongodb.synchronze;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Iterator;
 
 import org.bson.Document;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Component;
 
 import com.anvisa.core.json.JsonToObject;
 import com.anvisa.model.persistence.mongodb.BaseEntityMongoDB;
+import com.anvisa.model.persistence.mongodb.cosmetic.regularized.ContentCosmeticRegularized;
 import com.anvisa.model.persistence.mongodb.foot.ContentFootDetailMdb;
 import com.anvisa.model.persistence.mongodb.foot.ContentFootMdb;
 import com.anvisa.model.persistence.mongodb.interceptor.synchronizedata.IntSynchronizeMdb;
+import com.anvisa.model.persistence.mongodb.loggerprocessing.LogErroProcessig;
 import com.anvisa.model.persistence.mongodb.loggerprocessing.LoggerProcessing;
 import com.anvisa.model.persistence.mongodb.repository.FootRepositoryMdb;
 import com.anvisa.model.persistence.mongodb.repository.LoggerRepositoryMdb;
@@ -39,18 +43,18 @@ public class SynchronizeFootMdb extends SynchronizeDataMdb implements IntSynchro
 
 	@Autowired
 	private static FootRepositoryMdb footRepository;
-	
+
 	@Autowired
 	private static LoggerRepositoryMdb loggerRepositoryMdb;
-	
-
 
 	@Autowired
-	public void setService(FootRepositoryMdb footRepository, SequenceDaoImpl sequence, LoggerRepositoryMdb loggerRepositoryMdb) {
+	public void setService(FootRepositoryMdb footRepository, SequenceDaoImpl sequence,
+			LoggerRepositoryMdb loggerRepositoryMdb, MongoTemplate mongoTemplate) {
 
 		this.footRepository = footRepository;
 		this.sequence = sequence;
 		this.loggerRepositoryMdb = loggerRepositoryMdb;
+		this.mongoTemplate = mongoTemplate;
 
 	}
 
@@ -65,7 +69,7 @@ public class SynchronizeFootMdb extends SynchronizeDataMdb implements IntSynchro
 	}
 
 	@Override
-	public ContentFootMdb parseData(JsonNode jsonNode) {
+	public ContentFootMdb parseData(String cnpj, JsonNode jsonNode) {
 		// TODO Auto-generated method stub
 		Content content = new Content();
 
@@ -83,16 +87,20 @@ public class SynchronizeFootMdb extends SynchronizeDataMdb implements IntSynchro
 		contentProduto.setDataVencimento(JsonToObject.getValueDate(jsonNode, "dataVencimentoRegistro"));
 		try {
 
-			ContentFootDetailMdb contentFootDetailMdb = this.loadDetailData(contentProduto.getProcesso());
-			
+			ContentFootDetailMdb contentFootDetailMdb = this.loadDetailData(cnpj, contentProduto.getProcesso());
+
 			contentProduto.setContentFootDetail(contentFootDetailMdb);
 
-		}catch (Exception e) {
+		} catch (Exception e) {
 			// TODO: handle exception
+			LogErroProcessig log = new LogErroProcessig(cnpj, contentProduto.getProcesso(), e.getMessage(),
+					ContentFootMdb.class.getName(), this.getClass().getName(), e,
+					LocalDateTime.now());
+			mongoTemplate.save(log);
 		}
-		
+
 		return contentProduto;
-		
+
 	}
 
 	public ContentFootDetailMdb parseDetailData(JsonNode jsonNode) {
@@ -122,7 +130,7 @@ public class SynchronizeFootMdb extends SynchronizeDataMdb implements IntSynchro
 		return super.loadData(this, cnpj);
 	}
 
-	public ContentFootDetailMdb loadDetailData(String concat) {
+	public ContentFootDetailMdb loadDetailData(String cnpj, String concat) {
 
 		// TODO Auto-generated method stub
 		ContentFootDetailMdb rootObject = null;
@@ -139,7 +147,7 @@ public class SynchronizeFootMdb extends SynchronizeDataMdb implements IntSynchro
 
 			ObjectMapper objectMapper = new ObjectMapper();
 
-			JsonNode rootNode = objectMapper.readTree(this.getGZIPString(response.body().byteStream()));
+			JsonNode rootNode = objectMapper.readTree(this.getGZIPString(cnpj, response.body().byteStream()));
 
 			if (rootNode != null) {
 
@@ -147,52 +155,59 @@ public class SynchronizeFootMdb extends SynchronizeDataMdb implements IntSynchro
 			}
 			response.close();
 			client = null;
+			System.gc();
 			return rootObject;
 
 		} catch (Exception e) {
 
 			log.error(e.getMessage());
-			
+			LogErroProcessig log = new LogErroProcessig(cnpj, concat, e.getMessage(), ContentFootMdb.class.getName(),
+					this.getClass().getName(), e, LocalDateTime.now());
+			mongoTemplate.save(log);
+			System.gc();
+
 		}
 
 		return null;
 	}
 
 	@Override
-	public void persist(ArrayList<BaseEntityMongoDB> itens, LoggerProcessing loggerProcessing) {
-		
+	public void persist(String cnpj, ArrayList<BaseEntityMongoDB> itens, LoggerProcessing loggerProcessing) {
+
 		@SuppressWarnings("resource")
-		MongoClient mongoClient = new MongoClient("localhost");	
-		
-		//MongoCredential credential = MongoCredential.createPlainCredential("findinfo01", "findinfo01", "idkfa0101".toCharArray());
-		
+		MongoClient mongoClient = new MongoClient("localhost");
+
+		// MongoCredential credential =
+		// MongoCredential.createPlainCredential("findinfo01", "findinfo01",
+		// "idkfa0101".toCharArray());
+
 		MongoDatabase database = mongoClient.getDatabase("findinfo01");
-		
+
 		MongoCollection<Document> coll = database.getCollection("foot");
-		
+
 		Gson gson = new Gson();
-		
-		
-		ArrayList<Document>  listSave = new ArrayList<Document>();
-		
-		
-		int totalInserido   = 0;
+
+		ArrayList<Document> listSave = new ArrayList<Document>();
+
+		int totalInserido = 0;
 		int totalAtualizado = 0;
-		int totalErro       = 0;
-		
+		int totalErro = 0;
+
 		for (Iterator<BaseEntityMongoDB> iterator = itens.iterator(); iterator.hasNext();) {
 
 			ContentFootMdb baseEntity = (ContentFootMdb) iterator.next();
 			try {
-				
-				log.info("Synchronize "+this.getClass().getName()+" "+baseEntity.getProcesso() + " - " + baseEntity.getCnpj());
-				
+
+				log.info("Synchronize " + this.getClass().getName() + " " + baseEntity.getProcesso() + " - "
+						+ baseEntity.getCnpj());
+
 				ContentFootMdb localFoot = footRepository.findByProcesso(baseEntity.getProcesso(), baseEntity.getCnpj(),
 						baseEntity.getCodigo(), baseEntity.getRegistro(), baseEntity.getDataVencimento());
 
 				boolean newFoot = (localFoot == null);
 
-				ContentFootDetailMdb detail = (ContentFootDetailMdb) this.loadDetailData(baseEntity.getProcesso());
+				ContentFootDetailMdb detail = (ContentFootDetailMdb) this.loadDetailData(cnpj,
+						baseEntity.getProcesso());
 
 				if (detail != null) {
 
@@ -216,72 +231,77 @@ public class SynchronizeFootMdb extends SynchronizeDataMdb implements IntSynchro
 
 					if (!localFoot.equals(baseEntity)) {
 
-						//baseEntity.setId(localFoot.getId());
+						// baseEntity.setId(localFoot.getId());
 						detail.setId(localFoot.getContentFootDetail().getId());
 						baseEntity.setContentFootDetail(detail);
 						baseEntity.setUpdateDate(LocalDate.now());
 						Document document = Document.parse(gson.toJson(baseEntity));
-						coll.updateOne(new Document("_id", new ObjectId(localFoot.getId().toString().getBytes())), document);
-						//listSave.add(document);
+						coll.updateOne(new Document("_id", new ObjectId(localFoot.getId().toString().getBytes())),
+								document);
+						// listSave.add(document);
 						totalAtualizado++;
 					}
 
 				} else {
-					
-					//baseEntity.setId(this.sequence.getNextSequenceId(SEQ_KEY));
+
+					// baseEntity.setId(this.sequence.getNextSequenceId(SEQ_KEY));
 					baseEntity.setInsertDate(LocalDate.now());
 					Document document = Document.parse(gson.toJson(baseEntity));
-					//listSave.add(document);
+					// listSave.add(document);
 					coll.insertOne(document);
 					totalInserido++;
 
 				}
 
 			} catch (Exception e) {
-				
+
 				// TODO: handle exception
-				log.error(this.getClass().getName() +" Processo "+baseEntity.getProcesso()+" cnpj "+ baseEntity.getCnpj()+" Codigo "
-						+baseEntity.getCodigo()+" Registro "+baseEntity.getRegistro()+" Vencimento "+baseEntity.getDataVencimento());
+				log.error(this.getClass().getName() + " Processo " + baseEntity.getProcesso() + " cnpj "
+						+ baseEntity.getCnpj() + " Codigo " + baseEntity.getCodigo() + " Registro "
+						+ baseEntity.getRegistro() + " Vencimento " + baseEntity.getDataVencimento());
 				log.error(e.getMessage());
-				
+				LogErroProcessig log = new LogErroProcessig(cnpj, baseEntity.getProcesso(), e.getMessage(),
+						ContentFootMdb.class.getName(), this.getClass().getName(), e,
+						LocalDateTime.now());
+				mongoTemplate.save(log);
+
 				totalErro++;
-				
+
 			}
-			
-			/*try {
-				
-//				if (cont % 10 == 0) {
-//				    //footRepository.saveAll(listSave);
-//					coll.insertMany(listSave);
-//				}
-				
-			} catch (Exception e) {
-				
-				// TODO: handle exception
-				log.error(this.getClass().getName() +" Processo "+baseEntity.getProcesso()+" cnpj "+ baseEntity.getCnpj()+" Codigo "
-						+baseEntity.getCodigo()+" Registro "+baseEntity.getRegistro()+" Vencimento "+baseEntity.getDataVencimento());
-				log.error(e.getMessage());
-				
-				totalErro++;
-				
-			}	*/
-			
+
+			/*
+			 * try {
+			 * 
+			 * // if (cont % 10 == 0) { // //footRepository.saveAll(listSave); //
+			 * coll.insertMany(listSave); // }
+			 * 
+			 * } catch (Exception e) {
+			 * 
+			 * // TODO: handle exception log.error(this.getClass().getName()
+			 * +" Processo "+baseEntity.getProcesso()+" cnpj "+
+			 * baseEntity.getCnpj()+" Codigo "
+			 * +baseEntity.getCodigo()+" Registro "+baseEntity.getRegistro()+" Vencimento "
+			 * +baseEntity.getDataVencimento()); log.error(e.getMessage());
+			 * 
+			 * totalErro++;
+			 * 
+			 * }
+			 */
+
 		}
-		
 
 		loggerProcessing.setTotalInserido(new Long(totalInserido));
 		loggerProcessing.setTotalAtualizado(new Long(totalAtualizado));
 		loggerProcessing.setTotalErro(new Long(totalErro));
 		loggerRepositoryMdb.save(loggerProcessing);
 		mongoClient.close();
-		
 
 	}
 
 	@Override
 	public ArrayList<Document> loadDataDocument(String cnpj) {
 		// TODO Auto-generated method stub
-		return super.loadDataDocument(this,cnpj);
+		return super.loadDataDocument(this, cnpj);
 	}
 
 }

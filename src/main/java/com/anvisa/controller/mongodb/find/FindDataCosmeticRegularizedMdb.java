@@ -1,5 +1,6 @@
 package com.anvisa.controller.mongodb.find;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
@@ -45,9 +46,36 @@ public class FindDataCosmeticRegularizedMdb  {
 
 		List<ContentCosmeticRegularized> contentCosmeticRegularizeds = filter(queryRecordParameter);
 		
+		ArrayList<ContentCosmeticRegularized> cosmeticRegularizeds = new ArrayList<ContentCosmeticRegularized>();
+		
 		for (Iterator iterator = contentCosmeticRegularizeds.iterator(); iterator.hasNext();) {
+			
 			ContentCosmeticRegularized contentCosmeticRegularized = (ContentCosmeticRegularized) iterator.next();
-			contentCosmeticRegularized.lodaProcess();
+			
+/*			if (contentCosmeticRegularized.getProcess()!=null && contentCosmeticRegularized.getProcess().getProcessDetail()!=null) {
+				cosmeticRegularizeds.add(contentCosmeticRegularized);
+				contentCosmeticRegularized.lodaProcess();
+			}*/
+			/*if (contentCosmeticRegularized.getProcess()==null) {
+				ArrayList<Process> process = processRepository.findByProcesso(contentCosmeticRegularized.getProcesso(),
+						contentCosmeticRegularized.getContentCosmeticRegularizedDetail().getCnpj());
+				if (process.size()>0) {
+					contentCosmeticRegularized.setProcess(process.get(0));
+					contentCosmeticRegularized.lodaProcess();
+				} else {
+					SynchronizeProcessMdb synchronizeProcess = new SynchronizeProcessMdb();
+					ArrayList<BaseEntityMongoDB> processos = synchronizeProcess.loadData(contentCosmeticRegularized.getContentCosmeticRegularizedDetail().getCnpj()
+							+ "&filter[processo]=" + contentCosmeticRegularized.getProcesso(),1);
+	
+					if (processos.size() > 0) {
+						Process newProcess = (Process) processos.get(0);
+						processRepository.insert(newProcess);
+						contentCosmeticRegularized.lodaProcess();
+					}
+				}
+				
+			}*/
+			
 		}
 		
 

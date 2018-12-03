@@ -20,11 +20,10 @@ public abstract class BaseEntityMongoDB {
   
     @Id
     private ObjectId id;  
-  
     //@Field(value = "active")
 	private boolean active;
 
-    //@Field(value = "insertUser")	
+    @Field(value = "insertUser")	
 	private User insertUser;
 	
 

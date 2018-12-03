@@ -104,7 +104,7 @@ public class ProcessPetition {
 		if (node != null) {
 
 			peticao.setExpediente(JsonToObject.getValue(node, "expediente"));
-			peticao.setDataEntrada(JsonToObject.getValueDate(node, "dataEntrada"));
+			peticao.setDataEntrada(JsonToObject.getValueDate(node,"peticao" ,"dataEntrada"));
 			peticao.setProtocolo(JsonToObject.getValue(node, "protocolo"));
 			
 			ProcessoSubject assunto = new ProcessoSubject();

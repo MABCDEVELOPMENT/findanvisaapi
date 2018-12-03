@@ -11,6 +11,7 @@ import java.util.concurrent.TimeUnit;
 import org.bson.Document;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Component;
 
 import com.anvisa.core.json.JsonToObject;
@@ -28,6 +29,7 @@ import com.anvisa.model.persistence.mongodb.cosmetic.register.presentation.Prese
 import com.anvisa.model.persistence.mongodb.cosmetic.register.presentation.PresentationDestination;
 import com.anvisa.model.persistence.mongodb.cosmetic.register.presentation.PresentationRestriction;
 import com.anvisa.model.persistence.mongodb.interceptor.synchronizedata.IntSynchronizeMdb;
+import com.anvisa.model.persistence.mongodb.loggerprocessing.LogErroProcessig;
 import com.anvisa.model.persistence.mongodb.loggerprocessing.LoggerProcessing;
 import com.anvisa.model.persistence.mongodb.repository.CosmeticRegisterRepositoryMdb;
 import com.anvisa.model.persistence.mongodb.repository.LoggerRepositoryMdb;
@@ -56,16 +58,18 @@ public class SynchronizeCosmeticRegisterMdb extends SynchronizeDataMdb implement
 
 	@Autowired
 	private static CosmeticRegisterRepositoryMdb cosmeticRegisterRepository;
-	
+
 	@Autowired
 	private static LoggerRepositoryMdb loggerRepositoryMdb;
 
 	@Autowired
-	public void setService(CosmeticRegisterRepositoryMdb cosmeticRegisterRepository, SequenceDaoImpl sequence, LoggerRepositoryMdb loggerRepositoryMdb) {
+	public void setService(CosmeticRegisterRepositoryMdb cosmeticRegisterRepository, SequenceDaoImpl sequence,
+			LoggerRepositoryMdb loggerRepositoryMdb, MongoTemplate mongoTemplate) {
 
 		this.cosmeticRegisterRepository = cosmeticRegisterRepository;
 		this.sequence = sequence;
 		this.loggerRepositoryMdb = loggerRepositoryMdb;
+		this.mongoTemplate = mongoTemplate;
 
 	}
 
@@ -83,7 +87,7 @@ public class SynchronizeCosmeticRegisterMdb extends SynchronizeDataMdb implement
 
 	}
 
-	public ContentCosmeticRegister parseData(JsonNode jsonNode) {
+	public ContentCosmeticRegister parseData(String cnpj, JsonNode jsonNode) {
 		// TODO Auto-generated method stub
 		ContentCosmeticRegister contentCosmeticRegister = new ContentCosmeticRegister();
 
@@ -111,18 +115,19 @@ public class SynchronizeCosmeticRegisterMdb extends SynchronizeDataMdb implement
 		contentCosmeticRegister.setVencimento(JsonToObject.getValueDate(jsonNode, "vencimento", "vencimento"));
 
 		contentCosmeticRegister.setDataRegistro(JsonToObject.getValueDate(jsonNode, "publicacao"));
-		
-		ContentCosmeticRegisterDetail contentCosmeticRegisterDetail = this.loadDetailData(contentCosmeticRegister.getProcesso());
 
-		if (contentCosmeticRegisterDetail!=null) {
-			
+		ContentCosmeticRegisterDetail contentCosmeticRegisterDetail = this
+				.loadDetailData(contentCosmeticRegister.getCnpj(), contentCosmeticRegister.getProcesso());
+
+		if (contentCosmeticRegisterDetail != null) {
+
 			contentCosmeticRegister.setContentCosmeticRegisterDetail(contentCosmeticRegisterDetail);
 		}
-		
+
 		return contentCosmeticRegister;
 	}
 
-	public ContentCosmeticRegisterDetail parseDetailData(JsonNode jsonNode) {
+	public ContentCosmeticRegisterDetail parseDetailData(String cnpj, JsonNode jsonNode) {
 		// TODO Auto-generated method stub
 		ContentCosmeticRegisterDetail contentCosmeticRegisterDetail = new ContentCosmeticRegisterDetail();
 
@@ -136,15 +141,15 @@ public class SynchronizeCosmeticRegisterMdb extends SynchronizeDataMdb implement
 				.setVencimentoRegistro(JsonToObject.getValueDate(jsonNode, "vencimento", "vencimento"));
 		contentCosmeticRegisterDetail.setPublicacaoRgistro(JsonToObject.getValueDate(jsonNode, "publicacao"));
 		contentCosmeticRegisterDetail.setApresentacoes(
-				parseApresentationData(jsonNode, "apresentacoes", contentCosmeticRegisterDetail.getProcesso()));
-		contentCosmeticRegisterDetail
-				.setPeticoes(parsePetitionData(jsonNode, "peticoes", contentCosmeticRegisterDetail.getProcesso()));
+				parseApresentationData(cnpj, jsonNode, "apresentacoes", contentCosmeticRegisterDetail.getProcesso()));
+		contentCosmeticRegisterDetail.setPeticoes(
+				parsePetitionData(cnpj, jsonNode, "peticoes", contentCosmeticRegisterDetail.getProcesso()));
 
 		return contentCosmeticRegisterDetail;
 	}
 
-	public ArrayList<CosmeticRegisterPresentation> parseApresentationData(JsonNode jsonNode, String attribute,
-			String processo) {
+	public ArrayList<CosmeticRegisterPresentation> parseApresentationData(String cnpj, JsonNode jsonNode,
+			String attribute, String processo) {
 
 		ArrayNode element = (ArrayNode) jsonNode.findValue(attribute);
 
@@ -169,7 +174,7 @@ public class SynchronizeCosmeticRegisterMdb extends SynchronizeDataMdb implement
 				apresentacaoCosmeticoRegistrado.setSituacao(JsonToObject.getValue(nodeIt, "registro", "situacao"));
 
 				CosmeticRegisterPresentationDetail cosmeticRegisterPresentationDetail = (CosmeticRegisterPresentationDetail) this
-						.loadPresentationDetail(processo, apresentacaoCosmeticoRegistrado.getCodigo());
+						.loadPresentationDetail(cnpj, processo, apresentacaoCosmeticoRegistrado.getCodigo());
 				apresentacaoCosmeticoRegistrado
 						.setCosmeticRegisterPresentationDetail(cosmeticRegisterPresentationDetail);
 
@@ -274,7 +279,8 @@ public class SynchronizeCosmeticRegisterMdb extends SynchronizeDataMdb implement
 
 	}
 
-	public ArrayList<CosmeticRegisterPetition> parsePetitionData(JsonNode jsonNode, String attribute, String processo) {
+	public ArrayList<CosmeticRegisterPetition> parsePetitionData(String cnpj, JsonNode jsonNode, String attribute,
+			String processo) {
 
 		ArrayNode element = (ArrayNode) jsonNode.findValue(attribute);
 
@@ -300,8 +306,8 @@ public class SynchronizeCosmeticRegisterMdb extends SynchronizeDataMdb implement
 						+ JsonToObject.getValueDateToString(nodeIt, "situacao", "data");
 				cosmeticRegisterPetition.setSituacao(situacao);
 
-				CosmeticRegisterPetitionDetail cosmeticRegisterPresentationDetail = this.loadPetitionDetail(processo,
-						cosmeticRegisterPetition.getExpediente());
+				CosmeticRegisterPetitionDetail cosmeticRegisterPresentationDetail = this.loadPetitionDetail(cnpj,
+						processo, cosmeticRegisterPetition.getExpediente());
 
 				cosmeticRegisterPetition.setCosmeticRegisterPetitionDetail(cosmeticRegisterPresentationDetail);
 
@@ -413,43 +419,54 @@ public class SynchronizeCosmeticRegisterMdb extends SynchronizeDataMdb implement
 			if (response.code() == 500) {
 				response.close();
 				client = null;
+				System.gc();
 				return null;
 			}
 
-			JsonNode rootNode = objectMapper.readTree(this.getGZIPString(response.body().byteStream()));
+			JsonNode rootNode = objectMapper.readTree(this.getGZIPString(cnpj, response.body().byteStream()));
 
 			Iterator<JsonNode> elementsContents = rootNode.path("content").iterator();
 
 			log.info("SynchronizeData Total Registros " + rootNode.get("totalElements"), dateFormat.format(new Date()));
 
 			int i = 0;
+			System.out.println("Load iniciando");
 			while (elementsContents.hasNext()) {
 
 				JsonNode jsonNode = (JsonNode) elementsContents.next();
 
-				BaseEntityMongoDB baseEntity = this.parseData(jsonNode);
+				BaseEntityMongoDB baseEntity = this.parseData(cnpj, jsonNode);
 
 				String processo = ((ContentCosmeticRegister) baseEntity).getProcesso();
 
 				rootObject.add(baseEntity);
-
-				//System.out.println(i++);
-
+				i++;
+				if (i>=200) {
+					System.out.println(i);	
+					i=0;
+				}
+				
 			}
+			System.out.println("Load finalizando");
 			response.close();
 			client = null;
+			System.gc();
 			return rootObject;
 
 		} catch (Exception e) {
 			// TODO: handle exception
-			e.printStackTrace();
+			LogErroProcessig log = new LogErroProcessig(cnpj, "", e.getMessage(),
+					ContentCosmeticRegister.class.getName(), this.getClass().getName(), e,
+					LocalDateTime.now());
+			mongoTemplate.save(log);
+			System.gc();
 		}
 
 		return rootObject;
 		// return super.loadData(this, cnpj);
 	}
 
-	public ContentCosmeticRegisterDetail loadDetailData(String concat) {
+	public ContentCosmeticRegisterDetail loadDetailData(String cnpj, String concat) {
 		ContentCosmeticRegisterDetail rootObject = null;
 		OkHttpClient client = new OkHttpClient();
 
@@ -467,29 +484,36 @@ public class SynchronizeCosmeticRegisterMdb extends SynchronizeDataMdb implement
 			if (response.code() == 500) {
 				response.close();
 				client = null;
+				System.gc();
 				return null;
 			}
 
-			JsonNode rootNode = objectMapper.readTree(this.getGZIPString(response.body().byteStream()));
+			JsonNode rootNode = objectMapper.readTree(this.getGZIPString(cnpj, response.body().byteStream()));
 
 			if (rootNode != null) {
 
-				rootObject = this.parseDetailData(rootNode);
+				rootObject = this.parseDetailData(cnpj, rootNode);
 			}
 			response.close();
 			client = null;
+			System.gc();
 			return rootObject;
 
 		} catch (Exception e) {
 			// TODO: handle exception
-			e.printStackTrace();
+			LogErroProcessig log = new LogErroProcessig(cnpj, concat, e.getMessage(),
+					ContentCosmeticRegister.class.getName(), this.getClass().getName(), e,
+					LocalDateTime.now());
+			mongoTemplate.save(log);
+			System.gc();
 		}
 
 		return null;
 		// return super.loadDetailData(this, concat);
 	}
 
-	public CosmeticRegisterPresentationDetail loadPresentationDetail(String processo, String apresentacao) {
+	public CosmeticRegisterPresentationDetail loadPresentationDetail(String cnpj, String processo,
+			String apresentacao) {
 
 		CosmeticRegisterPresentationDetail rootObject = null;
 		OkHttpClient client = new OkHttpClient();
@@ -510,27 +534,34 @@ public class SynchronizeCosmeticRegisterMdb extends SynchronizeDataMdb implement
 			if (response.code() == 500) {
 				response.close();
 				client = null;
+				System.gc();
 				return null;
 			}
 
-			JsonNode rootNode = objectMapper.readTree(this.getGZIPString(response.body().byteStream()));
+			JsonNode rootNode = objectMapper.readTree(this.getGZIPString(cnpj, response.body().byteStream()));
 
 			if (rootNode != null) {
 
 				rootObject = this.parseDetailAprentation(rootNode, "produto");
 			}
 			response.close();
+			System.gc();
 			return rootObject;
 
 		} catch (Exception e) {
 			// TODO: handle exception
-			e.printStackTrace();
+			LogErroProcessig log = new LogErroProcessig(cnpj, processo, e.getMessage(),
+					ContentCosmeticRegister.class.getName(), this.getClass().getName(), e,
+					LocalDateTime.now());
+			mongoTemplate.save(log);
+			System.gc();
+
 		}
 
 		return null;
 	}
 
-	public CosmeticRegisterPetitionDetail loadPetitionDetail(String processo, String peticao) {
+	public CosmeticRegisterPetitionDetail loadPetitionDetail(String cnpj, String processo, String peticao) {
 
 		CosmeticRegisterPetitionDetail rootObject = null;
 		OkHttpClient client = new OkHttpClient();
@@ -551,62 +582,73 @@ public class SynchronizeCosmeticRegisterMdb extends SynchronizeDataMdb implement
 			if (response.code() == 500) {
 				response.close();
 				client = null;
+				System.gc();
 				return null;
 			}
 
-			JsonNode rootNode = objectMapper.readTree(this.getGZIPString(response.body().byteStream()));
+			JsonNode rootNode = objectMapper.readTree(this.getGZIPString(cnpj, response.body().byteStream()));
 
 			if (rootNode != null) {
 
 				rootObject = this.parsePetitionDetailData(rootNode, "produto");
 			}
 			response.close();
+			System.gc();
 			return rootObject;
 
 		} catch (Exception e) {
 			// TODO: handle exception
-			//e.printStackTrace();
+			// e.printStackTrace();
+			LogErroProcessig log = new LogErroProcessig(cnpj, processo, e.getMessage(),
+					ContentCosmeticRegister.class.getName(), this.getClass().getName(), e,
+					LocalDateTime.now());
+			mongoTemplate.save(log);
+			System.gc();
+
 		}
 
 		return null;
 	}
 
 	@Override
-	public void persist(ArrayList<BaseEntityMongoDB> itens, LoggerProcessing loggerProcessing) {
+	public void persist(String cnpj, ArrayList<BaseEntityMongoDB> itens, LoggerProcessing loggerProcessing) {
 
 		@SuppressWarnings("resource")
-		MongoClient mongoClient = new MongoClient("localhost");	
-		
-		//MongoCredential credential = MongoCredential.createPlainCredential("findinfo01", "findinfo01", "idkfa0101".toCharArray());
-		
+		MongoClient mongoClient = new MongoClient("localhost");
+
+		// MongoCredential credential =
+		// MongoCredential.createPlainCredential("findinfo01", "findinfo01",
+		// "idkfa0101".toCharArray());
+
 		MongoDatabase database = mongoClient.getDatabase("findinfo01");
-		
+
 		MongoCollection<Document> coll = database.getCollection("cosmeticRegister");
-		
+
 		Gson gson = new Gson();
-		
-		
-		ArrayList<Document>  listSave = new ArrayList<Document>();
+
+		ArrayList<Document> listSave = new ArrayList<Document>();
 		int size = itens.size();
 		int cont = 0;
-		int totalInserido   = 0;
+		int totalInserido = 0;
 		int totalAtualizado = 0;
-		int totalErro       = 0;
+		int totalErro = 0;
 
 		for (Iterator<BaseEntityMongoDB> iterator = itens.iterator(); iterator.hasNext();) {
 
 			ContentCosmeticRegister baseEntity = (ContentCosmeticRegister) iterator.next();
-			
+
 			try {
-				
-				log.info("Synchronize "+this.getClass().getName()+" "+baseEntity.getProcesso() + " - " + baseEntity.getCnpj());
+
+				log.info("Synchronize " + this.getClass().getName() + " " + baseEntity.getProcesso() + " - "
+						+ baseEntity.getCnpj());
 
 				ContentCosmeticRegister localCosmetic = cosmeticRegisterRepository.findByProcesso(
 						baseEntity.getProcesso(), baseEntity.getExpedienteProcesso(), baseEntity.getCnpj());
 
 				boolean newFoot = (localCosmetic == null);
 
-				ContentCosmeticRegisterDetail detail = this.loadDetailData(baseEntity.getProcesso());
+				ContentCosmeticRegisterDetail detail = this.loadDetailData(baseEntity.getCnpj(),
+						baseEntity.getProcesso());
 				if (detail != null) {
 					ContentCosmeticRegisterDetail contentCosmeticRegisterDetail = detail;
 					((ContentCosmeticRegister) baseEntity)
@@ -631,18 +673,19 @@ public class SynchronizeCosmeticRegisterMdb extends SynchronizeDataMdb implement
 
 					if (!localCosmetic.equals(baseEntity)) {
 
-						//baseEntity.setId(localCosmetic.getId());
+						// baseEntity.setId(localCosmetic.getId());
 						baseEntity.setUpdateDate(LocalDate.now());
 						Document document = Document.parse(gson.toJson(baseEntity));
-						coll.updateOne(new Document("_id", new ObjectId(localCosmetic.getId().toString().getBytes())), document);
+						coll.updateOne(new Document("_id", new ObjectId(localCosmetic.getId().toString().getBytes())),
+								document);
 						totalAtualizado++;
 					}
 
 				} else {
-					//baseEntity.setId(this.sequence.getNextSequenceId(SEQ_KEY));
+					// baseEntity.setId(this.sequence.getNextSequenceId(SEQ_KEY));
 					baseEntity.setInsertDate(LocalDate.now());
 					Document document = Document.parse(gson.toJson(baseEntity));
-					//listSave.add(document);
+					// listSave.add(document);
 					coll.insertOne(document);
 					totalInserido++;
 				}
@@ -652,21 +695,21 @@ public class SynchronizeCosmeticRegisterMdb extends SynchronizeDataMdb implement
 				log.error(this.getClass().getName() + " Cnpj " + baseEntity.getCnpj() + " Processo "
 						+ baseEntity.getProcesso() + " ExpedienteProcesso " + baseEntity.getExpedienteProcesso());
 				log.error(e.getMessage());
-				
+
+				LogErroProcessig log = new LogErroProcessig(cnpj, baseEntity.getProcesso(), e.getMessage(),
+						ContentCosmeticRegister.class.getName(), this.getClass().getName(),
+						e, LocalDateTime.now());
+				mongoTemplate.save(log);
+
 				totalErro++;
 			}
-			
-/*			try {
-				if (cont % 100 == 0 || cont == size) {
-					coll.insertMany(listSave);
-					listSave = new ArrayList<Document>();
-				}
-			} catch (Exception e) {
-				// TODO: handle exception
-				log.error(this.getClass().getName() + " Processo " + baseEntity.getProcesso());
-				log.error(e.getMessage());				
-				totalErro++;
-			}	*/
+
+			/*
+			 * try { if (cont % 100 == 0 || cont == size) { coll.insertMany(listSave);
+			 * listSave = new ArrayList<Document>(); } } catch (Exception e) { // TODO:
+			 * handle exception log.error(this.getClass().getName() + " Processo " +
+			 * baseEntity.getProcesso()); log.error(e.getMessage()); totalErro++; }
+			 */
 			cont++;
 		}
 

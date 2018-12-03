@@ -6,6 +6,7 @@ import java.util.List;
 import javax.inject.Inject;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
@@ -40,11 +41,11 @@ public class FindDataCosmeticNotificationMdb {
 
 		List<ContentCosmeticNotification> contentCosmeticNotifications = filter(queryRecordParameter);
 		
-		for (Iterator iterator = contentCosmeticNotifications.iterator(); iterator.hasNext();) {
+/*		for (Iterator iterator = contentCosmeticNotifications.iterator(); iterator.hasNext();) {
 			ContentCosmeticNotification contentCosmeticNotification = (ContentCosmeticNotification) iterator.next();
 			contentCosmeticNotification.lodaProcess();
 		}
-
+*/
 		/*SynchronizeProcessMdb synchronizeProcess = new SynchronizeProcessMdb();
 
 		for (ContentCosmeticNotification contentCosmeticNotification : contentCosmeticNotifications) {
